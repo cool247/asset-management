@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 // form
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller } from "react-hook-form";
 // @mui
-import { TextField } from '@mui/material';
+import { TextField } from "@mui/material";
 
 // ----------------------------------------------------------------------
 
@@ -11,9 +11,13 @@ RHFSelect.propTypes = {
   name: PropTypes.string,
 };
 
-export default function RHFSelect({ name, children, ...other }) {
+export default function RHFSelect({
+  name,
+  children,
+  native = false,
+  ...other
+}) {
   const { control } = useFormContext();
-
   return (
     <Controller
       name={name}
@@ -23,7 +27,7 @@ export default function RHFSelect({ name, children, ...other }) {
           {...field}
           select
           fullWidth
-          SelectProps={{ native: true }}
+          SelectProps={{ native: native }}
           error={!!error}
           helperText={error?.message}
           {...other}
