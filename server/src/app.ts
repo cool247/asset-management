@@ -14,7 +14,7 @@ const main = async () => {
     host: "localhost",
   });
   app.get("/", async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.send("SERVER WORKING");
+    reply.send("SERVER WORKING...");
   });
   await migrate(db, {
     migrationsFolder: "./drizzle",
