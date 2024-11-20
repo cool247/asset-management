@@ -7,9 +7,9 @@ import { users } from "../Models/user.model";
 import { logger } from "../Utils/logger";
 
 export const createUser = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name }: { name: string } = request.body as { name: string };
+  const { name, barcodeId }: { name: string; barcodeId: string } = request.body as { name: string; barcodeId: string };
   logger.info(name);
-  const createUser = await db.insert(users).values({ name }).returning();
+  const createUser = await db.insert(users).values({ name, barcodeId }).returning();
   reply.send(createUser);
 };
 

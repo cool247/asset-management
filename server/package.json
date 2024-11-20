@@ -18,16 +18,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/cors": "^10.0.1",
     "cli-color": "^2.0.4",
     "drizzle-orm": "^0.36.3",
     "fastify": "^5.1.0",
-    "fastify-cors": "^6.1.0",
     "fastify-plugin": "^5.0.1",
     "pg": "^8.13.1"
   },
   "devDependencies": {
     "@types/cli-color": "^2.0.6",
-    "@types/fastify-cors": "^2.1.2",
     "@types/node": "^22.9.0",
     "@types/pg": "^8.11.10",
     "dotenv": "^16.4.5",
