@@ -6,7 +6,7 @@ import { assets, assetTypes } from "./Models/asset.model";
 import { assetMovements } from "./Models/asset-movement.model";
 import { db } from "./Config/db";
 
-const allowedTables = ["users", "locations", "rows", "racks_and_cupboards","asset_types" ,"assets", "asset_movements"];
+const allowedTables = ["users", "locations", "rows", "racks_and_cupboards", "asset_types", "assets", "asset_movements"];
 
 async function truncateTable(tableName: string) {
   if (!allowedTables.includes(tableName)) {
@@ -26,10 +26,10 @@ const seed = async () => {
   try {
     console.log("truncating tables...");
     for await (const table of allowedTables) {
-      await truncateTable(table)
+      await truncateTable(table);
     }
     console.log("truncated all tables");
-    
+
     console.log("Seeding database...");
     // Users
     await db.insert(users).values([
@@ -95,20 +95,18 @@ const seed = async () => {
     // Asset Movements
     await db.insert(assetMovements).values([
       {
-        assetId: 1, // Assuming A001 has id=1
-        sourceLocationId: 1,
-        destinationLocationId: 2,
-        rackId: 1, // Assuming RC001 has id=1
-        userId: 1, // Assuming John Doe has id=1
+        assetId: "A001",
+        from: "RC001",
+        to: null,
+        userId: "U001",
         status: "Pending",
         comments: "Move for maintenance",
       },
       {
-        assetId: 2, // Assuming A002 has id=2
-        sourceLocationId: 2,
-        destinationLocationId: 1,
-        rackId: 2, // Assuming RC002 has id=2
-        userId: 2, // Assuming Jane Smith has id=2
+        assetId: "A002",
+        from: "RC002",
+        to: "RC001",
+        userId: "U002",
         status: "Completed",
         comments: "Relocation to main warehouse",
       },

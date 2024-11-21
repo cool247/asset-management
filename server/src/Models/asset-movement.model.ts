@@ -2,6 +2,7 @@ import { integer, pgEnum, pgTable, serial, timestamp, varchar } from "drizzle-or
 import { assets } from "./asset.model";
 import { racksAndCupboards } from "./rack-cupboard.model";
 import { locations } from "./location.model";
+import { users } from "./user.model";
 
 // Enum for movement status
 export const movementStatusEnum = pgEnum("movement_status", ["Pending", "Completed"]);
@@ -9,13 +10,12 @@ export type PendingOrCompletedType = keyof typeof movementStatusEnum.enumValues
 
 export const assetMovements = pgTable("asset_movements", {
   id: serial("id").primaryKey(),
-  assetId: integer("asset_id").notNull().references(() => assets.id), 
-  sourceLocationId: integer("source_location_id").references(() => locations.id), 
-  destinationLocationId: integer("destination_location_id").references(() => locations.id), 
-  rackId: integer("rack_id").references(() => racksAndCupboards.id), 
-  userId: integer("user_id").notNull(), 
+  assetId: varchar("asset_id").notNull().references(() => assets.barcodeId), 
+  from: varchar("racks_and_cupboards_from").notNull().references(() => racksAndCupboards.barcodeId), 
+  to: varchar("racks_and_cupboards_to").references(() => racksAndCupboards.barcodeId), 
+  userId: varchar("user_id").notNull().references(() => users.barcodeId), 
   status: movementStatusEnum().default("Pending"), 
-  movedAt: timestamp("moved_at").defaultNow().notNull(), 
   comments: varchar("comments", { length: 255 }),
+  movedAt: timestamp("moved_at").defaultNow().notNull(), 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
