@@ -1,5 +1,6 @@
-import fastify, { FastifyInstance } from "fastify";
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import cors from "@fastify/cors";
+import fastifyJwt from "@fastify/jwt";
 import { userRoutes } from "../Routes/user.route";
 import { locationRoutes } from "../Routes/location.route";
 import { rowRoutes } from "../Routes/row.route";
@@ -14,8 +15,13 @@ export const buildServer = async () => {
     origin: true,
   });
 
+  app.register(fastifyJwt, {
+    secret: "secret_key",
+  });
+
+  
   const registerRoutes = async (instance: FastifyInstance): Promise<void> => {
-    instance.register(userRoutes, { prefix: "/user" });
+    instance.register(userRoutes, { prefix: "/user",});
     instance.register(locationRoutes, { prefix: "/location" });
     instance.register(rowRoutes, { prefix: "/row" });
     instance.register(rackAndCupboardRoutes, { prefix: "/rack-cupboard" });

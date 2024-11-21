@@ -7,13 +7,10 @@ import { users } from "../Models/user.model";
 import { CreateUserInput, UpdateUserInput } from "../Schemas/user.schema";
 
 export const createUser = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name, barcodeId, role, contactNumber } = request.body as CreateUserInput;
+  const { name, barcodeId, role, contactNumber, password } = request.body as CreateUserInput;
 
   try {
-    const createUser = await db
-      .insert(users)
-      .values({ name, barcodeId, role, contactNumber }) // Include additional fields
-      .returning();
+    const createUser = await db.insert(users).values({ name, barcodeId, role, contactNumber, password }).returning();
 
     reply.status(201).send(createUser);
   } catch (error) {

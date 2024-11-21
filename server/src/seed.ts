@@ -6,14 +6,35 @@ import { assets, assetTypes } from "./Models/asset.model";
 import { assetMovements } from "./Models/asset-movement.model";
 import { db } from "./Config/db";
 
+const allowedTables = ["users", "locations", "rows", "racks_and_cupboards","asset_types" ,"assets", "asset_movements"];
+
+async function truncateTable(tableName: string) {
+  if (!allowedTables.includes(tableName)) {
+    throw new Error(`Table ${tableName} is not allowed to be truncated.`);
+  }
+
+  try {
+    await db.execute(`TRUNCATE TABLE "${tableName}" RESTART IDENTITY CASCADE`);
+    console.log(`Table ${tableName} truncated successfully.`);
+  } catch (error) {
+    console.error(`Failed to truncate table ${tableName}:`, error);
+    throw error;
+  }
+}
+
 const seed = async () => {
   try {
+    console.log("truncating tables...");
+    for await (const table of allowedTables) {
+      await truncateTable(table)
+    }
+    console.log("truncated all tables");
+    
     console.log("Seeding database...");
-
     // Users
     await db.insert(users).values([
-      { barcodeId: "U001", name: "John Doe" },
-      { barcodeId: "U002", name: "Jane Smith" },
+      { barcodeId: "U001", name: "John Doe", contactNumber: "9000000001", password: "mobileuser1@123" },
+      { barcodeId: "U002", name: "Jane Smith", password: "mobileuser2@123", contactNumber: "9000000002" },
     ]);
 
     // Rows
@@ -47,10 +68,7 @@ const seed = async () => {
     ]);
 
     // Asset Types
-    await db.insert(assetTypes).values([
-      { name: "Laptop" },
-      { name: "Monitor" },
-    ]);
+    await db.insert(assetTypes).values([{ name: "Laptop" }, { name: "Monitor" }]);
 
     // Assets
     await db.insert(assets).values([
