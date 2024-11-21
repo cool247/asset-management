@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { rows } from "./row.model";
 
 export const rackOrCupboardEnum = pgEnum("rack_or_cupboard_type", ["Rack", "Cupboard"]);
@@ -13,4 +13,6 @@ export const racksAndCupboards = pgTable("racks_and_cupboards", {
   type: rackOrCupboardEnum().default("Cupboard"),
   name: varchar("name", { length: 50 }).notNull(),
   description: varchar("description", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

@@ -1,4 +1,4 @@
-import { integer, jsonb, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import { integer, jsonb, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { locations } from "./location.model";
 
 
@@ -23,4 +23,6 @@ export const assets = pgTable("assets", {
     .notNull()
     .references(() => locations.id),
   dynamicFields: jsonb("dynamic_fields"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

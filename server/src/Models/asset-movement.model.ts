@@ -16,5 +16,6 @@ export const assetMovements = pgTable("asset_movements", {
   userId: integer("user_id").notNull(), 
   status: movementStatusEnum().default("Pending"), 
   movedAt: timestamp("moved_at").defaultNow().notNull(), 
-  comments: varchar("comments", { length: 255 }), 
+  comments: varchar("comments", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });

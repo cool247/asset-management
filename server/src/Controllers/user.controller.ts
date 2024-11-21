@@ -7,9 +7,18 @@ import { users } from "../Models/user.model";
 import { CreateUserInput, UpdateUserInput } from "../Schemas/user.schema";
 
 export const createUser = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name, barcodeId } = request.body as CreateUserInput;
-  const createUser = await db.insert(users).values({ name, barcodeId }).returning();
-  reply.status(201).send(createUser);
+  const { name, barcodeId, role, contactNumber } = request.body as CreateUserInput;
+
+  try {
+    const createUser = await db
+      .insert(users)
+      .values({ name, barcodeId, role, contactNumber }) // Include additional fields
+      .returning();
+
+    reply.status(201).send(createUser);
+  } catch (error) {
+    reply.status(500).send({ message: "An error occurred", error });
+  }
 };
 
 export const getAllUsers = async (_, reply: FastifyReply) => {
@@ -30,10 +39,14 @@ export const getUserById = async (request: FastifyRequest, reply: FastifyReply) 
 
 export const updateUserById = async (request: FastifyRequest, reply: FastifyReply) => {
   const { id } = request.params as UpdateUserInput["params"];
-  const { newName } = request.body as UpdateUserInput["body"];
+  const { newName, role, contactNumber } = request.body as UpdateUserInput["body"];
 
   try {
-    const updateUser = await db.update(users).set({ name: newName }).where(eq(users.id, id)).returning();
+    const updateUser = await db
+      .update(users)
+      .set({ name: newName, role, contactNumber }) // Update all fields
+      .where(eq(users.id, id))
+      .returning();
 
     if (updateUser.length === 0) {
       return reply.status(404).send({ message: "User not found" });

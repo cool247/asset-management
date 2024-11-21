@@ -4,15 +4,19 @@ export const createUserSchema = z.object({
   body: z.object({
     name: z.string().max(50, "Name must be less than 50 characters"),
     barcodeId: z.string().max(100, "Barcode ID must be less than 100 characters"),
+    role: z.enum(["admin", "desktop_user", "mobile_user"]).optional(), // Default in DB
+    contactNumber: z.string().max(15, "Contact number must be valid").optional(),
   }),
 });
 
 export const updateUserSchema = z.object({
-  body: z.object({
-    newName: z.string().max(50, "Name must be less than 50 characters"),
-  }),
   params: z.object({
-    id: z.number().int("ID must be an integer"),
+    id: z.number().int("ID must be a valid integer"),
+  }),
+  body: z.object({
+    newName: z.string().max(50, "Name must be less than 50 characters").optional(),
+    role: z.enum(["admin", "desktop_user", "mobile_user"]).optional(),
+    contactNumber: z.string().max(15, "Contact number must be valid").optional(),
   }),
 });
 
