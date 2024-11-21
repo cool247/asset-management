@@ -3,33 +3,11 @@ import { db } from "../Config/db"; // Assuming you have a DB config
 import { logger } from "../Utils/logger"; // Assuming you have a logger utility
 import { assets } from "../Models/asset.model"; // Import your assets model
 import { eq } from "drizzle-orm"; // For comparison in queries
+import { AssetIdInput, CreateAssetInput, UpdateAssetInput } from "../Schemas/asset.schema";
 
 export const createAsset = async (request: FastifyRequest, reply: FastifyReply) => {
-  const {
-    barcodeId,
-    assetTypeId,
-    length,
-    quantityInUse,
-    totalQty,
-    locationId,
-    dynamicFields,
-  }: {
-    barcodeId: string;
-    assetTypeId: number;
-    length: number | null;
-    quantityInUse: number;
-    totalQty: number;
-    locationId: number;
-    dynamicFields: Record<string, any> | null; // assuming dynamic fields are JSONB
-  } = request.body as {
-    barcodeId: string;
-    assetTypeId: number;
-    length: number | null;
-    quantityInUse: number;
-    totalQty: number;
-    locationId: number;
-    dynamicFields: Record<string, any> | null;
-  };
+  const { barcodeId, assetTypeId, length, quantityInUse, totalQty, locationId, dynamicFields } =
+    request.body as CreateAssetInput;
 
   logger.info(`Creating asset with barcodeId: ${barcodeId}`);
 
@@ -65,7 +43,7 @@ export const getAllAssets = async (request: FastifyRequest, reply: FastifyReply)
 };
 
 export const getAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
+  const { id } = request.params as AssetIdInput;
 
   try {
     const asset = await db.select().from(assets).where(eq(assets.id, id));
@@ -82,34 +60,15 @@ export const getAssetById = async (request: FastifyRequest, reply: FastifyReply)
 };
 
 export const updateAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
-  const {
-    assetTypeId,
-    length,
-    quantityInUse,
-    totalQty,
-    locationId,
-    dynamicFields,
-  }: {
-    assetTypeId?: number;
-    length?: number | null;
-    quantityInUse?: number;
-    totalQty?: number;
-    locationId?: number;
-    dynamicFields?: Record<string, any> | null;
-  } = request.body as {
-    assetTypeId?: number;
-    length?: number | null;
-    quantityInUse?: number;
-    totalQty?: number;
-    locationId?: number;
-    dynamicFields?: Record<string, any> | null;
-  };
+  const { id } = request.params as UpdateAssetInput["params"];
+  const { barcodeId, assetTypeId, length, quantityInUse, totalQty, locationId, dynamicFields } =
+    request.body as UpdateAssetInput["body"];
 
   try {
     const updatedAsset = await db
       .update(assets)
       .set({
+        barcodeId,
         assetTypeId,
         length,
         quantityInUse,
@@ -132,7 +91,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
 };
 
 export const deleteAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
+  const { id } = request.params as AssetIdInput;
 
   try {
     const deletedAsset = await db.delete(assets).where(eq(assets.id, id)).returning();

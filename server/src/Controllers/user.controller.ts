@@ -4,75 +4,59 @@ import { db } from "../Config/db";
 import { eq } from "drizzle-orm";
 
 import { users } from "../Models/user.model";
-import { logger } from "../Utils/logger";
+import { CreateUserInput, UpdateUserInput } from "../Schemas/user.schema";
 
 export const createUser = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name, barcodeId }: { name: string; barcodeId: string } = request.body as { name: string; barcodeId: string };
-  logger.info(name);
+  const { name, barcodeId } = request.body as CreateUserInput;
   const createUser = await db.insert(users).values({ name, barcodeId }).returning();
-  reply.send(createUser);
+  reply.status(201).send(createUser);
 };
 
-export const getAllUsers = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getAllUsers = async (_, reply: FastifyReply) => {
   const allUsers = await db.select().from(users);
   reply.send(allUsers);
 };
 
 export const getUserById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number }; // Ensure id is a number
+  const { id } = request.params as { id: number };
+  const getUser = await db.select().from(users).where(eq(users.id, id));
 
-  try {
-    const getUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, id));
-
-    if (getUser.length === 0) {
-      return reply.status(404).send({ message: 'User not found' });
-    }
-
-    reply.send(getUser[0]); // Send the single user retrieved
-  } catch (error) {
-    reply.status(500).send({ message: 'An error occurred while fetching the user', error });
+  if (getUser.length === 0) {
+    return reply.status(404).send({ message: "User not found" });
   }
-}
+
+  reply.send(getUser[0]);
+};
 
 export const updateUserById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number }; // Ensure id is a number
-  const { newName }: { newName: string } = request.body as { newName: string };
+  const { id } = request.params as UpdateUserInput["params"];
+  const { newName } = request.body as UpdateUserInput["body"];
 
   try {
-    const updateUser = await db
-      .update(users)
-      .set({ name: newName })
-      .where(eq(users.id, id)) // Pass id as a number
-      .returning();
+    const updateUser = await db.update(users).set({ name: newName }).where(eq(users.id, id)).returning();
 
     if (updateUser.length === 0) {
-      return reply.status(404).send({ message: 'User not found' });
+      return reply.status(404).send({ message: "User not found" });
     }
 
     reply.send(updateUser);
   } catch (error) {
-    reply.status(500).send({ message: 'An error occurred', error });
+    reply.status(500).send({ message: "An error occurred", error });
   }
 };
 
 export const deleteUserById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number }; // Ensure id is a number
+  const { id } = request.params as UpdateUserInput["params"];
 
   try {
-    const deleteUser = await db
-      .delete(users)
-      .where(eq(users.id, id)) // Use id for the where condition
-      .returning();
+    const deleteUser = await db.delete(users).where(eq(users.id, id)).returning();
 
     if (deleteUser.length === 0) {
-      return reply.status(404).send({ message: 'User not found' });
+      return reply.status(404).send({ message: "User not found" });
     }
 
     reply.send(deleteUser);
   } catch (error) {
-    reply.status(500).send({ message: 'An error occurred', error });
+    reply.status(500).send({ message: "An error occurred", error });
   }
 };

@@ -1,29 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../Config/db"; 
-import { logger } from "../Utils/logger"; 
+import { db } from "../Config/db";
+import { logger } from "../Utils/logger";
 import { eq } from "drizzle-orm";
 import { racksAndCupboards } from "../Models/rack-cupboard.model";
+import { CreateRackOrCupboardInput,  UpdateRackOrCupboardInput } from "../Schemas/rack-cupboard.schema";
 
 export const createRackOrCupboard = async (request: FastifyRequest, reply: FastifyReply) => {
-  const {
-    barcodeId,
-    rowId,
-    type,
-    name,
-    description,
-  }: {
-    barcodeId: string;
-    rowId: number;
-    type: "Rack" | "Cupboard"; 
-    name: string;
-    description: string | null;
-  } = request.body as {
-    barcodeId: string;
-    rowId: number;
-    type: "Rack" | "Cupboard";
-    name: string;
-    description: string | null;
-  };
+  const { barcodeId, rowId, type, name, description } = request.body as CreateRackOrCupboardInput;
 
   logger.info(`Creating rack or cupboard: ${name}`);
 
@@ -57,13 +40,10 @@ export const getAllRacksAndCupboards = async (request: FastifyRequest, reply: Fa
 };
 
 export const getRackOrCupboardById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
+  const { id } = request.params as  UpdateRackOrCupboardInput["params"];
 
   try {
-    const rackOrCupboard = await db
-      .select()
-      .from(racksAndCupboards)
-      .where(eq(racksAndCupboards.id, id));
+    const rackOrCupboard = await db.select().from(racksAndCupboards).where(eq(racksAndCupboards.id, id));
 
     if (rackOrCupboard.length === 0) {
       return reply.status(404).send({ error: "Rack or cupboard not found" });
@@ -77,14 +57,8 @@ export const getRackOrCupboardById = async (request: FastifyRequest, reply: Fast
 };
 
 export const updateRackOrCupboardById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
-  const { barcodeId, rowId, type, name, description }: { barcodeId: string, rowId: number, type: "Rack" | "Cupboard", name: string, description: string | null } = request.body as {
-    barcodeId: string;
-    rowId: number;
-    type: "Rack" | "Cupboard";
-    name: string;
-    description: string | null;
-  };
+  const { id } = request.params as  UpdateRackOrCupboardInput["params"];
+  const { barcodeId, rowId, type, name, description } = request.body as UpdateRackOrCupboardInput["body"];
 
   try {
     const updatedRackOrCupboard = await db
@@ -111,13 +85,10 @@ export const updateRackOrCupboardById = async (request: FastifyRequest, reply: F
 };
 
 export const deleteRackOrCupboardById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
+  const { id } = request.params as  UpdateRackOrCupboardInput["params"];
 
   try {
-    const deletedRackOrCupboard = await db
-      .delete(racksAndCupboards)
-      .where(eq(racksAndCupboards.id, id))
-      .returning();
+    const deletedRackOrCupboard = await db.delete(racksAndCupboards).where(eq(racksAndCupboards.id, id)).returning();
 
     if (deletedRackOrCupboard.length === 0) {
       return reply.status(404).send({ error: "Rack or cupboard not found" });
