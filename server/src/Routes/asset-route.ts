@@ -2,15 +2,15 @@ import { FastifyInstance } from "fastify";
 import {
   createAsset,
   getAllAssets,
-  getAssetByBarcodeId,
-  updateAssetByBarcodeId,
-  deleteAssetByBarcodeId
+  getAssetById,
+  updateAssetById,
+  deleteAssetById
 } from "../Controllers/asset.controller";
 
 export const assetRoutes = async (app: FastifyInstance) => {
-  app.post("/", createAsset); 
+  app.post("/create-new", createAsset); 
   app.get("/", getAllAssets); 
-  app.get("/:barcodeId", getAssetByBarcodeId); 
-  app.patch("/:barcodeId", updateAssetByBarcodeId); 
-  app.delete("/:barcodeId", deleteAssetByBarcodeId); 
+  app.get("/:id", getAssetById); 
+  app.patch("/:id", updateAssetById); 
+  app.delete("/:id", deleteAssetById); 
 };

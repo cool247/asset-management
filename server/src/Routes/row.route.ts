@@ -8,14 +8,10 @@ import {
 } from "../Controllers/row.controller"; // Import your controller methods
 
 export const rowRoutes = async (app: FastifyInstance) => {
-  app.post("/", createRow);
-
+  app.post("/create-new", createRow);
   app.get("/", getAllRows);
-
   app.get("/:id", getRowById);
-
   app.patch("/:id", updateRowById);
-
   app.delete("/:id", deleteRowById);
 };
 

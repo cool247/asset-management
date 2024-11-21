@@ -18,21 +18,61 @@ export const getAllUsers = async (request: FastifyRequest, reply: FastifyReply) 
   reply.send(allUsers);
 };
 
-export const getUserByName = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name }: { name: string } = request.params as { name: string };
-  const getUser = await db.select().from(users).where(eq(users.name, name));
-  reply.send(getUser);
-};
+export const getUserById = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id }: { id: number } = request.params as { id: number }; // Ensure id is a number
 
-export const updateUserByName = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name }: { name: string } = request.params as { name: string };
+  try {
+    const getUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, id));
+
+    if (getUser.length === 0) {
+      return reply.status(404).send({ message: 'User not found' });
+    }
+
+    reply.send(getUser[0]); // Send the single user retrieved
+  } catch (error) {
+    reply.status(500).send({ message: 'An error occurred while fetching the user', error });
+  }
+}
+
+export const updateUserById = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id }: { id: number } = request.params as { id: number }; // Ensure id is a number
   const { newName }: { newName: string } = request.body as { newName: string };
-  const updateUser = await db.update(users).set({ name: newName }).where(eq(users.name, name)).returning();
-  reply.send(updateUser);
+
+  try {
+    const updateUser = await db
+      .update(users)
+      .set({ name: newName })
+      .where(eq(users.id, id)) // Pass id as a number
+      .returning();
+
+    if (updateUser.length === 0) {
+      return reply.status(404).send({ message: 'User not found' });
+    }
+
+    reply.send(updateUser);
+  } catch (error) {
+    reply.status(500).send({ message: 'An error occurred', error });
+  }
 };
 
-export const deleteUserByName = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name }: { name: string } = request.params as { name: string };
-  const deleteUser = await db.delete(users).where(eq(users.name, name)).returning();
-  reply.send(deleteUser);
+export const deleteUserById = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id }: { id: number } = request.params as { id: number }; // Ensure id is a number
+
+  try {
+    const deleteUser = await db
+      .delete(users)
+      .where(eq(users.id, id)) // Use id for the where condition
+      .returning();
+
+    if (deleteUser.length === 0) {
+      return reply.status(404).send({ message: 'User not found' });
+    }
+
+    reply.send(deleteUser);
+  } catch (error) {
+    reply.status(500).send({ message: 'An error occurred', error });
+  }
 };

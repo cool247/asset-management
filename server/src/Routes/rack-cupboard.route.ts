@@ -8,7 +8,7 @@ import {
 } from "../Controllers/rack-cupboard.controller";
 
 export const rackAndCupboardRoutes = async (app: FastifyInstance) => {
-  app.post("/", createRackOrCupboard);
+  app.post("/create-new", createRackOrCupboard);
   app.get("/", getAllRacksAndCupboards);
   app.get("/:id", getRackOrCupboardById);
   app.patch("/:id", updateRackOrCupboardById);

@@ -8,7 +8,7 @@ import {
 } from "../Controllers/location.controller";
 
 export const locationRoutes = async (app: FastifyInstance) => {
-  app.post("/", createLocation);
+  app.post("/create-new", createLocation);
   app.get("/", getAllLocations); 
   app.get("/:id", getLocationById); 
   app.patch("/:id", updateLocationById); 

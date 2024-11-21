@@ -1,16 +1,16 @@
 import { FastifyInstance } from "fastify";
 import {
   createUser,
-  deleteUserByName,
+  deleteUserById,
   getAllUsers,
-  getUserByName,
-  updateUserByName,
+  getUserById,
+  updateUserById,
 } from "../Controllers/user.controller";
 
 export const userRoutes = async (app: FastifyInstance) => {
-  app.post("/", createUser);
-  app.patch("/:name", updateUserByName);
+  app.post("/create-new", createUser);
   app.get("/", getAllUsers);
-  app.get("/:name", getUserByName);
-  app.delete("/:name", deleteUserByName);
+  app.patch("/:id", updateUserById);
+  app.get("/:id", getUserById);
+  app.delete("/:id", deleteUserById);
 };

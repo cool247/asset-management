@@ -64,14 +64,11 @@ export const getAllAssets = async (request: FastifyRequest, reply: FastifyReply)
   }
 };
 
-export const getAssetByBarcodeId = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { barcodeId }: { barcodeId: string } = request.params as { barcodeId: string };
+export const getAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id }: { id: number } = request.params as { id: number };
 
   try {
-    const asset = await db
-      .select()
-      .from(assets)
-      .where(eq(assets.barcodeId, barcodeId));
+    const asset = await db.select().from(assets).where(eq(assets.id, id));
 
     if (asset.length === 0) {
       reply.status(404).send({ error: "Asset not found" });
@@ -79,13 +76,13 @@ export const getAssetByBarcodeId = async (request: FastifyRequest, reply: Fastif
       reply.send(asset);
     }
   } catch (error) {
-    logger.error(`Error fetching asset by barcodeId: ${error instanceof Error ? error.message : "Unknown error"}`);
+    logger.error(`Error fetching asset by id: ${error instanceof Error ? error.message : "Unknown error"}`);
     reply.status(500).send({ error: "Failed to fetch asset" });
   }
 };
 
-export const updateAssetByBarcodeId = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { barcodeId }: { barcodeId: string } = request.params as { barcodeId: string };
+export const updateAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id }: { id: number } = request.params as { id: number };
   const {
     assetTypeId,
     length,
@@ -120,7 +117,7 @@ export const updateAssetByBarcodeId = async (request: FastifyRequest, reply: Fas
         locationId,
         dynamicFields,
       })
-      .where(eq(assets.barcodeId, barcodeId))
+      .where(eq(assets.id, id))
       .returning();
 
     if (updatedAsset.length === 0) {
@@ -129,19 +126,16 @@ export const updateAssetByBarcodeId = async (request: FastifyRequest, reply: Fas
       reply.send(updatedAsset);
     }
   } catch (error) {
-    logger.error(`Error updating asset by barcodeId: ${error instanceof Error ? error.message : "Unknown error"}`);
+    logger.error(`Error updating asset by id: ${error instanceof Error ? error.message : "Unknown error"}`);
     reply.status(500).send({ error: "Failed to update asset" });
   }
 };
 
-export const deleteAssetByBarcodeId = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { barcodeId }: { barcodeId: string } = request.params as { barcodeId: string };
+export const deleteAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id }: { id: number } = request.params as { id: number };
 
   try {
-    const deletedAsset = await db
-      .delete(assets)
-      .where(eq(assets.barcodeId, barcodeId))
-      .returning();
+    const deletedAsset = await db.delete(assets).where(eq(assets.id, id)).returning();
 
     if (deletedAsset.length === 0) {
       reply.status(404).send({ error: "Asset not found" });

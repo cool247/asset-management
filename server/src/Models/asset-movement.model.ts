@@ -4,7 +4,7 @@ import { racksAndCupboards } from "./rack-cupboard.model";
 import { locations } from "./location.model";
 
 // Enum for movement status
-const movementStatusEnum = pgEnum("movement_status", ["Pending", "Completed"]);
+export const movementStatusEnum = pgEnum("movement_status", ["Pending", "Completed"]);
 export type PendingOrCompletedType = keyof typeof movementStatusEnum.enumValues
 
 export const assetMovements = pgTable("asset_movements", {
@@ -14,7 +14,7 @@ export const assetMovements = pgTable("asset_movements", {
   destinationLocationId: integer("destination_location_id").references(() => locations.id), 
   rackId: integer("rack_id").references(() => racksAndCupboards.id), 
   userId: integer("user_id").notNull(), 
-  status: movementStatusEnum("status").default("Pending").notNull(), 
+  status: movementStatusEnum().default("Pending"), 
   movedAt: timestamp("moved_at").defaultNow().notNull(), 
   comments: varchar("comments", { length: 255 }), 
 });

@@ -9,6 +9,7 @@ export const createLocation = async (request: FastifyRequest, reply: FastifyRepl
     name: string;
     description: string | null;
   };
+  console.log(name, description)
 
   logger.info(`Creating location with name: ${name}`);
 
@@ -25,8 +26,10 @@ export const createLocation = async (request: FastifyRequest, reply: FastifyRepl
 export const getAllLocations = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const allLocations = await db.select().from(locations);
+    console.log(allLocations)
     reply.send(allLocations);
   } catch (error) {
+    console.log(error)
     logger.error(`Error fetching locations: ${error instanceof Error ? error.message : "Unknown error"}`);
     reply.status(500).send({ error: "Failed to fetch locations" });
   }
@@ -34,6 +37,7 @@ export const getAllLocations = async (request: FastifyRequest, reply: FastifyRep
 
 export const getLocationById = async (request: FastifyRequest, reply: FastifyReply) => {
   const { id }: { id: number } = request.params as { id: number };
+  console.log(id)
 
   try {
     const location = await db.select().from(locations).where(eq(locations.id, id));
