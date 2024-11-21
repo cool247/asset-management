@@ -1,7 +1,6 @@
-import { integer, pgEnum, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import {  pgEnum, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { assets } from "./asset.model";
 import { racksAndCupboards } from "./rack-cupboard.model";
-import { locations } from "./location.model";
 import { users } from "./user.model";
 
 // Enum for movement status

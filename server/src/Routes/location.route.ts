@@ -11,12 +11,8 @@ import { CreateLocationSchema, UpdateLocationSchema, GetLocationParamsSchema } f
 
 export const locationRoutes = async (app: FastifyInstance) => {
   app.post("/", { preHandler: validate(CreateLocationSchema) }, createLocation);
-
   app.get("/", getAllLocations);
-
   app.get("/:id", { preHandler: validate(GetLocationParamsSchema) }, getLocationById);
-
   app.patch("/:id", { preHandler: validate(UpdateLocationSchema) }, updateLocationById);
-
   app.delete("/:id", deleteLocationById);
 };

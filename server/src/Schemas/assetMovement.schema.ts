@@ -4,14 +4,12 @@ export const movementStatusEnum = z.enum(["Pending", "Completed"]);
 export const movementTypeEnum = z.enum(["cupboardToUser", "userToRack", "rackToUser", "userToCupboard"]);
 
 export const createAssetMovementSchema = z.object({
-  body: z.object({
-    movementType: movementTypeEnum,
-    assetId: z.string().min(1, "Asset barcodeId must be provided"),
-    from: z.string().min(1, "From rack barcodeId must be provided"),
-    to: z.string().min(1, "To rack barcodeId must be provided").nullable(),
-    userId: z.string().min(1, "User barcodeId must be provided"),
-    comments: z.string().max(255, "Comments must not exceed 255 characters").nullable(),
-  }),
+  movementType: z.string(),
+  assetId: z.string().min(1, "Asset barcodeId must be provided"),
+  from: z.string().min(1, "From rack barcodeId must be provided"),
+  to: z.string().min(1, "To rack barcodeId must be provided").nullable().optional(),
+  userId: z.string().min(1, "User barcodeId must be provided"),
+  comments: z.string().max(255, "Comments must not exceed 255 characters").nullable().optional(),
 });
 
 export const getAllAssetMovementsSchema = z.object({

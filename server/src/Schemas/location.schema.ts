@@ -13,3 +13,8 @@ export const UpdateLocationSchema = z.object({
 export const GetLocationParamsSchema = z.object({
   id: z.number().positive("ID must be a positive number"),
 });
+
+// Export inferred types
+export type CreateLocationInput = z.infer<typeof CreateLocationSchema>;
+export type UpdateLocationInput = z.infer<typeof UpdateLocationSchema>;
+export type LocationIdInput = z.infer<typeof GetLocationParamsSchema>;

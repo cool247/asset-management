@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { db } from "../Config/db"; // Assuming you have a DB config
-import { logger } from "../Utils/logger"; // Assuming you have a logger utility
-import { assets } from "../Models/asset.model"; // Import your assets model
-import { eq } from "drizzle-orm"; // For comparison in queries
+import { db } from "../Config/db";
+import { logger } from "../Utils/logger";
+import { assets } from "../Models/asset.model";
+import { eq } from "drizzle-orm";
 import { AssetIdInput, CreateAssetInput, UpdateAssetInput } from "../Schemas/asset.schema";
 
 export const createAsset = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -60,9 +60,9 @@ export const getAssetById = async (request: FastifyRequest, reply: FastifyReply)
 };
 
 export const updateAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as UpdateAssetInput["params"];
+  const { id } = request.params as AssetIdInput;
   const { barcodeId, assetTypeId, length, quantityInUse, totalQty, locationId, dynamicFields } =
-    request.body as UpdateAssetInput["body"];
+    request.body as UpdateAssetInput;
 
   try {
     const updatedAsset = await db

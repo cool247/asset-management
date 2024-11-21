@@ -68,8 +68,8 @@ export const getRowById = async (request: FastifyRequest, reply: FastifyReply) =
 };
 
 export const updateRowById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as UpdateRowInput["params"];
-  const { name, description } = request.body as UpdateRowInput["body"];
+  const { id } = request.params as RowIdInput;
+  const { name, description } = request.body as UpdateRowInput;
 
   try {
     const updatedRow = await db

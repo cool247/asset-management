@@ -4,7 +4,7 @@ import { db } from "../Config/db";
 import { eq } from "drizzle-orm";
 
 import { users } from "../Models/user.model";
-import { CreateUserInput, UpdateUserInput } from "../Schemas/user.schema";
+import { CreateUserInput, UpdateUserInput, UserIdInput } from "../Schemas/user.schema";
 
 export const createUser = async (request: FastifyRequest, reply: FastifyReply) => {
   const { name, barcodeId, role, contactNumber, password } = request.body as CreateUserInput;
@@ -35,8 +35,8 @@ export const getUserById = async (request: FastifyRequest, reply: FastifyReply) 
 };
 
 export const updateUserById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as UpdateUserInput["params"];
-  const { newName, role, contactNumber } = request.body as UpdateUserInput["body"];
+  const { id } = request.params as UserIdInput;
+  const { newName, role, contactNumber } = request.body as UpdateUserInput;
 
   try {
     const updateUser = await db
@@ -56,7 +56,7 @@ export const updateUserById = async (request: FastifyRequest, reply: FastifyRepl
 };
 
 export const deleteUserById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as UpdateUserInput["params"];
+  const { id } = request.params as UserIdInput;
 
   try {
     const deleteUser = await db.delete(users).where(eq(users.id, id)).returning();

@@ -6,11 +6,12 @@ import { assetMovements } from "../Models/asset-movement.model";
 import { CreateAssetMovementInput, movementStatusEnum } from "../Schemas/assetMovement.schema";
 
 export const createAssetMovement = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { assetId, from, to, userId, comments, movementType } = request.body as CreateAssetMovementInput["body"];
+  const { assetId, from, to, userId, comments, movementType } = request.body as CreateAssetMovementInput;
+  console.log(`Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to}`);
   try {
     if (movementType === "cupboardToUser") {
       logger.info(
-        `Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Completed}`,
+        `Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
       );
 
       const createAssetMovement = await db
@@ -25,7 +26,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         })
         .returning();
 
-      reply.status(201).send(createAssetMovement);
+      return reply.status(201).send(createAssetMovement);
     }
 
     if (movementType === "userToRack") {
@@ -56,7 +57,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         .where(eq(assetMovements.id, getAssetMovement[0].id))
         .returning();
 
-      reply.status(201).send(createAssetMovement);
+      return reply.status(201).send(createAssetMovement);
     }
 
     //RETUNING ASSET BACK
@@ -76,7 +77,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         })
         .returning();
 
-      reply.status(201).send(createAssetMovement);
+      return reply.status(201).send(createAssetMovement);
     }
 
     if (movementType === "userToCupboard") {
@@ -107,11 +108,11 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         .where(eq(assetMovements.id, getAssetMovement[0].id))
         .returning();
 
-      reply.status(201).send(createAssetMovement);
+      return reply.status(201).send(createAssetMovement);
     }
 
     logger.info(`movement Type no found, ${movementType}`);
-    reply.status(404).send({ message: "Bad Request" });
+    return reply.status(404).send({ message: "Bad Request" });
   } catch (error) {
     if (error instanceof Error) {
       logger.error(`Error creating asset movement: ${error.message}`);

@@ -4,6 +4,6 @@ import { createAssetMovementSchema, getAllAssetMovementsSchema } from "../Schema
 import { validate } from "../Middleware/validation.middleware";
 
 export const assetMovementRoutes = async (app: FastifyInstance) => {
-  app.post("/", { preHandler: validate(createAssetMovementSchema) }, createAssetMovement);
+  app.post("/create-new", { preHandler :validate(createAssetMovementSchema)}, createAssetMovement);
   app.get("/", { preHandler: validate(getAllAssetMovementsSchema) }, getAllAssetMovements);
 };

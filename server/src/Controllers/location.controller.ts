@@ -1,14 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
+import { eq } from "drizzle-orm";
 import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { locations } from "../Models/location.model";
-import { eq } from "drizzle-orm";
+import { CreateLocationInput, LocationIdInput, UpdateLocationInput } from "../Schemas/location.schema";
 
 export const createLocation = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name, description }: { name: string; description: string | null } = request.body as {
-    name: string;
-    description: string | null;
-  };
+  const { name, description } = request.body as CreateLocationInput;
   logger.info(`Creating location with name: ${name}`);
 
   try {
@@ -34,7 +32,7 @@ export const getAllLocations = async (request: FastifyRequest, reply: FastifyRep
 };
 
 export const getLocationById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
+  const { id } = request.params as LocationIdInput;
   try {
     const location = await db.select().from(locations).where(eq(locations.id, id));
 
@@ -50,11 +48,8 @@ export const getLocationById = async (request: FastifyRequest, reply: FastifyRep
 };
 
 export const updateLocationById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
-  const { name, description }: { name?: string; description?: string | null } = request.body as {
-    name?: string;
-    description?: string | null;
-  };
+  const { id } = request.params as LocationIdInput;
+  const { name, description } = request.body as UpdateLocationInput;
 
   try {
     const updatedLocation = await db
@@ -75,7 +70,7 @@ export const updateLocationById = async (request: FastifyRequest, reply: Fastify
 };
 
 export const deleteLocationById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id }: { id: number } = request.params as { id: number };
+  const { id } = request.params as LocationIdInput;
 
   try {
     const deletedLocation = await db.delete(locations).where(eq(locations.id, id)).returning();

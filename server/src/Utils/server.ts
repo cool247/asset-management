@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import fastify, { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 import { userRoutes } from "../Routes/user.route";
@@ -9,7 +9,11 @@ import { assetRoutes } from "../Routes/asset-route";
 import { assetMovementRoutes } from "../Routes/asset-movement.route";
 
 export const buildServer = async () => {
-  const app = fastify();
+  const app = fastify({ logger: true });
+
+  // Ensure the body parser is enabled
+  app.register(require("@fastify/formbody"));
+  // app.register(require("@fastify/json"));
 
   app.register(cors, {
     origin: true,
@@ -19,9 +23,8 @@ export const buildServer = async () => {
     secret: "secret_key",
   });
 
-  
   const registerRoutes = async (instance: FastifyInstance): Promise<void> => {
-    instance.register(userRoutes, { prefix: "/user",});
+    instance.register(userRoutes, { prefix: "/user" });
     instance.register(locationRoutes, { prefix: "/location" });
     instance.register(rowRoutes, { prefix: "/row" });
     instance.register(rackAndCupboardRoutes, { prefix: "/rack-cupboard" });
