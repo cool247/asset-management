@@ -7,7 +7,8 @@ export const createAssetSchema = z.object({
   length: z.number().int("Length must be an integer").optional(),
   quantityInUse: z.number().int("Quantity in use must be an integer").optional().default(0),
   totalQty: z.number().int("Total quantity must be an integer").nonnegative("Total quantity must be positive"),
-  locationId: z.number().int("Location ID must be an integer").nonnegative("Location ID must be positive"),
+  rackAndCupboardBardCodeId: z.string().optional(),
+  userBardCodeId: z.string().optional(),
   dynamicFields: z.record(z.string(), z.any()).optional(), // For dynamic key-value pairs
 });
 
@@ -18,7 +19,8 @@ export const updateAssetSchema = z.object({
   length: z.number().int("Length must be an integer").optional(),
   quantityInUse: z.number().int("Quantity in use must be an integer").optional(),
   totalQty: z.number().int("Total quantity must be an integer").optional(),
-  locationId: z.number().int("Location ID must be an integer").optional(),
+  rackAndCupboardBardCodeId: z.string().optional(),
+  userBardCodeId: z.string().optional(),
   dynamicFields: z.record(z.string(), z.any()).optional(),
 });
 

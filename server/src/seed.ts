@@ -74,20 +74,20 @@ const seed = async () => {
     await db.insert(assets).values([
       {
         barcodeId: "A001",
-        assetTypeId: 1, // Assuming Laptop has id=1
+        assetTypeId: 1,
         length: 15,
         quantityInUse: 2,
         totalQty: 10,
-        locationId: 1, // Assuming Warehouse 1 has id=1
+        userBardCodeId: "U001",
         dynamicFields: { color: "Black", model: "Dell XPS" },
       },
       {
         barcodeId: "A002",
-        assetTypeId: 2, // Assuming Monitor has id=2
+        assetTypeId: 2,
         length: 24,
         quantityInUse: 1,
         totalQty: 5,
-        locationId: 2, // Assuming Warehouse 2 has id=2
+        rackAndCupboardBardCodeId: "RC001",
         dynamicFields: { resolution: "4K", brand: "LG" },
       },
     ]);

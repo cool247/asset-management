@@ -6,8 +6,16 @@ import { eq } from "drizzle-orm";
 import { AssetIdInput, CreateAssetInput, UpdateAssetInput } from "../Schemas/asset.schema";
 
 export const createAsset = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { barcodeId, assetTypeId, length, quantityInUse, totalQty, locationId, dynamicFields } =
-    request.body as CreateAssetInput;
+  const {
+    barcodeId,
+    assetTypeId,
+    length,
+    quantityInUse,
+    totalQty,
+    rackAndCupboardBardCodeId,
+    userBardCodeId,
+    dynamicFields,
+  } = request.body as CreateAssetInput;
 
   logger.info(`Creating asset with barcodeId: ${barcodeId}`);
 
@@ -20,7 +28,8 @@ export const createAsset = async (request: FastifyRequest, reply: FastifyReply) 
         length,
         quantityInUse,
         totalQty,
-        locationId,
+        rackAndCupboardBardCodeId,
+        userBardCodeId,
         dynamicFields,
       })
       .returning();
@@ -61,8 +70,16 @@ export const getAssetById = async (request: FastifyRequest, reply: FastifyReply)
 
 export const updateAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
   const { id } = request.params as AssetIdInput;
-  const { barcodeId, assetTypeId, length, quantityInUse, totalQty, locationId, dynamicFields } =
-    request.body as UpdateAssetInput;
+  const {
+    barcodeId,
+    assetTypeId,
+    length,
+    quantityInUse,
+    totalQty,
+    rackAndCupboardBardCodeId,
+    userBardCodeId,
+    dynamicFields,
+  } = request.body as UpdateAssetInput;
 
   try {
     const updatedAsset = await db
@@ -73,7 +90,8 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
         length,
         quantityInUse,
         totalQty,
-        locationId,
+        rackAndCupboardBardCodeId,
+        userBardCodeId,
         dynamicFields,
       })
       .where(eq(assets.id, id))

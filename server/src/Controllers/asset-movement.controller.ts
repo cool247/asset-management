@@ -2,34 +2,73 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { and, eq } from "drizzle-orm";
 import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
-import { assetMovements } from "../Models/asset-movement.model";
 import { CreateAssetMovementInput, movementStatusEnum } from "../Schemas/assetMovement.schema";
+import { assetMovements } from "../Models/asset-movement.model";
+import { assets } from "../Models/asset.model";
 
 export const createAssetMovement = async (request: FastifyRequest, reply: FastifyReply) => {
   const { assetId, from, to, userId, comments, movementType } = request.body as CreateAssetMovementInput;
-  console.log(`Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to}`);
+  console.info(`Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to}`);
+
   try {
     if (movementType === "cupboardToUser") {
-      logger.info(
-        `Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
-      );
+      // validation if asset is present in cupboard
+
+      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetId));
+
+      if (movingAsset.length === 0) {
+        return reply.status(400).send({ message: "Asset is not in the cupboard" });
+      }
+
+      if (movingAsset[0].totalQty <= (movingAsset[0].quantityInUse || 0)) {
+        return reply.status(400).send({ message: "No Asset left to use " });
+      }
+
+      if (movingAsset[0].rackAndCupboardBardCodeId === from) {
+        return reply.status(400).send({ message: "Cupboard id is not matching with the asset cupboard id" });
+      }
+
+      db.update(assets).set({
+        userBardCodeId: userId,
+        rackAndCupboardBardCodeId: null,
+        quantityInUse: (movingAsset[0]?.quantityInUse || 0) - 1,
+      });
 
       const createAssetMovement = await db
         .insert(assetMovements)
         .values({
           assetId,
           from,
-          to,
+          to:undefined,
           userId,
           status: movementStatusEnum.Values.Pending,
           comments,
         })
         .returning();
 
+      logger.info(
+        `Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
+      );
       return reply.status(201).send(createAssetMovement);
     }
 
     if (movementType === "userToRack") {
+      // validation if asset is present to user
+
+      const movingAsset = await db
+        .select()
+        .from(assets)
+        .where(and(eq(assets.barcodeId, assetId), eq(assets.userBardCodeId, userId)));
+
+      if (movingAsset.length === 0) {
+        return reply.status(400).send({ message: "Asset not found" });
+      }
+
+      db.update(assets).set({
+        userBardCodeId: null,
+        rackAndCupboardBardCodeId: to,
+      });
+
       logger.info(
         `User to Rack asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Completed}`,
       );
@@ -44,24 +83,38 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         reply.status(404).send({ message: "Not Found" });
       }
 
-      const createAssetMovement = await db
+      const updateAssetMovement = await db
         .update(assetMovements)
         .set({
-          assetId,
-          from,
           to,
-          userId,
           status: movementStatusEnum.Values.Completed,
           comments,
         })
         .where(eq(assetMovements.id, getAssetMovement[0].id))
         .returning();
 
-      return reply.status(201).send(createAssetMovement);
+      return reply.status(201).send(updateAssetMovement);
     }
 
     //RETUNING ASSET BACK
     if (movementType === "rackToUser") {
+      // validation if asset is present in rack
+
+      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetId));
+
+      if (movingAsset.length === 0) {
+        return reply.status(400).send({ message: "Asset is not in the rack" });
+      }
+
+      if (movingAsset[0].rackAndCupboardBardCodeId === from) {
+        return reply.status(400).send({ message: "rack id is not matching with the asset rack id" });
+      }
+
+      db.update(assets).set({
+        userBardCodeId: userId,
+        rackAndCupboardBardCodeId: null,
+      });
+
       logger.info(
         `Rack to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
       );
@@ -70,7 +123,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         .values({
           assetId,
           from,
-          to,
+          to:undefined,
           userId,
           status: movementStatusEnum.Values.Pending,
           comments,
@@ -81,6 +134,21 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
     }
 
     if (movementType === "userToCupboard") {
+      const movingAsset = await db
+        .select()
+        .from(assets)
+        .where(and(eq(assets.barcodeId, assetId), eq(assets.userBardCodeId, userId)));
+
+      if (movingAsset.length === 0) {
+        return reply.status(400).send({ message: "Asset not found" });
+      }
+
+      db.update(assets).set({
+        userBardCodeId: null,
+        rackAndCupboardBardCodeId: to,
+        quantityInUse: (movingAsset[0]?.quantityInUse || 0) + 1,
+      });
+
       logger.info(
         `Rack to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Completed}`,
       );
@@ -95,24 +163,21 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         reply.status(404).send({ message: "Not Found" });
       }
 
-      const createAssetMovement = await db
+      const updateAssetMovement = await db
         .update(assetMovements)
         .set({
-          assetId,
-          from,
           to,
-          userId,
-          status: movementStatusEnum.Values.Pending,
+          status: movementStatusEnum.Values.Completed,
           comments,
         })
         .where(eq(assetMovements.id, getAssetMovement[0].id))
         .returning();
 
-      return reply.status(201).send(createAssetMovement);
+      return reply.status(201).send(updateAssetMovement);
     }
 
-    logger.info(`movement Type no found, ${movementType}`);
-    return reply.status(404).send({ message: "Bad Request" });
+    logger.info(`movement Type not found, ${movementType}`);
+    return reply.status(400).send({ message: "Bad Request" });
   } catch (error) {
     if (error instanceof Error) {
       logger.error(`Error creating asset movement: ${error.message}`);

@@ -1,6 +1,6 @@
 import { integer, jsonb, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
-import { locations } from "./location.model";
-
+import { racksAndCupboards } from "./rack-cupboard.model";
+import { users } from "./user.model";
 
 export const assetTypes = pgTable("asset_types", {
   id: serial("id").primaryKey(),
@@ -19,9 +19,8 @@ export const assets = pgTable("assets", {
   quantityInUse: integer("quantity_in_use").default(0),
   // qtyRemaining: integer("qty_remaining").default(0),
   totalQty: integer("total_qty").notNull(),
-  locationId: integer("location_id")
-    .notNull()
-    .references(() => locations.id),
+  rackAndCupboardBardCodeId: varchar("rack_and_cupboard_barcode_id").references(() => racksAndCupboards.barcodeId),
+  userBardCodeId: varchar("user_barcode_id").references(() => users.barcodeId),
   dynamicFields: jsonb("dynamic_fields"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
