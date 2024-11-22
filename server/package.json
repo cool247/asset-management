@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "node dist/app.js",
-    "build": "tsc",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "build": "npm run clean && tsc",
     "seed": "ts-node src/seed.ts",
     "dev": "tsc-watch --onSuccess \"node dist/app.js\" ",
     "drizzle:generate": "npx drizzle-kit generate",
