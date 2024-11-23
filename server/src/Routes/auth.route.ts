@@ -3,6 +3,7 @@ import { db } from "../Config/db";
 import { users } from "../Models/user.model";
 import bcrypt from "bcrypt";
 import { FastifyInstance } from "fastify";
+import { addToBlacklist } from "../Middleware/authenticate.middleware";
 
 type loginRequest = {
   contactNumber: string;
@@ -12,7 +13,7 @@ type loginRequest = {
 export const authRoutes = async (app: FastifyInstance) => {
   app.post("/login", { onRequest: [] }, async (request, reply) => {
     const { contactNumber, password } = request.body as loginRequest;
-console.log('login...')
+
     try {
       const [user] = await db.select().from(users).where(eq(users.contactNumber, contactNumber));
 
@@ -26,7 +27,7 @@ console.log('login...')
         return reply.status(401).send({ message: "Invalid credentials" });
       }
 
-      const token = app.jwt.sign({ id: user.id, role: user.role, barCodeId:user.barcodeId });
+      const token = app.jwt.sign({ id: user.id, role: user.role, barCodeId: user.barcodeId });
 
       reply.send({
         token,
@@ -39,6 +40,21 @@ console.log('login...')
       });
     } catch (error) {
       reply.status(500).send({ message: "Error logging in", error });
+    }
+  });
+
+  app.post("/logout", async (request, reply) => {
+    try {
+      const token = request.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return reply.status(400).send({ message: "Token is required for logout." });
+      }
+
+      addToBlacklist(token);
+
+      reply.status(200).send({ message: "Logged out successfully." });
+    } catch (error) {
+      reply.status(500).send({ message: "Error during logout." });
     }
   });
 };
