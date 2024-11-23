@@ -12,8 +12,8 @@ import {
 export const assetRequestRoutes = async (app: FastifyInstance) => {
   // Route to create a new asset request
   app.post("/create-new", { preHandler: validate(createAssetRequestSchema) }, createAssetRequest);
-  app.post("/my-all-requests",  getAllMyRequests);
-  app.post("/my-pending-requests",  getAllMyPendingRequests);
+  app.get("/my-all-requests",  getAllMyRequests);
+  app.get("/my-pending-requests",  getAllMyPendingRequests);
 
   // (Admin)
   app.get("/", getAllAssetRequests);

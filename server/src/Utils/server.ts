@@ -7,13 +7,10 @@ import { rowRoutes } from "../Routes/row.route";
 import { rackAndCupboardRoutes } from "../Routes/rack-cupboard.route";
 import { assetRoutes } from "../Routes/asset-route";
 import { assetMovementRoutes } from "../Routes/asset-movement.route";
+import { assetRequestRoutes } from "../Routes/asset_request_table";
 
 export const buildServer = async () => {
   const app = fastify({ logger: true });
-
-  // Ensure the body parser is enabled
-  app.register(require("@fastify/formbody"));
-  // app.register(require("@fastify/json"));
 
   app.register(cors, {
     origin: true,
@@ -30,6 +27,7 @@ export const buildServer = async () => {
     instance.register(rackAndCupboardRoutes, { prefix: "/rack-cupboard" });
     instance.register(assetRoutes, { prefix: "/asset" });
     instance.register(assetMovementRoutes, { prefix: "/asset-movement" });
+    instance.register(assetRequestRoutes, { prefix: "/asset-request" });
   };
 
   app.register(registerRoutes, { prefix: "/api" });

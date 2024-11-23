@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "../Config/db";
 import { assetRequestTable } from "../Models/asset_request_table";
 import { CreateAssetRequestInput, UpdateAssetRequestSchema } from "../Schemas/assetRequest.schema";
+import { logger } from "../Utils/logger";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
   const { assetId, userId, comments } = req.body as CreateAssetRequestInput;
@@ -22,7 +23,8 @@ export const createAssetRequest = async (req: FastifyRequest, reply: FastifyRepl
 
 export const getAllMyPendingRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    const userId = req.jwtPayload.id;
+    // const userId = req.jwtPayload.id;
+    const userId =  1;
     const requests = await db
       .select()
       .from(assetRequestTable)
@@ -35,7 +37,8 @@ export const getAllMyPendingRequests = async (req: FastifyRequest, reply: Fastif
 
 export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    const userId = req.jwtPayload.id;
+    // const userId = req.jwtPayload.id;
+    const userId =  1;
     const requests = await db.select().from(assetRequestTable).where(eq(assetRequestTable.userId, userId));
     reply.send(requests);
   } catch (error) {
@@ -69,6 +72,7 @@ export const updateAssetRequestStatus = async (req: FastifyRequest, reply: Fasti
 
     reply.status(200).send(updatedRequest);
   } catch (error) {
+    console.error(error)
     reply.status(500).send({ error: "Failed to update request status" });
   }
 };

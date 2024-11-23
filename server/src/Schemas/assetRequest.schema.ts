@@ -10,7 +10,7 @@ export const createAssetRequestSchema = z.object({
 });
 
 export const updateAssetRequestSchema = z.object({
-  adminId: z.number().positive("Request ID must be positive").int(),
+  adminId: z.number().positive("Admin ID must be positive").int(),
   status: assetRequestStatusEnum,
   comments:z.string().max(255, "Comments must not exceed 255 characters").nullable().optional(),
 });
