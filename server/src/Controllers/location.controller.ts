@@ -22,7 +22,6 @@ export const createLocation = async (request: FastifyRequest, reply: FastifyRepl
 export const getAllLocations = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const allLocations = await db.select().from(locations);
-    console.log(allLocations);
     reply.send(allLocations);
   } catch (error) {
     console.log(error);

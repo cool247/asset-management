@@ -24,7 +24,7 @@ export const buildServer = async () => {
 
   app.addHook("onRequest", async (request, reply) => {
     if (request.raw.url?.startsWith("/api/auth")) {
-      return; 
+      return;
     }
     await authenticate(request, reply);
   });
