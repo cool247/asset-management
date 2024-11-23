@@ -1,5 +1,6 @@
 import { users } from "./Models/user.model";
 import { rows } from "./Models/row.model";
+import bcrypt from "bcrypt";
 import { locations } from "./Models/location.model";
 import { racksAndCupboards } from "./Models/rack-cupboard.model";
 import { assets, assetTypes } from "./Models/asset.model";
@@ -7,6 +8,12 @@ import { assetMovements } from "./Models/asset-movement.model";
 import { db } from "./Config/db";
 
 const allowedTables = ["users", "locations", "rows", "racks_and_cupboards", "asset_types", "assets", "asset_movements"];
+
+const hashPassword = async (password: string) => {
+  const saltRounds = 10; // You can increase this for higher security (but slower performance)
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  return hashedPassword;
+};
 
 async function truncateTable(tableName: string) {
   if (!allowedTables.includes(tableName)) {
@@ -31,10 +38,17 @@ const seed = async () => {
     console.log("truncated all tables");
 
     console.log("Seeding database...");
+    // Example usage
+    const p1= await hashPassword("mobileuser1@123");
+    const p2= await hashPassword("mobileuser2@123");
+    const p3= await hashPassword("admin1@123");
+    const p4= await hashPassword("desktopuser2@123");
     // Users
     await db.insert(users).values([
-      { barcodeId: "U001", name: "John Doe", contactNumber: "9000000001", password: "mobileuser1@123" },
-      { barcodeId: "U002", name: "Jane Smith", password: "mobileuser2@123", contactNumber: "9000000002" },
+      { barcodeId: "U001", name: "John Doe", contactNumber: "9000000001", password: p1 },
+      { barcodeId: "U002", name: "Jane Smith", password: p2, contactNumber: "9000000002" },
+      { barcodeId: "U003", name: "Admin", password: p3, contactNumber: "9000000003" },
+      { barcodeId: "U004", name: "Desktop User", password: p4, contactNumber: "9000000004" },
     ]);
 
     // Rows

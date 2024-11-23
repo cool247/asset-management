@@ -29,7 +29,7 @@ export const createRackOrCupboard = async (request: FastifyRequest, reply: Fasti
     reply.status(201).send(createRackOrCupboard);
   } catch (error) {
     logger.error(`Error creating rack or cupboard: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to create rack or cupboard" });
+    reply.status(500).send({ message: "Failed to create rack or cupboard" });
   }
 };
 
@@ -39,7 +39,7 @@ export const getAllRacksAndCupboards = async (request: FastifyRequest, reply: Fa
     reply.send(allRacksAndCupboards);
   } catch (error) {
     logger.error(`Error fetching racks and cupboards: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to fetch racks and cupboards" });
+    reply.status(500).send({ message: "Failed to fetch racks and cupboards" });
   }
 };
 
@@ -50,13 +50,13 @@ export const getRackOrCupboardById = async (request: FastifyRequest, reply: Fast
     const rackOrCupboard = await db.select().from(racksAndCupboards).where(eq(racksAndCupboards.id, id));
 
     if (rackOrCupboard.length === 0) {
-      return reply.status(404).send({ error: "Rack or cupboard not found" });
+      return reply.status(404).send({ message: "Rack or cupboard not found" });
     }
 
     reply.send(rackOrCupboard[0]);
   } catch (error) {
     logger.error(`Error fetching rack or cupboard by ID: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to fetch rack or cupboard by ID" });
+    reply.status(500).send({ message: "Failed to fetch rack or cupboard by ID" });
   }
 };
 
@@ -78,13 +78,13 @@ export const updateRackOrCupboardById = async (request: FastifyRequest, reply: F
       .returning();
 
     if (updatedRackOrCupboard.length === 0) {
-      return reply.status(404).send({ error: "Rack or cupboard not found" });
+      return reply.status(404).send({ message: "Rack or cupboard not found" });
     }
 
     reply.send(updatedRackOrCupboard[0]);
   } catch (error) {
     logger.error(`Error updating rack or cupboard: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to update rack or cupboard" });
+    reply.status(500).send({ message: "Failed to update rack or cupboard" });
   }
 };
 
@@ -95,12 +95,12 @@ export const deleteRackOrCupboardById = async (request: FastifyRequest, reply: F
     const deletedRackOrCupboard = await db.delete(racksAndCupboards).where(eq(racksAndCupboards.id, id)).returning();
 
     if (deletedRackOrCupboard.length === 0) {
-      return reply.status(404).send({ error: "Rack or cupboard not found" });
+      return reply.status(404).send({ message: "Rack or cupboard not found" });
     }
 
     reply.send({ message: "Rack or cupboard deleted successfully" });
   } catch (error) {
     logger.error(`Error deleting rack or cupboard: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to delete rack or cupboard" });
+    reply.status(500).send({ message: "Failed to delete rack or cupboard" });
   }
 };

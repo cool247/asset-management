@@ -181,10 +181,10 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
   } catch (error) {
     if (error instanceof Error) {
       logger.error(`Error creating asset movement: ${error.message}`);
-      reply.status(500).send({ error: "Failed to create asset movement" });
+      reply.status(500).send({ message: "Failed to create asset movement" });
     } else {
       logger.error("An unknown error occurred during asset movement creation");
-      reply.status(500).send({ error: "Unknown error occurred" });
+      reply.status(500).send({ message: "Unknown error occurred" });
     }
   }
 };
@@ -196,10 +196,26 @@ export const getAllAssetMovements = async (request: FastifyRequest, reply: Fasti
   } catch (error) {
     if (error instanceof Error) {
       logger.error(`Error fetching asset movements: ${error.message}`);
-      reply.status(500).send({ error: "Failed to fetch asset movements" });
+      reply.status(500).send({ message: "Failed to fetch asset movements" });
     } else {
       logger.error("An unknown error occurred during asset movement creation");
-      reply.status(500).send({ error: "Unknown error occurred" });
+      reply.status(500).send({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+export const getUserAssetMovements = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const userBarCodeId = request.jwtPayload.bardCodeId;
+    const allAssetMovements = await db.select().from(assetMovements).where(eq(assetMovements.userId, userBarCodeId));
+    reply.send(allAssetMovements);
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error fetching asset movements: ${error.message}`);
+      reply.status(500).send({ message: "Failed to fetch asset movements" });
+    } else {
+      logger.error("An unknown error occurred during asset movement creation");
+      reply.status(500).send({ message: "Unknown error occurred" });
     }
   }
 };

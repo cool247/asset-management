@@ -4,7 +4,6 @@ import { and, eq } from "drizzle-orm";
 import { db } from "../Config/db";
 import { assetRequestTable } from "../Models/asset_request_table";
 import { CreateAssetRequestInput, UpdateAssetRequestSchema } from "../Schemas/assetRequest.schema";
-import { logger } from "../Utils/logger";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
   const { assetId, userId, comments } = req.body as CreateAssetRequestInput;
@@ -17,32 +16,30 @@ export const createAssetRequest = async (req: FastifyRequest, reply: FastifyRepl
 
     reply.status(201).send(newRequest);
   } catch (error) {
-    reply.status(500).send({ error: "Failed to create request" });
+    reply.status(500).send({ message: "Failed to create request" });
   }
 };
 
 export const getAllMyPendingRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    // const userId = req.jwtPayload.id;
-    const userId =  1;
+    const userId = req.jwtPayload.id;
     const requests = await db
       .select()
       .from(assetRequestTable)
       .where(and(eq(assetRequestTable.status, "Pending"), eq(assetRequestTable.userId, userId)));
     reply.send(requests);
   } catch (error) {
-    reply.status(500).send({ error: "Failed to fetch requests" });
+    reply.status(500).send({ message: "Failed to fetch requests" });
   }
 };
 
 export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    // const userId = req.jwtPayload.id;
-    const userId =  1;
+    const userId = req.jwtPayload.id;
     const requests = await db.select().from(assetRequestTable).where(eq(assetRequestTable.userId, userId));
     reply.send(requests);
   } catch (error) {
-    reply.status(500).send({ error: "Failed to fetch requests" });
+    reply.status(500).send({ message: "Failed to fetch requests" });
   }
 };
 
@@ -51,7 +48,7 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
     const requests = await db.select().from(assetRequestTable);
     reply.send(requests);
   } catch (error) {
-    reply.status(500).send({ error: "Failed to fetch requests" });
+    reply.status(500).send({ message: "Failed to fetch requests" });
   }
 };
 
@@ -73,6 +70,6 @@ export const updateAssetRequestStatus = async (req: FastifyRequest, reply: Fasti
     reply.status(200).send(updatedRequest);
   } catch (error) {
     console.error(error)
-    reply.status(500).send({ error: "Failed to update request status" });
+    reply.status(500).send({ message: "Failed to update request status" });
   }
 };

@@ -37,7 +37,7 @@ export const createAsset = async (request: FastifyRequest, reply: FastifyReply) 
     reply.status(201).send(createAsset);
   } catch (error) {
     logger.error(`Error creating asset: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to create asset" });
+    reply.status(500).send({ message: "Failed to create asset" });
   }
 };
 
@@ -47,7 +47,7 @@ export const getAllAssets = async (request: FastifyRequest, reply: FastifyReply)
     reply.send(allAssets);
   } catch (error) {
     logger.error(`Error fetching assets: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to fetch assets" });
+    reply.status(500).send({ message: "Failed to fetch assets" });
   }
 };
 
@@ -58,13 +58,13 @@ export const getAssetById = async (request: FastifyRequest, reply: FastifyReply)
     const asset = await db.select().from(assets).where(eq(assets.id, id));
 
     if (asset.length === 0) {
-      reply.status(404).send({ error: "Asset not found" });
+      reply.status(404).send({ message: "Asset not found" });
     } else {
       reply.send(asset);
     }
   } catch (error) {
     logger.error(`Error fetching asset by id: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to fetch asset" });
+    reply.status(500).send({ message: "Failed to fetch asset" });
   }
 };
 
@@ -98,13 +98,13 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
       .returning();
 
     if (updatedAsset.length === 0) {
-      reply.status(404).send({ error: "Asset not found" });
+      reply.status(404).send({ message: "Asset not found" });
     } else {
       reply.send(updatedAsset);
     }
   } catch (error) {
     logger.error(`Error updating asset by id: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to update asset" });
+    reply.status(500).send({ message: "Failed to update asset" });
   }
 };
 
@@ -115,12 +115,12 @@ export const deleteAssetById = async (request: FastifyRequest, reply: FastifyRep
     const deletedAsset = await db.delete(assets).where(eq(assets.id, id)).returning();
 
     if (deletedAsset.length === 0) {
-      reply.status(404).send({ error: "Asset not found" });
+      reply.status(404).send({ message: "Asset not found" });
     } else {
       reply.status(200).send({ message: "Asset deleted successfully" });
     }
   } catch (error) {
     logger.error(`Error deleting asset by barcodeId: ${error instanceof Error ? error.message : "Unknown error"}`);
-    reply.status(500).send({ error: "Failed to delete asset" });
+    reply.status(500).send({ message: "Failed to delete asset" });
   }
 };

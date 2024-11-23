@@ -1,6 +1,9 @@
+import {userRoleEnum} from '../Models/user.model'
+
 export interface JwtPayload {
   id: number;
-  role: string;  
+  bardCodeId: string;
+  role: typeof userRoleEnum.enumValues[number];  
   exp: number; // Expiry time
   iat: number; // Issued at
 }
