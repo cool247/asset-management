@@ -22,8 +22,12 @@ export const buildServer = async () => {
     secret: process.env.JWT_SECRET!,
   });
 
-  app.addHook("onRequest", authenticate);
-
+  app.addHook("onRequest", async (request, reply) => {
+    if (request.raw.url?.startsWith("/api/auth")) {
+      return; 
+    }
+    await authenticate(request, reply);
+  });
 
   const registerRoutes = async (instance: FastifyInstance): Promise<void> => {
     instance.register(authRoutes, { prefix: "/auth" });
