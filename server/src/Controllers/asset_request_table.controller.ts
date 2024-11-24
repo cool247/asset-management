@@ -5,6 +5,7 @@ import { db } from "../Config/db";
 import { assetRequestTable } from "../Models/asset_request_table";
 import { assets } from "../Models/asset.model";
 import { CreateAssetRequestInput, UpdateAssetRequestSchema } from "../Schemas/assetRequest.schema";
+import { users } from "../Models/user.model";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
   const { assetId, comments } = req.body as CreateAssetRequestInput;
@@ -44,12 +45,15 @@ export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply)
         assetId: assetRequestTable.assetId,
         assetName: assets.name,
         userId: assetRequestTable.userId,
+        userName: users.name, // User's name
         adminId: assetRequestTable.adminId,
+        adminName: users.name, // Admin's name
         status: assetRequestTable.status,
         comments: assetRequestTable.comments,
       })
       .from(assetRequestTable)
       .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
+      .innerJoin(users, eq(assetRequestTable.userId, users.id))
       .where(eq(assetRequestTable.userId, userId));
     reply.send(requests);
   } catch (error) {
@@ -60,7 +64,21 @@ export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply)
 
 export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    const requests = await db.select().from(assetRequestTable);
+    const requests = await db
+      .select({
+        requestId: assetRequestTable.id,
+        assetId: assetRequestTable.assetId,
+        assetName: assets.name,
+        userId: assetRequestTable.userId,
+        userName: users.name,
+        adminId: assetRequestTable.adminId,
+        adminName: users.name,
+        status: assetRequestTable.status,
+        comments: assetRequestTable.comments,
+      })
+      .from(assetRequestTable)
+      .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
+      .innerJoin(users, eq(assetRequestTable.userId, users.id));
     reply.send(requests);
   } catch (error) {
     reply.status(500).send({ message: "Failed to fetch requests" });
