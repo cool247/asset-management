@@ -39,16 +39,16 @@ const seed = async () => {
 
     console.log("Seeding database...");
     // Example usage
-    const p1= await hashPassword("mobileuser1@123");
-    const p2= await hashPassword("mobileuser2@123");
-    const p3= await hashPassword("admin1@123");
-    const p4= await hashPassword("desktopuser2@123");
+    const p1 = await hashPassword("mobileuser1@123");
+    const p2 = await hashPassword("mobileuser2@123");
+    const p3 = await hashPassword("admin1@123");
+    const p4 = await hashPassword("desktopuser2@123");
     // Users
     await db.insert(users).values([
       { barcodeId: "U001", name: "John Doe", contactNumber: "9000000001", password: p1 },
       { barcodeId: "U002", name: "Jane Smith", password: p2, contactNumber: "9000000002" },
-      { barcodeId: "U003", name: "Admin", password: p3, contactNumber: "9000000003",role:'admin' },
-      { barcodeId: "U004", name: "Desktop User", password: p4, contactNumber: "9000000004",role:'desktop_user' },
+      { barcodeId: "U003", name: "Admin", password: p3, contactNumber: "9000000003", role: "admin" },
+      { barcodeId: "U004", name: "Desktop User", password: p4, contactNumber: "9000000004", role: "desktop_user" },
     ]);
 
     // Rows
@@ -89,18 +89,18 @@ const seed = async () => {
       {
         barcodeId: "A001",
         assetTypeId: 1,
-        name:'asset-1',
+        name: "asset-1",
         length: 15,
         quantityInUse: 2,
         totalQty: 10,
-        userBardCodeId: "U001",
+        userBarCodeId: "U001",
         dynamicFields: { color: "Black", model: "Dell XPS" },
       },
       {
         barcodeId: "A002",
         assetTypeId: 2,
         length: 24,
-        name:'asset-2',
+        name: "asset-2",
         quantityInUse: 1,
         totalQty: 5,
         rackAndCupboardBardCodeId: "RC001",
@@ -111,18 +111,18 @@ const seed = async () => {
     // Asset Movements
     await db.insert(assetMovements).values([
       {
-        assetId: "A001",
+        assetBarCodeId: "A001",
         from: "RC001",
         to: null,
-        userId: "U001",
+        userBarCodeId: "U001",
         status: "Pending",
         comments: "Move for maintenance",
       },
       {
-        assetId: "A002",
+        assetBarCodeId: "A002",
         from: "RC002",
         to: "RC001",
-        userId: "U002",
+        userBarCodeId: "U002",
         status: "Completed",
         comments: "Relocation to main warehouse",
       },

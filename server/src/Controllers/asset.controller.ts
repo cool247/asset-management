@@ -14,7 +14,7 @@ export const createAsset = async (request: FastifyRequest, reply: FastifyReply) 
     quantityInUse,
     totalQty,
     rackAndCupboardBardCodeId,
-    userBardCodeId,
+    userBarCodeId,
     dynamicFields,
   } = request.body as CreateAssetInput;
 
@@ -31,7 +31,7 @@ export const createAsset = async (request: FastifyRequest, reply: FastifyReply) 
         quantityInUse,
         totalQty,
         rackAndCupboardBardCodeId,
-        userBardCodeId,
+        userBarCodeId,
         dynamicFields,
       })
       .returning();
@@ -80,7 +80,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
     quantityInUse,
     totalQty,
     rackAndCupboardBardCodeId,
-    userBardCodeId,
+    userBarCodeId,
     dynamicFields,
   } = request.body as UpdateAssetInput;
 
@@ -95,7 +95,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
         quantityInUse,
         totalQty,
         rackAndCupboardBardCodeId,
-        userBardCodeId,
+        userBarCodeId,
         dynamicFields,
       })
       .where(eq(assets.id, id))

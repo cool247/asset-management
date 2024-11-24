@@ -9,7 +9,7 @@ export const createAssetSchema = z.object({
   quantityInUse: z.number().int("Quantity in use must be an integer").optional().default(0),
   totalQty: z.number().int("Total quantity must be an integer").nonnegative("Total quantity must be positive"),
   rackAndCupboardBardCodeId: z.string().nullable(),
-  userBardCodeId: z.string().optional().nullable(),
+  userBarCodeId: z.string().optional().nullable(),
   dynamicFields: z.record(z.string(), z.any()).optional(),
 });
 
@@ -22,7 +22,7 @@ export const updateAssetSchema = z.object({
   quantityInUse: z.number().int("Quantity in use must be an integer").optional(),
   totalQty: z.number().int("Total quantity must be an integer").optional(),
   rackAndCupboardBardCodeId: z.string().optional(),
-  userBardCodeId: z.string().optional(),
+  userBarCodeId: z.string().optional(),
   dynamicFields: z.record(z.string(), z.any()).optional(),
 });
 

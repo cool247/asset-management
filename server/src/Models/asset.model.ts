@@ -21,7 +21,7 @@ export const assets = pgTable("assets", {
   // qtyRemaining: integer("qty_remaining").default(0),
   totalQty: integer("total_qty").notNull(),
   rackAndCupboardBardCodeId: varchar("rack_and_cupboard_barcode_id").references(() => racksAndCupboards.barcodeId),
-  userBardCodeId: varchar("user_barcode_id").references(() => users.barcodeId),
+  userBarCodeId: varchar("user_barcode_id").references(() => users.barcodeId),
   dynamicFields: jsonb("dynamic_fields"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

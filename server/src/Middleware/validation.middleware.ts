@@ -19,7 +19,6 @@ export const validate = (schema: ZodSchema) => async (request: FastifyRequest, r
         details,
       });
     }
-    console.error("Unknown Validation Error:", error);
     return reply.status(500).send({
       message: "Something went wrong during validation",
     });

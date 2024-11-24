@@ -5,10 +5,10 @@ export const movementTypeEnum = z.enum(["cupboardToUser", "userToRack", "rackToU
 
 export const createAssetMovementSchema = z.object({
   movementType: z.string(),
-  assetId: z.string().min(1, "Asset barcodeId must be provided"),
+  assetBarCodeId: z.string().min(1, "Asset barcodeId must be provided"),
   from: z.string().min(1, "From rack barcodeId must be provided"),
   to: z.string().min(1, "To rack barcodeId must be provided").nullable().optional(),
-  userId: z.string().min(1, "User barcodeId must be provided"),
+  userBarCodeId: z.string().min(1, "User barcodeId must be provided"),
   comments: z.string().max(255, "Comments must not exceed 255 characters").nullable().optional(),
 });
 

@@ -5,16 +5,19 @@ import { logger } from "../Utils/logger";
 import { CreateAssetMovementInput, movementStatusEnum } from "../Schemas/assetMovement.schema";
 import { assetMovements } from "../Models/asset-movement.model";
 import { assets } from "../Models/asset.model";
+import { assetRequestTable } from "../Models/asset_request_table";
 
 export const createAssetMovement = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { assetId, from, to, userId, comments, movementType } = request.body as CreateAssetMovementInput;
-  console.info(`Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to}`);
+  const { assetBarCodeId, from, to, comments = "", movementType } = request.body as CreateAssetMovementInput;
+  console.info(`Cupboard to user asset movement for assetBarCodeId: ${assetBarCodeId}, from: ${from} to ${to}`);
+
+  const { id: userId, bardCodeId: userBarCodeId } = request.jwtPayload;
 
   try {
     if (movementType === "cupboardToUser") {
       // validation if asset is present in cupboard
 
-      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetId));
+      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetBarCodeId));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset is not in the cupboard" });
@@ -28,8 +31,19 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         return reply.status(400).send({ message: "Cupboard id is not matching with the asset cupboard id" });
       }
 
+      const assetRequest = await db
+        .select()
+        .from(assetRequestTable)
+        .where(and(eq(assetRequestTable.userId, userId), eq(assetRequestTable.status, "Pending")));
+
+      if (assetRequest.length <= 0) {
+        return reply
+          .status(400)
+          .send({ message: "Asset is not requested or it is in pending status, please consult to the admin" });
+      }
+
       db.update(assets).set({
-        userBardCodeId: userId,
+        userBarCodeId,
         rackAndCupboardBardCodeId: null,
         quantityInUse: (movingAsset[0]?.quantityInUse || 0) - 1,
       });
@@ -37,17 +51,17 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
       const createAssetMovement = await db
         .insert(assetMovements)
         .values({
-          assetId,
+          assetBarCodeId,
           from,
-          to:undefined,
-          userId,
+          to: null,
+          userBarCodeId,
           status: movementStatusEnum.Values.Pending,
           comments,
         })
         .returning();
 
       logger.info(
-        `Cupboard to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
+        `Cupboard to user asset movement for assetBarCodeId: ${assetBarCodeId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
       );
       return reply.status(201).send(createAssetMovement);
     }
@@ -58,29 +72,33 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
       const movingAsset = await db
         .select()
         .from(assets)
-        .where(and(eq(assets.barcodeId, assetId), eq(assets.userBardCodeId, userId)));
+        .where(and(eq(assets.barcodeId, assetBarCodeId), eq(assets.userBarCodeId, userBarCodeId)));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset not found" });
       }
 
       db.update(assets).set({
-        userBardCodeId: null,
+        userBarCodeId: null,
         rackAndCupboardBardCodeId: to,
       });
 
       logger.info(
-        `User to Rack asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Completed}`,
+        `User to Rack asset movement for assetBarCodeId: ${assetBarCodeId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Completed}`,
       );
       const getAssetMovement = await db
         .select()
         .from(assetMovements)
         .where(
-          and(eq(assetMovements.assetId, assetId), eq(assetMovements.from, from), eq(assetMovements.userId, userId)),
+          and(
+            eq(assetMovements.assetBarCodeId, assetBarCodeId),
+            eq(assetMovements.from, from),
+            eq(assetMovements.userBarCodeId, userBarCodeId),
+          ),
         );
 
       if (getAssetMovement.length === 0) {
-        reply.status(404).send({ message: "Not Found" });
+        return reply.status(404).send({ message: "Not Found" });
       }
 
       const updateAssetMovement = await db
@@ -100,7 +118,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
     if (movementType === "rackToUser") {
       // validation if asset is present in rack
 
-      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetId));
+      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetBarCodeId));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset is not in the rack" });
@@ -110,21 +128,32 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
         return reply.status(400).send({ message: "rack id is not matching with the asset rack id" });
       }
 
+      const assetRequest = await db
+        .select()
+        .from(assetRequestTable)
+        .where(and(eq(assetRequestTable.userId, userId), eq(assetRequestTable.status, "Pending")));
+
+      if (assetRequest.length <= 0) {
+        return reply
+          .status(400)
+          .send({ message: "Asset is not requested or it is in pending status, please consult to the admin" });
+      }
+
       db.update(assets).set({
-        userBardCodeId: userId,
+        userBarCodeId,
         rackAndCupboardBardCodeId: null,
       });
 
       logger.info(
-        `Rack to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
+        `Rack to user asset movement for assetBarCodeId: ${assetBarCodeId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Pending}`,
       );
       const createAssetMovement = await db
         .insert(assetMovements)
         .values({
-          assetId,
+          assetBarCodeId,
           from,
-          to:undefined,
-          userId,
+          to: null,
+          userBarCodeId,
           status: movementStatusEnum.Values.Pending,
           comments,
         })
@@ -137,30 +166,34 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
       const movingAsset = await db
         .select()
         .from(assets)
-        .where(and(eq(assets.barcodeId, assetId), eq(assets.userBardCodeId, userId)));
+        .where(and(eq(assets.barcodeId, assetBarCodeId), eq(assets.userBarCodeId, userBarCodeId)));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset not found" });
       }
 
       db.update(assets).set({
-        userBardCodeId: null,
+        userBarCodeId: null,
         rackAndCupboardBardCodeId: to,
         quantityInUse: (movingAsset[0]?.quantityInUse || 0) + 1,
       });
 
       logger.info(
-        `Rack to user asset movement for assetId: ${assetId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Completed}`,
+        `Rack to user asset movement for assetBarCodeId: ${assetBarCodeId}, from: ${from} to ${to} status: ${movementStatusEnum.Values.Completed}`,
       );
       const getAssetMovement = await db
         .select()
         .from(assetMovements)
         .where(
-          and(eq(assetMovements.assetId, assetId), eq(assetMovements.from, from), eq(assetMovements.userId, userId)),
+          and(
+            eq(assetMovements.assetBarCodeId, assetBarCodeId),
+            eq(assetMovements.from, from),
+            eq(assetMovements.userBarCodeId, userBarCodeId),
+          ),
         );
 
       if (getAssetMovement.length === 0) {
-        reply.status(404).send({ message: "Not Found" });
+        return reply.status(404).send({ message: "Not Found" });
       }
 
       const updateAssetMovement = await db
@@ -207,7 +240,10 @@ export const getAllAssetMovements = async (request: FastifyRequest, reply: Fasti
 export const getUserAssetMovements = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const userBarCodeId = request.jwtPayload.bardCodeId;
-    const allAssetMovements = await db.select().from(assetMovements).where(eq(assetMovements.userId, userBarCodeId));
+    const allAssetMovements = await db
+      .select()
+      .from(assetMovements)
+      .where(eq(assetMovements.userBarCodeId, userBarCodeId));
     reply.send(allAssetMovements);
   } catch (error) {
     if (error instanceof Error) {

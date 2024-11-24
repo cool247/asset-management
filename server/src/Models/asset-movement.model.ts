@@ -9,10 +9,10 @@ export type PendingOrCompletedType = keyof typeof movementStatusEnum.enumValues
 
 export const assetMovements = pgTable("asset_movements", {
   id: serial("id").primaryKey(),
-  assetId: varchar("asset_id").notNull().references(() => assets.barcodeId), 
+  assetBarCodeId: varchar("asset_barcode_id").notNull().references(() => assets.barcodeId), 
   from: varchar("racks_and_cupboards_from").notNull().references(() => racksAndCupboards.barcodeId), 
   to: varchar("racks_and_cupboards_to").references(() => racksAndCupboards.barcodeId), 
-  userId: varchar("user_id").notNull().references(() => users.barcodeId), 
+  userBarCodeId: varchar("user_barcode_id").notNull().references(() => users.barcodeId), 
   status: movementStatusEnum().default("Pending"), 
   comments: varchar("comments", { length: 255 }),
   movedAt: timestamp("moved_at").defaultNow().notNull(), 
