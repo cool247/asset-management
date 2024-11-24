@@ -17,6 +17,7 @@ import NAV from "../components/nav/sampleNav";
 import Location from "../pages/master/location";
 import AssertsRow from "../pages/master/row";
 import RackCupboard from "../pages/master/rack-cupboard";
+import Asset from "../pages/master/asset";
 
 // ----------------------------------------------------------------------
 
@@ -147,6 +148,7 @@ export default function Router() {
             { path: "location", element: <Location /> },
             { path: "row", element: <AssertsRow /> },
             { path: "rack-cupboard", element: <RackCupboard /> },
+            { path: "assets", element: <Asset /> },
           ],
         },
         {

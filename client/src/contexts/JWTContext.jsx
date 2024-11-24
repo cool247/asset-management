@@ -1,8 +1,9 @@
-import { createContext, useEffect, useReducer } from 'react';
-import PropTypes from 'prop-types';
+import { createContext, useEffect, useReducer } from "react";
+import PropTypes from "prop-types";
 // utils
-import axios from '../utils/axios';
-import { isValidToken, setSession } from '../utils/jwt';
+import axios from "../utils/axios";
+import { setSession } from "../utils/jwt";
+import { LOGIN_AUTH } from "../urls";
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +25,7 @@ const handlers = {
   },
   LOGIN: (state, action) => {
     const { user } = action.payload;
-    console.log(user,"ppp")
+    console.log(user, "ppp");
 
     return {
       ...state,
@@ -32,7 +33,7 @@ const handlers = {
       user,
     };
   },
-  LOGOUT: (state) => ({
+  LOGOUT: state => ({
     ...state,
     isAuthenticated: false,
     user: null,
@@ -48,11 +49,12 @@ const handlers = {
   },
 };
 
-const reducer = (state, action) => (handlers[action.type] ? handlers[action.type](state, action) : state);
+const reducer = (state, action) =>
+  handlers[action.type] ? handlers[action.type](state, action) : state;
 
 const AuthContext = createContext({
   ...initialState,
-  method: 'jwt',
+  method: "jwt",
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   register: () => Promise.resolve(),
@@ -70,16 +72,13 @@ function AuthProvider({ children }) {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const accessToken = window.localStorage.getItem('accessToken');
-
-        if (accessToken && isValidToken(accessToken)) {
+        const accessToken = window.localStorage.getItem("accessToken");
+        if (accessToken) {
           setSession(accessToken);
-
-          const response = await axios.get('/api/account/my-account');
-          const { user } = response.data;
+          const user = JSON.parse(sessionStorage.getItem("userDetails"));
 
           dispatch({
-            type: 'INITIALIZE',
+            type: "INITIALIZE",
             payload: {
               isAuthenticated: true,
               user,
@@ -87,7 +86,7 @@ function AuthProvider({ children }) {
           });
         } else {
           dispatch({
-            type: 'INITIALIZE',
+            type: "INITIALIZE",
             payload: {
               isAuthenticated: false,
               user: null,
@@ -97,7 +96,7 @@ function AuthProvider({ children }) {
       } catch (err) {
         console.error(err);
         dispatch({
-          type: 'INITIALIZE',
+          type: "INITIALIZE",
           payload: {
             isAuthenticated: false,
             user: null,
@@ -109,25 +108,26 @@ function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  const login =  (email, password) => {
-    // const response = await axios.post('/api/account/login', {
-    //   email,
-    //   password,
-    // });
-    console.log('ppppppp')
-    const { accessToken, user } = {accessToken: 'asaSAsa.ASAsaS.ASA.SASAsaSASA',user:{email:'sad@sd.com',username:'sss'}};
+  const login = async (contactNumber, password) => {
+    const { data } = await axios.post(LOGIN_AUTH, {
+      contactNumber,
+      password,
+    });
+    console.log(data, "ppppppp");
+    const { token, userDetails } = data;
 
-    setSession(accessToken);
+    setSession(token);
+    sessionStorage.setItem("userDetails", JSON.stringify(userDetails));
     dispatch({
-      type: 'LOGIN',
+      type: "LOGIN",
       payload: {
-        user,
+        userDetails,
       },
     });
   };
 
   const register = async (email, password, firstName, lastName) => {
-    const response = await axios.post('/api/account/register', {
+    const response = await axios.post("/api/account/register", {
       email,
       password,
       firstName,
@@ -135,9 +135,9 @@ function AuthProvider({ children }) {
     });
     const { accessToken, user } = response.data;
 
-    window.localStorage.setItem('accessToken', accessToken);
+    window.localStorage.setItem("accessToken", accessToken);
     dispatch({
-      type: 'REGISTER',
+      type: "REGISTER",
       payload: {
         user,
       },
@@ -146,14 +146,14 @@ function AuthProvider({ children }) {
 
   const logout = async () => {
     setSession(null);
-    dispatch({ type: 'LOGOUT' });
+    dispatch({ type: "LOGOUT" });
   };
 
   return (
     <AuthContext.Provider
       value={{
         ...state,
-        method: 'jwt',
+        method: "jwt",
         login,
         logout,
         register,

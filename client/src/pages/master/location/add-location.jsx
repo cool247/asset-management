@@ -4,6 +4,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { Grid } from "@mui/material";
 import FormWrapper from "../../../components/FormWrapper";
+import { useMutation } from "@tanstack/react-query";
+import { addUpdatLocation } from "../../../mutations";
+import { useSnackbar } from "notistack";
+import { useEffect } from "react";
 
 const defaultValues = {
   name: "",
@@ -12,16 +16,37 @@ const defaultValues = {
 const schema = Yup.object().shape({
   name: Yup.string().trim().required("Required"),
 });
-export default function AddLocation({ onClose, isEditMode }) {
+export default function AddLocation({ onClose, isEditMode, row, refetch }) {
+  const { enqueueSnackbar } = useSnackbar();
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
   const { handleSubmit, reset } = methods;
 
+  const mutation = useMutation({
+    mutationFn: async formData => {
+      return addUpdatLocation(formData, row?.id);
+    },
+    onSuccess: () => {
+      enqueueSnackbar("Successfully Added ", { variant: "success" });
+      refetch();
+      onClose();
+    },
+    onError: () => {
+      enqueueSnackbar("Failed to add", { variant: "error" });
+    },
+  });
   const onSubmit = data => {
-    console.log(data);
+    mutation.mutate(data);
   };
+  useEffect(() => {
+    if (isEditMode) {
+      reset({
+        ...row,
+      });
+    }
+  }, [row, isEditMode]);
   return (
     <FormWrapper
       onClose={onClose}
@@ -29,7 +54,7 @@ export default function AddLocation({ onClose, isEditMode }) {
       onReset={() => {
         reset();
       }}
-      loading={false}
+      loading={mutation.isPending}
       maxWidth={"xs"}
       fullWidth
       isEditMode={isEditMode}

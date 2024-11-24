@@ -4,45 +4,75 @@ import MRTTable from "../../../components/mrt-table";
 import { Box, Button, IconButton } from "@mui/material";
 import Iconify from "../../../components/Iconify";
 import AddRow from "./add-row";
+import { useGetRows } from "../../../api-hook";
+import DeleteRecord from "../../../components/DeleteRecord";
+import { useSnackbar } from "notistack";
+import { deleteRow } from "../../../mutations";
 const columns = [
   {
     accessorKey: "name",
     header: "Row Name",
   },
   {
-    accessorKey: "name",
+    accessorKey: "description",
     header: "Description",
   },
 ];
 export default function AssertsRow() {
-  const [record, setRecords] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const { data, isLoading, refetch } = useGetRows();
   const [selectedRow, setSelectedRow] = useState(null);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteRow(selectedRow.id);
+      enqueueSnackbar("Successfully deleted record", { variant: "success" });
+      setOpenDelete(false);
+      setSelectedRow(null);
+      refetch();
+    } catch (error) {
+      enqueueSnackbar("Failed to delete", { variant: "error" });
+    }
+  };
   return (
     <>
       {open && (
         <AddRow
           open={open}
+          row={selectedRow}
           isEditMode={isEditMode}
           onClose={() => {
             setIsEditMode(false);
             setSelectedRow(null);
             setOpen(false);
           }}
+          refetch={refetch}
+        />
+      )}
+      {openDelete && (
+        <DeleteRecord
+          title={"Delete Row"}
+          row={selectedRow}
+          onClose={() => {
+            setOpenDelete(false);
+            setSelectedRow(null);
+          }}
+          onSubmit={handleDelete}
         />
       )}
       <MRTTable
-        data={record}
+        data={data ?? []}
         columns={columns}
-        loading={false}
+        loading={isLoading}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex" }}>
             <IconButton
               onClick={() => {
                 setOpen(true);
-                setSelectedRow(row);
+                setSelectedRow(row.original);
                 setIsEditMode(true);
               }}
             >
@@ -51,7 +81,7 @@ export default function AssertsRow() {
             <IconButton
               onClick={() => {
                 setOpenDelete(true);
-                setSelectedRow(row);
+                setSelectedRow(row.original);
               }}
               color="error"
             >

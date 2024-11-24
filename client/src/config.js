@@ -4,14 +4,7 @@ import { PATH_DASHBOARD } from './routes/paths';
 // API
 // ----------------------------------------------------------------------
 
-export const HOST_API =  'http:172.16.68:8000';
-
-
-
-
-
-
-
+export const HOST_API =  'http://localhost:9000/api/';
 
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL

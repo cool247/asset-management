@@ -1,54 +1,47 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import MRTTable from "../../../components/mrt-table";
 import { Box, Button, IconButton } from "@mui/material";
 import Iconify from "../../../components/Iconify";
-import AddRackCupboard from "./add-rack-cupboard";
-import { useGetRackCupBoard } from "../../../api-hook";
-import DeleteRecord from "../../../components/DeleteRecord";
-import { deleteRackCupBoard } from "../../../mutations";
-import { useSnackbar } from "notistack";
+import AddAsset from "./add-asset";
+import { useGetAssets } from "../../../api-hook";
+
 const columns = [
   {
     accessorKey: "type",
-    header: "Type",
+    header: "Asset Type",
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Asset Name",
   },
-
   {
-    accessorKey: "barcodeId",
-    header: "Barcode ID",
+    accessorKey: "location",
+    header: "Asset Location/Position",
   },
-
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "capacity",
+    header: "Capacity",
+  },
+  {
+    accessorKey: "quantity",
+    header: "Quantity",
+  },
+  {
+    accessorKey: "quantityInUse",
+    header: "Quantity in use",
   },
 ];
-export default function RackCupboard() {
-  const { data, isLoading, refetch } = useGetRackCupBoard();
-  const { enqueueSnackbar } = useSnackbar();
+export default function Asset() {
+  const { data, isLoading, refetch } = useGetAssets();
   const [selectedRow, setSelectedRow] = useState(null);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const handleDelete = async () => {
-    try {
-      await deleteRackCupBoard(selectedRow.id);
-      enqueueSnackbar("Successfully deleted record", { variant: "success" });
-      setOpenDelete(false);
-      setSelectedRow(null);
-      refetch();
-    } catch (error) {
-      enqueueSnackbar("Failed to delete", { variant: "error" });
-    }
-  };
   return (
     <>
       {open && (
-        <AddRackCupboard
+        <AddAsset
           open={open}
           isEditMode={isEditMode}
           onClose={() => {
@@ -60,17 +53,6 @@ export default function RackCupboard() {
           refetch={refetch}
         />
       )}
-      {openDelete && (
-        <DeleteRecord
-          onClose={() => {
-            setOpenDelete(false);
-            setSelectedRow(null);
-          }}
-          row={selectedRow}
-          title={"Delete Rack/Cupboard"}
-          onSubmit={handleDelete}
-        />
-      )}
       <MRTTable
         data={data || []}
         columns={columns}
@@ -80,7 +62,7 @@ export default function RackCupboard() {
             <IconButton
               onClick={() => {
                 setOpen(true);
-                setSelectedRow(row.original);
+                setSelectedRow(row);
                 setIsEditMode(true);
               }}
             >
@@ -89,7 +71,7 @@ export default function RackCupboard() {
             <IconButton
               onClick={() => {
                 setOpenDelete(true);
-                setSelectedRow(row.original);
+                setSelectedRow(row);
               }}
               color="error"
             >
