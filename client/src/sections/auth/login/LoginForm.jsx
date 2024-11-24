@@ -52,9 +52,9 @@ export default function LoginForm() {
     formState: { errors, isSubmitting },
   } = methods;
 
-  const onSubmit = data => {
+  const onSubmit = async data => {
     try {
-      login(data.contactNumber, data.password);
+      await login(data.contactNumber, data.password);
     } catch (error) {
       console.error(error);
       reset();
@@ -63,7 +63,6 @@ export default function LoginForm() {
       }
     }
   };
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>

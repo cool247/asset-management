@@ -60,3 +60,7 @@ export const createAsstReq = async req => {
   const data = await axiosInstance.post(ASSET_REQ + `/create-new`, req);
   return data;
 };
+export const updateReqByAdmin = async (req, id) => {
+  const data = await axiosInstance.put(ASSET_REQ + `/${id}`, req);
+  return data;
+};

@@ -9,19 +9,37 @@ import DeleteRecord from "../../../components/DeleteRecord";
 import { deleteLocation } from "../../../mutations";
 import { useSnackbar } from "notistack";
 import CreateAssetsRequest from "./request-assets";
+import Label from "../../../components/Label";
 
+const getStatusColor = status => {
+  if (status === "Pending") {
+    return "warning";
+  }
+  if (status === "Approved") {
+    return "success";
+  }
+  if (status === "Rejected") {
+    return "error";
+  }
+  return "default";
+};
 const columns = [
   {
-    accessorKey: "name",
+    accessorKey: "assetName",
     header: "Asset Name",
   },
   {
-    accessorKey: "comments",
-    header: "Description",
+    accessorKey: "userRemarks",
+    header: "Remarks",
   },
   {
     accessorKey: "status",
     header: "Status",
+    Cell: ({ renderedCellValue, row }) => (
+      <Label variant={"ghost"} color={getStatusColor(renderedCellValue)}>
+        {renderedCellValue}
+      </Label>
+    ),
   },
 ];
 
@@ -75,28 +93,28 @@ export default function MyRequest() {
         data={data || []}
         columns={columns}
         loading={isLoading}
-        renderRowActions={({ row }) => (
-          <Box sx={{ display: "flex" }}>
-            <IconButton
-              onClick={() => {
-                setOpen(true);
-                setSelectedRow(row.original);
-                setIsEditMode(true);
-              }}
-            >
-              <Iconify icon={"eva:edit-fill"} />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                setOpenDelete(true);
-                setSelectedRow(row.original);
-              }}
-              color="error"
-            >
-              <Iconify icon={"eva:trash-2-outline"} />
-            </IconButton>
-          </Box>
-        )}
+        // renderRowActions={({ row }) => (
+        //   <Box sx={{ display: "flex" }}>
+        //     <IconButton
+        //       onClick={() => {
+        //         setOpen(true);
+        //         setSelectedRow(row.original);
+        //         setIsEditMode(true);
+        //       }}
+        //     >
+        //       <Iconify icon={"eva:edit-fill"} />
+        //     </IconButton>
+        //     <IconButton
+        //       onClick={() => {
+        //         setOpenDelete(true);
+        //         setSelectedRow(row.original);
+        //       }}
+        //       color="error"
+        //     >
+        //       <Iconify icon={"eva:trash-2-outline"} />
+        //     </IconButton>
+        //   </Box>
+        // )}
         renderTopToolbarCustomActions={() => (
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button

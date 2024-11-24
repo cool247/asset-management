@@ -17,28 +17,36 @@ import { useGetRackCupBoard } from "../../../api-hook";
 const defaultValues = {
   assetTypeId: "",
   type: "",
-  vendor: "",
-  capacity: "",
-  rackAndCupboardBardCodeId: "",
+  rackAndCupboardBardCodeId: null,
   barcodeId: "",
   location: "",
-  partNo: "",
   name: "",
   description: "",
   totalQty: "",
+  dynamicFields: null,
+  userBardCodeId: null,
 };
+
 const DEFAULT_ASSET = [
   { name: "Pen-drive", id: 1 },
   { name: "Laptop", id: 2 },
 ];
 const schema = Yup.object().shape({
   name: Yup.string().trim().required("Required"),
-  rackAndCupboardBardCodeId: Yup.string().trim().required("Required"),
+  rackAndCupboardBardCodeId: Yup.string()
+    .trim()
+    .nullable()
+    .required("Required"),
   // location: Yup.string().trim().required("Required"),
   totalQty: Yup.string().trim().required("Required"),
-  partNo: Yup.string().trim().required("Required"),
+
   assetTypeId: Yup.string().trim().required("Required"),
   barcodeId: Yup.string().trim().required("Required"),
+  dynamicFields: Yup.object().shape({
+    vendor: Yup.string().trim(),
+    capacity: Yup.string().trim(),
+    partNo: Yup.string().trim().required("Required"),
+  }),
 });
 export default function AddAsset({ onClose, isEditMode, row, refetch }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -71,7 +79,6 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
       ...data,
       assetTypeId: +data.assetTypeId,
       totalQty: +data.totalQty,
-      userBardCodeId: "",
       // type: +data.type,
     });
   };
@@ -122,7 +129,7 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
             <RHFTextField
-              name={"partNo"}
+              name={"dynamicFields.partNo"}
               label={"Part No."}
               placeholder="Enter Part Name"
               required
@@ -130,14 +137,14 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
             <RHFTextField
-              name={"capacity"}
+              name={"dynamicFields.capacity"}
               label={"Capacity"}
               placeholder="Enter Capacity"
             />
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
             <RHFTextField
-              name={"vendor"}
+              name={"dynamicFields.vendor"}
               label={"Vendor"}
               placeholder="Enter Vendor"
             />

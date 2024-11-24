@@ -8,23 +8,12 @@ import { useGetAssets } from "../../../api-hook";
 
 const columns = [
   {
-    accessorKey: "type",
-    header: "Asset Type",
-  },
-  {
     accessorKey: "name",
     header: "Asset Name",
   },
+
   {
-    accessorKey: "location",
-    header: "Asset Location/Position",
-  },
-  {
-    accessorKey: "capacity",
-    header: "Capacity",
-  },
-  {
-    accessorKey: "quantity",
+    accessorKey: "totalQty",
     header: "Quantity",
   },
   {

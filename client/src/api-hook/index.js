@@ -74,3 +74,17 @@ export const useGetMyAllAssetsRequest = () => {
   };
   return { data, isLoading, isError, refetch };
 };
+export const useGetAllAssetsRequestAdmin = () => {
+  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["getAllAssetsRequestAdmin"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(ASSET_REQ);
+      return data;
+    },
+  });
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ["getAllAssetsRequestAdmin"] });
+  };
+  return { data, isLoading, isError, refetch };
+};

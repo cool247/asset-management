@@ -17,15 +17,14 @@ import jwtDecode from "jwt-decode";
 
 const defaultValues = {
   assetId: "",
-  qty: "",
-  comments: "",
+  userRemarks: "",
 };
 const schema = Yup.object().shape({
   assetId: Yup.number()
     .positive("Asset ID must be positive")
     .required("Required"),
   // qty: Yup.number().positive("User ID must be positive").required("Required"),
-  comments: Yup.string()
+  userRemarks: Yup.string()
     .max(255, "Comments must not exceed 255 characters")
     .optional(),
 });
@@ -79,7 +78,7 @@ export default function CreateAssetsRequest({
       maxWidth={"xs"}
       fullWidth
       isEditMode={isEditMode}
-      title={isEditMode ? "Update Location" : "Add Location"}
+      title={isEditMode ? "Update Request" : "Raise a Request"}
     >
       {" "}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -89,13 +88,13 @@ export default function CreateAssetsRequest({
               {data &&
                 data.map(el => (
                   <MenuItem value={el.id} key={el.id}>
-                    {el.barcodeId}
+                    {el.name}
                   </MenuItem>
                 ))}
             </RHFSelect>
           </Grid>
           <Grid item xs={12}>
-            <RHFTextField name={"comments"} label={"Comment"} />
+            <RHFTextField name={"userRemarks"} label={"Remarks"} />
           </Grid>
         </Grid>
       </FormProvider>

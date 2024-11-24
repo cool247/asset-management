@@ -1,5 +1,5 @@
-import { Suspense, lazy } from "react";
-import { Navigate, useRoutes, useLocation } from "react-router-dom";
+import { lazy } from "react";
+import { Navigate, useRoutes } from "react-router-dom";
 // layouts
 import MainLayout from "../layouts/main";
 import DashboardLayout from "../layouts/dashboard";
@@ -11,7 +11,6 @@ import AuthGuard from "../guards/AuthGuard";
 // config
 import { PATH_AFTER_LOGIN } from "../config";
 // components
-import LoadingScreen from "../components/LoadingScreen";
 import MeterWiseCoverage from "../pages/report/MeterWiseCoverage";
 import NAV from "../components/nav/sampleNav";
 import Location from "../pages/master/location";
@@ -19,6 +18,7 @@ import AssertsRow from "../pages/master/row";
 import RackCupboard from "../pages/master/rack-cupboard";
 import Asset from "../pages/master/asset";
 import MyRequest from "../pages/user/my-assets";
+import AllAssetRequestAdmin from "../pages/asset-request";
 
 // ----------------------------------------------------------------------
 
@@ -161,7 +161,7 @@ export default function Router() {
               ),
               index: true,
             },
-            { path: "assets-request", element: <Location /> },
+            { path: "assets-request", element: <AllAssetRequestAdmin /> },
             { path: "activity", element: <h1>Coming Soon</h1> },
           ],
         },
@@ -209,13 +209,11 @@ export default function Router() {
     },
     {
       path: "/",
-      element: <MainLayout />,
-      children: [
-        { element: <HomePage />, index: true },
-        { path: "about-us", element: <About /> },
-        { path: "contact-us", element: <Contact /> },
-        { path: "faqs", element: <Faqs /> },
-      ],
+      element: (
+        <GuestGuard>
+          <Login />
+        </GuestGuard>
+      ),
     },
     { path: "*", element: <Navigate to="/404" replace /> },
   ]);

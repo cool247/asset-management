@@ -1,25 +1,15 @@
-import { Link as RouterLink } from "react-router-dom";
 // @mui
 import { styled } from "@mui/material/styles";
-import {
-  Box,
-  Card,
-  Stack,
-  Link,
-  Alert,
-  Container,
-  Typography,
-} from "@mui/material";
+import { Box, Card, Stack, Container, Typography } from "@mui/material";
 // routes
-import { PATH_AUTH } from "../../routes/paths";
 
 import useResponsive from "../../hooks/useResponsive";
 // components
-import Logo from "../../components/Logo";
+// import Logo from "../../components/Logo";
 import Image from "../../components/Image";
 // sections
 import { LoginForm } from "../../sections/auth/login";
-import electricity_grid from "/electricity-grid.jpg";
+import electricity_grid from "/52706.avif";
 // import logo from '/logo.webp';
 import Iconify from "../../components/Iconify";
 
@@ -51,7 +41,7 @@ const SectionStyle = styled(Card)(({ theme }) => ({
   width: "100%",
   maxWidth: 464,
   display: "flex",
-  flexDirection: "column",
+  // flexDirection: "column",
   justifyContent: "center",
   margin: theme.spacing(2, 0, 2, 2),
 }));
@@ -69,15 +59,13 @@ const ContentStyle = styled("div")(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Login() {
-  const smUp = useResponsive("up", "sm");
-
   const mdUp = useResponsive("up", "md");
 
   return (
     <RootStyle>
       <HeaderStyle>
-        <Logo />
-        {smUp && (
+        {/* <Logo /> */}
+        {/* {smUp && (
           <Typography variant="body2" sx={{ mt: { md: -2 } }}>
             Don’t have an account? {""}
             <Link
@@ -88,14 +76,11 @@ export default function Login() {
               Get started
             </Link>
           </Typography>
-        )}
+        )} */}
       </HeaderStyle>
 
       {mdUp && (
         <SectionStyle>
-          <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-            Hi, Welcome Back
-          </Typography>
           <Image
             ratio="1/1"
             visibleByDefault
@@ -120,14 +105,9 @@ export default function Login() {
             <Iconify icon="flat-color-icons:lock" sx={{ fontSize: 56 }} />
           </Stack>
 
-          <Alert severity="info" sx={{ mb: 3 }}>
-            Use email : <strong>demo@gmail.com</strong> / password :
-            <strong> demo1234</strong>
-          </Alert>
-
           <LoginForm />
 
-          {!smUp && (
+          {/* {!smUp && (
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
               Don’t have an account?{" "}
               <Link
@@ -138,7 +118,7 @@ export default function Login() {
                 Get started
               </Link>
             </Typography>
-          )}
+          )} */}
         </ContentStyle>
       </Container>
     </RootStyle>
