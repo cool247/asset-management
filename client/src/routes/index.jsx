@@ -18,6 +18,7 @@ import Location from "../pages/master/location";
 import AssertsRow from "../pages/master/row";
 import RackCupboard from "../pages/master/rack-cupboard";
 import Asset from "../pages/master/asset";
+import MyRequest from "../pages/user/my-assets";
 
 // ----------------------------------------------------------------------
 
@@ -102,11 +103,11 @@ export default function Router() {
           path: "user",
           children: [
             {
-              element: <Navigate to="/dashboard/user/profile" replace />,
+              element: <Navigate to="/dashboard/user/my-all-request" replace />,
               index: true,
             },
-            // { path: 'profile', element: <UserProfile /> },
-            { path: "cards", element: <UserCards /> },
+
+            { path: "my-all-request", element: <MyRequest /> },
             { path: "list", element: <UserList /> },
             { path: "new", element: <UserCreate /> },
             { path: ":name/edit", element: <UserCreate /> },
@@ -151,6 +152,20 @@ export default function Router() {
             { path: "assets", element: <Asset /> },
           ],
         },
+        {
+          path: "action",
+          children: [
+            {
+              element: (
+                <Navigate to="/dashboard/action/assets-request" replace />
+              ),
+              index: true,
+            },
+            { path: "assets-request", element: <Location /> },
+            { path: "activity", element: <h1>Coming Soon</h1> },
+          ],
+        },
+
         {
           path: "mail",
           children: [

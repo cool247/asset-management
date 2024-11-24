@@ -71,6 +71,8 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
       ...data,
       assetTypeId: +data.assetTypeId,
       totalQty: +data.totalQty,
+      userBardCodeId: "",
+      // type: +data.type,
     });
   };
   useEffect(() => {
@@ -165,8 +167,8 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
 
           <Grid item xs={12} sm={12} md={4}>
             <RHFSelect name={"type"} label={"Select Type"} required>
-              <MenuItem value="Rack">Rack</MenuItem>
-              <MenuItem value="Cupboard">Cupboard</MenuItem>
+              <MenuItem value="1">Rack</MenuItem>
+              <MenuItem value="2">Cupboard</MenuItem>
             </RHFSelect>
           </Grid>
 
@@ -179,7 +181,7 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
               <MenuItem value="">Select Rack/Cupboard</MenuItem>
               {data &&
                 data.map(el => (
-                  <MenuItem value={el.name} key={el.id}>
+                  <MenuItem value={el.barcodeId} key={el.id}>
                     {el.name}
                   </MenuItem>
                 ))}

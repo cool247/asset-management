@@ -29,12 +29,14 @@ const navConfig = [
   // GENERAL
   {
     subheader: "general",
+    type: ["admin", "mobile_user", "user_desktop"],
     items: [
       // { title: "app", path: PATH_DASHBOARD.general.app, icon: ICONS.dashboard },
       // { title: 'e-commerce', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.ecommerce },
       {
         title: "dashboard",
         path: PATH_DASHBOARD.general.analytics,
+        type: ["admin", "mobile_user", "user_desktop"],
       },
       // { title: 'banking', path: PATH_DASHBOARD.general.banking, icon: ICONS.banking },
       // { title: 'booking', path: PATH_DASHBOARD.general.booking, icon: ICONS.booking },
@@ -43,106 +45,57 @@ const navConfig = [
   // ----------------------------------------------------------------------
   {
     subheader: "Master",
-
+    type: ["admin"],
     items: [
       {
         title: "Location",
         path: PATH_DASHBOARD.master.location,
+        type: ["admin"],
       },
       {
         title: "Row",
         path: PATH_DASHBOARD.master.row,
+        type: ["admin"],
       },
       {
         title: "Rack/Cupboard",
         path: PATH_DASHBOARD.master.rackCupboard,
+        type: ["admin"],
       },
       {
         title: "Assets",
         path: PATH_DASHBOARD.master.assets,
+        type: ["admin"],
       },
     ],
   },
-
-
   {
     subheader: "Action",
+    type: ["admin"],
     items: [
       {
         title: "Assets Request",
         path: PATH_DASHBOARD.action.assetsRequest,
+        type: ["admin"],
       },
       {
         title: "Activity",
         path: PATH_DASHBOARD.action.activity,
+        type: ["admin"],
       },
-      
-     
     ],
   },
-  // MANAGEMENT
-  // ----------------------------------------------------------------------
   {
-    subheader: "management",
+    subheader: "Request",
+    type: ["user_desktop", "mobile_user"],
     items: [
-      // USER
       {
-        title: "user",
-        path: PATH_DASHBOARD.user.root,
-        icon: ICONS.user,
-        children: [
-          { title: "profile", path: PATH_DASHBOARD.user.profile },
-          { title: "cards", path: PATH_DASHBOARD.user.cards },
-          { title: "list", path: PATH_DASHBOARD.user.list },
-          { title: "create", path: PATH_DASHBOARD.user.new },
-          { title: "edit", path: PATH_DASHBOARD.user.demoEdit },
-          { title: "account", path: PATH_DASHBOARD.user.account },
-        ],
+        title: "My Request",
+        path: PATH_DASHBOARD.user_desktop.allReq,
+        type: ["user_desktop", "mobile_user"],
       },
-
-      // E-COMMERCE
-      // {
-      //   title: 'e-commerce',
-      //   path: PATH_DASHBOARD.eCommerce.root,
-      //   icon: ICONS.cart,
-      //   children: [
-      //     { title: 'shop', path: PATH_DASHBOARD.eCommerce.shop },
-      //     { title: 'product', path: PATH_DASHBOARD.eCommerce.demoView },
-      //     { title: 'list', path: PATH_DASHBOARD.eCommerce.list },
-      //     { title: 'create', path: PATH_DASHBOARD.eCommerce.new },
-      //     { title: 'edit', path: PATH_DASHBOARD.eCommerce.demoEdit },
-      //     { title: 'checkout', path: PATH_DASHBOARD.eCommerce.checkout },
-      //   ],
-      // },
-
-      // INVOICE
-      {
-        title: "invoice",
-        path: PATH_DASHBOARD.invoice.root,
-        icon: ICONS.invoice,
-        children: [
-          { title: "list", path: PATH_DASHBOARD.invoice.list },
-          { title: "details", path: PATH_DASHBOARD.invoice.demoView },
-          { title: "create", path: PATH_DASHBOARD.invoice.new },
-          { title: "edit", path: PATH_DASHBOARD.invoice.demoEdit },
-        ],
-      },
-
-      // BLOG
-      // {
-      //   title: 'blog',
-      //   path: PATH_DASHBOARD.blog.root,
-      //   icon: ICONS.blog,
-      //   children: [
-      //     { title: 'posts', path: PATH_DASHBOARD.blog.posts },
-      //     { title: 'post', path: PATH_DASHBOARD.blog.demoView },
-      //     { title: 'create', path: PATH_DASHBOARD.blog.new },
-      //   ],
-      // },
     ],
   },
-
- 
 ];
 
 export default navConfig;

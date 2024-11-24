@@ -1,4 +1,4 @@
-import { ASSET, LOCATION, RACK_COUPBOARD, ROW } from "../urls";
+import { ASSET, ASSET_REQ, LOCATION, RACK_COUPBOARD, ROW } from "../urls";
 import axiosInstance from "../utils/axios";
 
 export const addUpdateRow = async (req, id) => {
@@ -54,5 +54,9 @@ export const addUpdatAsset = async (req, id) => {
 
 export const deleteAsset = async id => {
   const data = await axiosInstance.delete(ASSET + `/${id}`);
+  return data;
+};
+export const createAsstReq = async req => {
+  const data = await axiosInstance.post(ASSET_REQ + `/create-new`, req);
   return data;
 };

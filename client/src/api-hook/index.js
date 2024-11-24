@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../utils/axios";
-import { ASSET, LOCATION, RACK_COUPBOARD, ROW } from "../urls";
+import { ASSET, ASSET_REQ, LOCATION, RACK_COUPBOARD, ROW } from "../urls";
 
 export const useGetRows = () => {
   const queryClient = useQueryClient();
@@ -56,6 +56,21 @@ export const useGetAssets = () => {
   });
   const refetch = () => {
     queryClient.invalidateQueries({ queryKey: ["getAllAssets"] });
+  };
+  return { data, isLoading, isError, refetch };
+};
+
+export const useGetMyAllAssetsRequest = () => {
+  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["my-all-requests"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(ASSET_REQ + "/my-all-requests");
+      return data;
+    },
+  });
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ["my-all-requests"] });
   };
   return { data, isLoading, isError, refetch };
 };

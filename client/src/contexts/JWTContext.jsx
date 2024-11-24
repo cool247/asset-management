@@ -25,8 +25,6 @@ const handlers = {
   },
   LOGIN: (state, action) => {
     const { user } = action.payload;
-    console.log(user, "ppp");
-
     return {
       ...state,
       isAuthenticated: true,
@@ -121,7 +119,7 @@ function AuthProvider({ children }) {
     dispatch({
       type: "LOGIN",
       payload: {
-        userDetails,
+        user: userDetails,
       },
     });
   };

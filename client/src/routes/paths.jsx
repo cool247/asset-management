@@ -48,10 +48,10 @@ export const PATH_DASHBOARD = {
     rackCupboard: path(ROOTS_DASHBOARD, "/master/rack-cupboard"),
     assets: path(ROOTS_DASHBOARD, "/master/assets"),
   },
-  action:{
-    root:path(ROOTS_DASHBOARD, "/action"),
-    assetsRequest:path(ROOTS_DASHBOARD, "/action/assets-request"),
-    activity:path(ROOTS_DASHBOARD, "/action/activity")
+  action: {
+    root: path(ROOTS_DASHBOARD, "/action"),
+    assetsRequest: path(ROOTS_DASHBOARD, "/action/assets-request"),
+    activity: path(ROOTS_DASHBOARD, "/action/activity"),
   },
   report: {
     root: path(ROOTS_DASHBOARD, "/report"),
@@ -122,6 +122,11 @@ export const PATH_DASHBOARD = {
       ROOTS_DASHBOARD,
       "/blog/post/apply-these-7-secret-techniques-to-improve-event"
     ),
+  },
+  user_desktop: {
+    root: path(ROOTS_DASHBOARD, "/user"),
+    raiseReq: path(ROOTS_DASHBOARD, "/user/raise-assets-request"),
+    allReq: path(ROOTS_DASHBOARD, "/user/my-all-request"),
   },
 };
 
