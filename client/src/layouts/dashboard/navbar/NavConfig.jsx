@@ -30,12 +30,11 @@ const navConfig = [
   {
     subheader: "general",
     items: [
-      { title: "app", path: PATH_DASHBOARD.general.app, icon: ICONS.dashboard },
+      // { title: "app", path: PATH_DASHBOARD.general.app, icon: ICONS.dashboard },
       // { title: 'e-commerce', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.ecommerce },
       {
-        title: "analytics",
+        title: "dashboard",
         path: PATH_DASHBOARD.general.analytics,
-        icon: ICONS.analytics,
       },
       // { title: 'banking', path: PATH_DASHBOARD.general.banking, icon: ICONS.banking },
       // { title: 'booking', path: PATH_DASHBOARD.general.booking, icon: ICONS.booking },
@@ -59,12 +58,28 @@ const navConfig = [
         path: PATH_DASHBOARD.master.rackCupboard,
       },
       {
-        title: "Asserts",
-        path: PATH_DASHBOARD.master.asserts,
+        title: "Assets",
+        path: PATH_DASHBOARD.master.assets,
       },
     ],
   },
 
+
+  {
+    subheader: "Action",
+    items: [
+      {
+        title: "Assets Request",
+        path: PATH_DASHBOARD.action.assetsRequest,
+      },
+      {
+        title: "Activity",
+        path: PATH_DASHBOARD.action.activity,
+      },
+      
+     
+    ],
+  },
   // MANAGEMENT
   // ----------------------------------------------------------------------
   {
@@ -127,26 +142,7 @@ const navConfig = [
     ],
   },
 
-  // APP
-  // ----------------------------------------------------------------------
-  // {
-  //   subheader: 'app',
-  //   items: [
-  //     {
-  //       title: 'mail',
-  //       path: PATH_DASHBOARD.mail.root,
-  //       icon: ICONS.mail,
-  //       info: (
-  //         <Label variant="outlined" color="error">
-  //           +32
-  //         </Label>
-  //       ),
-  //     },
-  //     { title: 'chat', path: PATH_DASHBOARD.chat.root, icon: ICONS.chat },
-  //     { title: 'calendar', path: PATH_DASHBOARD.calendar, icon: ICONS.calendar },
-  //     { title: 'kanban', path: PATH_DASHBOARD.kanban, icon: ICONS.kanban },
-  //   ],
-  // },
+ 
 ];
 
 export default navConfig;

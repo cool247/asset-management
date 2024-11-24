@@ -4,22 +4,39 @@ import MRTTable from "../../../components/mrt-table";
 import { Box, Button, IconButton } from "@mui/material";
 import Iconify from "../../../components/Iconify";
 import AddLocation from "./add-location";
+import { useGetLocation } from "../../../api-hook";
+import DeleteRecord from "../../../components/DeleteRecord";
+import { deleteLocation } from "../../../mutations";
+import { useSnackbar } from "notistack";
 const columns = [
   {
     accessorKey: "name",
     header: "Name",
   },
   {
-    accessorKey: "name",
-    header: "Location",
+    accessorKey: "description",
+    header: "Description",
   },
 ];
 export default function Location() {
-  const [record, setRecords] = useState([]);
+  const { data, isLoading, refetch } = useGetLocation();
+  const { enqueueSnackbar } = useSnackbar();
   const [selectedRow, setSelectedRow] = useState(null);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteLocation(selectedRow.id);
+      enqueueSnackbar("Successfully deleted record", { variant: "success" });
+      setOpenDelete(false);
+      setSelectedRow(null);
+      refetch();
+    } catch (error) {
+      enqueueSnackbar("Failed to delete", { variant: "error" });
+    }
+  };
   return (
     <>
       {open && (
@@ -31,18 +48,32 @@ export default function Location() {
             setSelectedRow(null);
             setOpen(false);
           }}
+          row={selectedRow}
+          refetch={refetch}
+        />
+      )}
+
+      {openDelete && (
+        <DeleteRecord
+          title={"Delete Location"}
+          row={selectedRow}
+          onClose={() => {
+            setOpenDelete(false);
+            setSelectedRow(null);
+          }}
+          onSubmit={handleDelete}
         />
       )}
       <MRTTable
-        data={record}
+        data={data || []}
         columns={columns}
-        loading={false}
+        loading={isLoading}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex" }}>
             <IconButton
               onClick={() => {
                 setOpen(true);
-                setSelectedRow(row);
+                setSelectedRow(row.original);
                 setIsEditMode(true);
               }}
             >
@@ -51,7 +82,7 @@ export default function Location() {
             <IconButton
               onClick={() => {
                 setOpenDelete(true);
-                setSelectedRow(row);
+                setSelectedRow(row.original);
               }}
               color="error"
             >

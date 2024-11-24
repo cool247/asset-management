@@ -4,7 +4,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { Grid } from "@mui/material";
 import FormWrapper from "../../../components/FormWrapper";
-
+import { useMutation } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import { addUpdateRow } from "../../../mutations";
+import { useEffect } from "react";
 const defaultValues = {
   name: "",
   description: "",
@@ -12,15 +15,34 @@ const defaultValues = {
 const schema = Yup.object().shape({
   name: Yup.string().trim().required("Required"),
 });
-export default function AddRow({ onClose, isEditMode }) {
+export default function AddRow({ onClose, isEditMode, refetch, row }) {
+  const { enqueueSnackbar } = useSnackbar();
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
   const { handleSubmit, reset } = methods;
 
+  const mutation = useMutation({
+    mutationFn: async formData => {
+      return addUpdateRow(formData, row?.id);
+    },
+    onSuccess: () => {
+      enqueueSnackbar("Successfully Added Row", { variant: "success" });
+      refetch();
+      onClose();
+    },
+    onError: () => {
+      enqueueSnackbar("Failed to add", { variant: "error" });
+    },
+  });
+  useEffect(() => {
+    if (isEditMode) {
+      reset({ ...row });
+    }
+  }, [row]);
   const onSubmit = data => {
-    console.log(data);
+    mutation.mutate(data);
   };
   return (
     <FormWrapper
@@ -29,7 +51,7 @@ export default function AddRow({ onClose, isEditMode }) {
       onReset={() => {
         reset();
       }}
-      loading={false}
+      loading={mutation.isPending}
       maxWidth={"xs"}
       fullWidth
       isEditMode={isEditMode}
