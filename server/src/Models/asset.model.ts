@@ -10,6 +10,7 @@ export const assetTypes = pgTable("asset_types", {
 export const assets = pgTable("assets", {
   id: serial("id").primaryKey(),
   barcodeId: varchar("barcode_id", { length: 100 }).notNull().unique(),
+  name: varchar("name", { length: 100 }).notNull(),
   assetTypeId: integer("asset_type_id")
     .notNull()
     .references(() => assetTypes.id),

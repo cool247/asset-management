@@ -17,6 +17,7 @@ export const createAssetRequest = async (req: FastifyRequest, reply: FastifyRepl
 
     reply.status(201).send(newRequest);
   } catch (error) {
+    console.log(error);
     reply.status(500).send({ message: "Failed to create request" });
   }
 };
@@ -36,9 +37,17 @@ export const getAllMyPendingRequests = async (req: FastifyRequest, reply: Fastif
 
 export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    const userId =  req.jwtPayload.id;
+    const userId = req.jwtPayload.id;
     const requests = await db
-      .select()
+      .select({
+        requestId: assetRequestTable.id,
+        assetId: assetRequestTable.assetId,
+        assetName: assets.name,
+        userId: assetRequestTable.userId,
+        adminId: assetRequestTable.adminId,
+        status: assetRequestTable.status,
+        comments: assetRequestTable.comments,
+      })
       .from(assetRequestTable)
       .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
       .where(eq(assetRequestTable.userId, userId));

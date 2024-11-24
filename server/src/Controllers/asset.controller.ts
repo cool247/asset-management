@@ -8,6 +8,7 @@ import { AssetIdInput, CreateAssetInput, UpdateAssetInput } from "../Schemas/ass
 export const createAsset = async (request: FastifyRequest, reply: FastifyReply) => {
   const {
     barcodeId,
+    name,
     assetTypeId,
     length,
     quantityInUse,
@@ -23,6 +24,7 @@ export const createAsset = async (request: FastifyRequest, reply: FastifyReply) 
     const createAsset = await db
       .insert(assets)
       .values({
+        name,
         barcodeId,
         assetTypeId,
         length,
@@ -74,6 +76,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
     barcodeId,
     assetTypeId,
     length,
+    name,
     quantityInUse,
     totalQty,
     rackAndCupboardBardCodeId,
@@ -86,6 +89,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
       .update(assets)
       .set({
         barcodeId,
+        name,
         assetTypeId,
         length,
         quantityInUse,
