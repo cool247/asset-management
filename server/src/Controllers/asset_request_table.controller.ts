@@ -3,11 +3,12 @@ import { and, eq } from "drizzle-orm";
 //
 import { db } from "../Config/db";
 import { assetRequestTable } from "../Models/asset_request_table";
+import { assets } from "../Models/asset.model";
 import { CreateAssetRequestInput, UpdateAssetRequestSchema } from "../Schemas/assetRequest.schema";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
-  const { assetId, userId, comments } = req.body as CreateAssetRequestInput;
-
+  const { assetId, comments } = req.body as CreateAssetRequestInput;
+  const userId = req.jwtPayload.id;
   try {
     const newRequest = await db
       .insert(assetRequestTable)
@@ -35,10 +36,15 @@ export const getAllMyPendingRequests = async (req: FastifyRequest, reply: Fastif
 
 export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    const userId = req.jwtPayload.id;
-    const requests = await db.select().from(assetRequestTable).where(eq(assetRequestTable.userId, userId));
+    const userId =  req.jwtPayload.id;
+    const requests = await db
+      .select()
+      .from(assetRequestTable)
+      .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
+      .where(eq(assetRequestTable.userId, userId));
     reply.send(requests);
   } catch (error) {
+    console.log(error);
     reply.status(500).send({ message: "Failed to fetch requests" });
   }
 };
@@ -54,8 +60,8 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
 
 export const updateAssetRequestStatus = async (req: FastifyRequest, reply: FastifyReply) => {
   const { id } = req.params as { id: string };
-  const { adminId, status, comments } = req.body as UpdateAssetRequestSchema;
-
+  const { status, comments } = req.body as UpdateAssetRequestSchema;
+  const adminId = req.jwtPayload.id;
   try {
     const updatedRequest = await db
       .update(assetRequestTable)
@@ -69,7 +75,7 @@ export const updateAssetRequestStatus = async (req: FastifyRequest, reply: Fasti
 
     reply.status(200).send(updatedRequest);
   } catch (error) {
-    console.error(error)
+    console.error(error);
     reply.status(500).send({ message: "Failed to update request status" });
   }
 };
