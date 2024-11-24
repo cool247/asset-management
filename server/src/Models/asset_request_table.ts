@@ -10,7 +10,8 @@ export const assetRequestTable = pgTable("asset_request_table", {
   userId: integer("user_id").notNull().references(() => users.id),
   adminId: integer("admin_id").references(() => users.id),
   status: requestStatusEnum().default("Pending"),
-  comments: varchar("comments", { length: 255 }),
+  adminRemarks: varchar("user_remarks", { length: 255 }),
+  userRemarks: varchar("admin_remarks", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

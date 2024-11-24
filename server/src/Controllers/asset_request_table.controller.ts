@@ -8,12 +8,12 @@ import { CreateAssetRequestInput, UpdateAssetRequestSchema } from "../Schemas/as
 import { users } from "../Models/user.model";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
-  const { assetId, comments } = req.body as CreateAssetRequestInput;
+  const { assetId, userRemarks='' } = req.body as CreateAssetRequestInput;
   const userId = req.jwtPayload.id;
   try {
     const newRequest = await db
       .insert(assetRequestTable)
-      .values({ assetId, userId, comments, status: "Pending" })
+      .values({ assetId, userId, userRemarks, status: "Pending" })
       .returning();
 
     reply.status(201).send(newRequest);
@@ -27,8 +27,22 @@ export const getAllMyPendingRequests = async (req: FastifyRequest, reply: Fastif
   try {
     const userId = req.jwtPayload.id;
     const requests = await db
-      .select()
+      .select({
+        requestId: assetRequestTable.id,
+        assetId: assetRequestTable.assetId,
+        assetName: assets.name,
+        userId: assetRequestTable.userId,
+        userName: users.name,
+        adminId: assetRequestTable.adminId,
+        adminName: users.name,
+        status: assetRequestTable.status,
+        userRemarks: assetRequestTable.userRemarks,
+        adminRemarks: assetRequestTable.adminRemarks,
+        createdAt:assetRequestTable.createdAt,
+      })
       .from(assetRequestTable)
+      .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
+      .innerJoin(users, eq(assetRequestTable.userId, users.id))
       .where(and(eq(assetRequestTable.status, "Pending"), eq(assetRequestTable.userId, userId)));
     reply.send(requests);
   } catch (error) {
@@ -45,11 +59,13 @@ export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply)
         assetId: assetRequestTable.assetId,
         assetName: assets.name,
         userId: assetRequestTable.userId,
-        userName: users.name, // User's name
+        userName: users.name,
         adminId: assetRequestTable.adminId,
-        adminName: users.name, // Admin's name
+        adminName: users.name,
         status: assetRequestTable.status,
-        comments: assetRequestTable.comments,
+        userRemarks: assetRequestTable.userRemarks,
+        adminRemarks: assetRequestTable.adminRemarks,
+        createdAt:assetRequestTable.createdAt,
       })
       .from(assetRequestTable)
       .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
@@ -74,7 +90,9 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
         adminId: assetRequestTable.adminId,
         adminName: users.name,
         status: assetRequestTable.status,
-        comments: assetRequestTable.comments,
+        createdAt:assetRequestTable.createdAt,
+        userRemarks: assetRequestTable.userRemarks,
+        adminRemarks: assetRequestTable.adminRemarks,
       })
       .from(assetRequestTable)
       .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
@@ -87,12 +105,12 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
 
 export const updateAssetRequestStatus = async (req: FastifyRequest, reply: FastifyReply) => {
   const { id } = req.params as { id: string };
-  const { status, comments } = req.body as UpdateAssetRequestSchema;
+  const { status, adminRemarks } = req.body as UpdateAssetRequestSchema;
   const adminId = req.jwtPayload.id;
   try {
     const updatedRequest = await db
       .update(assetRequestTable)
-      .set({ adminId, status, comments, updatedAt: new Date() })
+      .set({ adminId, status, adminRemarks, updatedAt: new Date() })
       .where(eq(assetRequestTable.id, parseInt(id)))
       .returning();
 

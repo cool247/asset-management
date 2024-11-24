@@ -32,57 +32,57 @@ async function truncateTable(tableName: string) {
 const seed = async () => {
   try {
     console.log("truncating tables...");
-    // for await (const table of allowedTables) {
-    //   await truncateTable(table);
-    // }
+    for await (const table of allowedTables) {
+      await truncateTable(table);
+    }
     console.log("truncated all tables");
 
     console.log("Seeding database...");
     // Example usage
-    // const p1= await hashPassword("mobileuser1@123");
-    // const p2= await hashPassword("mobileuser2@123");
-    // const p3= await hashPassword("admin1@123");
-    // const p4= await hashPassword("desktopuser2@123");
-    // // Users
-    // await db.insert(users).values([
-    //   { barcodeId: "U001", name: "John Doe", contactNumber: "9000000001", password: p1 },
-    //   { barcodeId: "U002", name: "Jane Smith", password: p2, contactNumber: "9000000002" },
-    //   { barcodeId: "U003", name: "Admin", password: p3, contactNumber: "9000000003",role:'admin' },
-    //   { barcodeId: "U004", name: "Desktop User", password: p4, contactNumber: "9000000004",role:'desktop_user' },
-    // ]);
+    const p1= await hashPassword("mobileuser1@123");
+    const p2= await hashPassword("mobileuser2@123");
+    const p3= await hashPassword("admin1@123");
+    const p4= await hashPassword("desktopuser2@123");
+    // Users
+    await db.insert(users).values([
+      { barcodeId: "U001", name: "John Doe", contactNumber: "9000000001", password: p1 },
+      { barcodeId: "U002", name: "Jane Smith", password: p2, contactNumber: "9000000002" },
+      { barcodeId: "U003", name: "Admin", password: p3, contactNumber: "9000000003",role:'admin' },
+      { barcodeId: "U004", name: "Desktop User", password: p4, contactNumber: "9000000004",role:'desktop_user' },
+    ]);
 
     // Rows
-    // await db.insert(rows).values([
-    //   { name: "Row A", description: "First row" },
-    //   { name: "Row B", description: "Second row" },
-    // ]);
+    await db.insert(rows).values([
+      { name: "Row A", description: "First row" },
+      { name: "Row B", description: "Second row" },
+    ]);
 
-    // // Locations
-    // await db.insert(locations).values([
-    //   { name: "Warehouse 1", description: "Main warehouse" },
-    //   { name: "Warehouse 2", description: "Secondary warehouse" },
-    // ]);
+    // Locations
+    await db.insert(locations).values([
+      { name: "Warehouse 1", description: "Main warehouse" },
+      { name: "Warehouse 2", description: "Secondary warehouse" },
+    ]);
 
-    // // Rack or Cupboards
-    // await db.insert(racksAndCupboards).values([
-    //   {
-    //     barcodeId: "RC001",
-    //     rowId: 1, // Assuming Row A has id=1
-    //     type: "Rack",
-    //     name: "Rack 1",
-    //     description: "First rack",
-    //   },
-    //   {
-    //     barcodeId: "RC002",
-    //     rowId: 2, // Assuming Row B has id=2
-    //     type: "Cupboard",
-    //     name: "Cupboard 1",
-    //     description: "First cupboard",
-    //   },
-    // ]);
+    // Rack or Cupboards
+    await db.insert(racksAndCupboards).values([
+      {
+        barcodeId: "RC001",
+        rowId: 1, // Assuming Row A has id=1
+        type: "Rack",
+        name: "Rack 1",
+        description: "First rack",
+      },
+      {
+        barcodeId: "RC002",
+        rowId: 2, // Assuming Row B has id=2
+        type: "Cupboard",
+        name: "Cupboard 1",
+        description: "First cupboard",
+      },
+    ]);
 
-    // // Asset Types
-    // await db.insert(assetTypes).values([{ name: "Laptop" }, { name: "Monitor" }]);
+    // Asset Types
+    await db.insert(assetTypes).values([{ name: "Laptop" }, { name: "Monitor" }]);
 
     // Assets
     await db.insert(assets).values([
@@ -109,24 +109,24 @@ const seed = async () => {
     ]);
 
     // Asset Movements
-    // await db.insert(assetMovements).values([
-    //   {
-    //     assetId: "A001",
-    //     from: "RC001",
-    //     to: null,
-    //     userId: "U001",
-    //     status: "Pending",
-    //     comments: "Move for maintenance",
-    //   },
-    //   {
-    //     assetId: "A002",
-    //     from: "RC002",
-    //     to: "RC001",
-    //     userId: "U002",
-    //     status: "Completed",
-    //     comments: "Relocation to main warehouse",
-    //   },
-    // ]);
+    await db.insert(assetMovements).values([
+      {
+        assetId: "A001",
+        from: "RC001",
+        to: null,
+        userId: "U001",
+        status: "Pending",
+        comments: "Move for maintenance",
+      },
+      {
+        assetId: "A002",
+        from: "RC002",
+        to: "RC001",
+        userId: "U002",
+        status: "Completed",
+        comments: "Relocation to main warehouse",
+      },
+    ]);
 
     console.log("Seeding completed.");
   } catch (error) {

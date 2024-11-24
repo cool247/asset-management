@@ -5,12 +5,12 @@ export const movementTypeEnum = z.enum(["cupboardToUser", "userToRack", "rackToU
 
 export const createAssetRequestSchema = z.object({
   assetId: z.number().positive("Asset ID must be positive").int(),
-  comments: z.string().max(255, "Comments must not exceed 255 characters").optional(),
+  userRemarks: z.string().max(255, "Comments must not exceed 255 characters").optional(),
 });
 
 export const updateAssetRequestSchema = z.object({
   status: assetRequestStatusEnum,
-  comments:z.string().max(255, "Comments must not exceed 255 characters").nullable().optional(),
+  adminRemarks:z.string().max(255, "Comments must not exceed 255 characters").nullable(),
 });
 
 export type CreateAssetRequestInput = z.infer<typeof createAssetRequestSchema>;
