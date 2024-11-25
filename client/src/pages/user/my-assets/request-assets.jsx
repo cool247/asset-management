@@ -16,11 +16,12 @@ import { useGetAssets } from "../../../api-hook";
 import jwtDecode from "jwt-decode";
 
 const defaultValues = {
-  assetId: "",
+  assetId: null,
   userRemarks: "",
 };
 const schema = Yup.object().shape({
   assetId: Yup.number()
+    .nullable()
     .positive("Asset ID must be positive")
     .required("Required"),
   // qty: Yup.number().positive("User ID must be positive").required("Required"),
@@ -43,18 +44,21 @@ export default function CreateAssetsRequest({
     defaultValues,
   });
   const { handleSubmit, reset } = methods;
-
   const mutation = useMutation({
     mutationFn: async formData => {
       return createAsstReq(formData, row?.id);
     },
     onSuccess: () => {
-      enqueueSnackbar("Successfully Added ", { variant: "success" });
+      enqueueSnackbar(`Successfully submitted Request`, {
+        variant: "success",
+      });
       refetch();
       onClose();
     },
     onError: () => {
-      enqueueSnackbar("Failed to add", { variant: "error" });
+      enqueueSnackbar(`Failed to ${isEditMode ? "update" : "add"} `, {
+        variant: "error",
+      });
     },
   });
   const onSubmit = data => {
@@ -78,7 +82,7 @@ export default function CreateAssetsRequest({
       maxWidth={"xs"}
       fullWidth
       isEditMode={isEditMode}
-      title={isEditMode ? "Update Request" : "Raise a Request"}
+      title={isEditMode ? "Update Request" : "Create New Request"}
     >
       {" "}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>

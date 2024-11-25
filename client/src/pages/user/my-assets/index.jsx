@@ -30,7 +30,11 @@ const columns = [
   },
   {
     accessorKey: "userRemarks",
-    header: "Remarks",
+    header: "User Remarks",
+  },
+  {
+    accessorKey: "adminRemarks",
+    header: "Admin Remark",
   },
   {
     accessorKey: "status",
@@ -93,28 +97,28 @@ export default function MyRequest() {
         data={data || []}
         columns={columns}
         loading={isLoading}
-        // renderRowActions={({ row }) => (
-        //   <Box sx={{ display: "flex" }}>
-        //     <IconButton
-        //       onClick={() => {
-        //         setOpen(true);
-        //         setSelectedRow(row.original);
-        //         setIsEditMode(true);
-        //       }}
-        //     >
-        //       <Iconify icon={"eva:edit-fill"} />
-        //     </IconButton>
-        //     <IconButton
-        //       onClick={() => {
-        //         setOpenDelete(true);
-        //         setSelectedRow(row.original);
-        //       }}
-        //       color="error"
-        //     >
-        //       <Iconify icon={"eva:trash-2-outline"} />
-        //     </IconButton>
-        //   </Box>
-        // )}
+        renderRowActions={({ row }) => (
+          <Box sx={{ display: "flex" }}>
+            <IconButton
+              onClick={() => {
+                setOpen(true);
+                setSelectedRow(row.original);
+                setIsEditMode(true);
+              }}
+            >
+              <Iconify icon={"eva:edit-fill"} />
+            </IconButton>
+            <IconButton
+              onClick={() => {
+                setOpenDelete(true);
+                setSelectedRow(row.original);
+              }}
+              color="error"
+            >
+              <Iconify icon={"eva:trash-2-outline"} />
+            </IconButton>
+          </Box>
+        )}
         renderTopToolbarCustomActions={() => (
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
@@ -125,7 +129,7 @@ export default function MyRequest() {
                 setIsEditMode(false);
               }}
             >
-              Add New
+              Create New Request
             </Button>
           </Box>
         )}

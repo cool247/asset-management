@@ -41,7 +41,7 @@ const MRTTable = ({
     //  enableGrouping:true,
     initialState: {
       density: "comfortable",
-      columnPinning: { left: [], right: ["mrt-row-actions"] },
+      // columnPinning: { left: [], right: ["mrt-row-actions"] },
       expanded: expanded || false,
       showGlobalFilter: true,
       pagination: pagination,
@@ -79,7 +79,12 @@ const MRTTable = ({
       },
     },
     muiTableBodyCellProps: {
-      sx: { paddingLeft: "4px", paddingRight: "8px", boxShadow: "none" },
+      sx: {
+        paddingLeft: "4px",
+        paddingRight: "8px",
+        boxShadow: "none",
+        borderBottom: theme => `1px solid ${theme.palette.grey[300]}`,
+      },
     },
     muiTableHeadCellColumnActionsButtonProps: {
       sx: {

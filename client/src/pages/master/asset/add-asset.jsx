@@ -65,12 +65,16 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
       return addUpdatAsset(formData, row?.id);
     },
     onSuccess: () => {
-      enqueueSnackbar("Successfully Added ", { variant: "success" });
+      enqueueSnackbar(`Successfully ${isEditMode ? "Updated" : "Added"}  `, {
+        variant: "success",
+      });
       refetch();
       onClose();
     },
     onError: () => {
-      enqueueSnackbar("Failed to add", { variant: "error" });
+      enqueueSnackbar(`Failed to ${isEditMode ? "update" : "add"} `, {
+        variant: "error",
+      });
     },
   });
   const onSubmit = data => {

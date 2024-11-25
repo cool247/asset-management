@@ -43,8 +43,12 @@ const columns = [
     header: "Asset Name",
   },
   {
-    accessorKey: "comments",
+    accessorKey: "userRemarks",
     header: "User Remarks",
+  },
+  {
+    accessorKey: "adminRemarks",
+    header: "Admin Remark",
   },
   {
     accessorKey: "createdAt",
@@ -83,6 +87,7 @@ export default function AllAssetRequestAdmin() {
       await updateReqByAdmin(req, selectedRow.requestId);
       enqueueSnackbar("Successfully updated status ", { variant: "success" });
       onClose();
+      refetch();
     } catch (error) {
       enqueueSnackbar("Failed to update status", { variant: "error" });
     } finally {
