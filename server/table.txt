@@ -1,0 +1,103 @@
+1. Users Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the user
+name	String	Name of the user
+barcodeId	String	Unique barcode ID assigned to the user
+role	Enum	Role of the user (e.g., "Admin", "User")
+isActive	Boolean	Indicates if the user is active
+createdAt	Timestamp	Timestamp of when the user was created
+updatedAt	Timestamp	Timestamp of when the user was last updated
+
+2. Assets Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the asset
+name	String	Asset name
+typeId	Foreign Key	Links to AssetTypes.id
+totalQuantity	Integer	Total quantity of the asset
+usedQuantity	Integer	Quantity currently in use
+remainingQuantity	Derived	Derived as totalQuantity - usedQuantity
+isActive	Boolean	Indicates if the asset is active
+createdAt	Timestamp	Timestamp of when the asset was created
+updatedAt	Timestamp	Timestamp of when the asset was last updated
+
+3. AssetTypes Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the asset type
+name	String	Name of the asset type (e.g., "Laptop")
+isActive	Boolean	Indicates if the asset type is active
+createdAt	Timestamp	Timestamp of when the type was created
+updatedAt	Timestamp	Timestamp of when the type was last updated
+
+4. AssetProperties Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the property
+typeId	Foreign Key	Links to AssetTypes.id
+name	String	Property name (e.g., "RAM", "Processor")
+dataType	Enum	Type of data (e.g., "String", "Number")
+isActive	Boolean	Indicates if the property is active
+createdAt	Timestamp	Timestamp of when the property was created
+updatedAt	Timestamp	Timestamp of when the property was last updated
+
+5. AssetPropertyValues Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the property value
+assetId	Foreign Key	Links to Assets.id
+propertyId	Foreign Key	Links to AssetProperties.id
+value	String	Value of the property (e.g., "16GB")
+isActive	Boolean	Indicates if the property value is active
+createdAt	Timestamp	Timestamp of when the value was created
+updatedAt	Timestamp	Timestamp of when the value was last updated
+
+6. AssetItems Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the physical item
+assetId	Foreign Key	Links to Assets.id
+serialNumber	String	Unique serial number or barcode for the item
+status	Enum	Status of the item (e.g., "In Rack", "In Use", "With User")
+currentLocationId	Foreign Key	Current location (Locations.id)
+currentUserId	Foreign Key	Current user (Users.id, nullable)
+isActive	Boolean	Indicates if the asset item is active
+createdAt	Timestamp	Timestamp of when the item was created
+updatedAt	Timestamp	Timestamp of when the item was last updated
+
+7. Locations Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the location
+name	String	Location name (e.g., Rack, Cupboard)
+type	Enum	Type of location ("Rack", "Cupboard")
+barcode	String	Unique barcode assigned to the location
+isActive	Boolean	Indicates if the location is active
+createdAt	Timestamp	Timestamp of when the location was created
+updatedAt	Timestamp	Timestamp of when the location was last updated
+
+8. Requests Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the request
+assetId	Foreign Key	Links to Assets.id
+requestedQuantity	Integer	Total quantity requested
+approvedQuantity	Integer	Total quantity approved
+fromLocationId	Foreign Key	Source location (Locations.id)
+toLocationId	Foreign Key	Destination location (Locations.id)
+requestedBy	Foreign Key	User who requested (Users.id)
+approvedBy	Foreign Key	Admin who approved (Users.id)
+requestedRemarks	String	Remarks provided by the requester
+approvalRemarks	String	Remarks provided by the approver
+status	Enum	Status ("Pending", "Approved", "Rejected")
+isActive	Boolean	Indicates if the request is active
+createdAt	Timestamp	Timestamp of when the request was created
+updatedAt	Timestamp	Timestamp of when the request was last updated
+
+9. AssetMovements Table
+Column Name	Type	Description
+id	Primary Key	Unique identifier for the movement
+assetId	Foreign Key	Links to Assets.id
+fromLocationId	Foreign Key	Source location (Locations.id)
+toLocationId	Foreign Key	Destination location (Locations.id)
+requestId	Foreign Key	Links to Requests.id
+movedQuantity	Integer	Quantity moved
+movedBy	Foreign Key	User who moved the asset (Users.id)
+moverRemarks	String	Remarks by the mover
+status	Enum	Status of the movement ("Completed")
+isActive	Boolean	Indicates if the movement is active
+createdAt	Timestamp	Timestamp of when the movement was created
+updatedAt	Timestamp	Timestamp of when the movement was last updated
