@@ -4,8 +4,8 @@ import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { CreateAssetMovementInput, movementStatusEnum } from "../Schemas/assetMovement.schema";
 import { assetMovements } from "../Models/asset-movement.model";
-import { assets } from "../Models/asset.model";
-import { assetRequestTable } from "../Models/asset_request_table";
+import { assetsTable } from "../Models/asset.model";
+import { assetRequestTable } from "../Models/asset_request.model";
 
 export const createAssetMovement = async (request: FastifyRequest, reply: FastifyReply) => {
   const { assetBarCodeId, from, to, comments = "", movementType } = request.body as CreateAssetMovementInput;
@@ -17,7 +17,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
     if (movementType === "cupboardToUser") {
       // validation if asset is present in cupboard
 
-      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetBarCodeId));
+      const movingAsset = await db.select().from(assetsTable).where(eq(assetsTable.barcodeId, assetBarCodeId));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset is not in the cupboard" });
@@ -42,7 +42,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
           .send({ message: "Asset is not requested or it is in pending status, please consult to the admin" });
       }
 
-      db.update(assets).set({
+      db.update(assetsTable).set({
         userBarCodeId,
         rackAndCupboardBardCodeId: null,
         quantityInUse: (movingAsset[0]?.quantityInUse || 0) - 1,
@@ -71,14 +71,14 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
 
       const movingAsset = await db
         .select()
-        .from(assets)
-        .where(and(eq(assets.barcodeId, assetBarCodeId), eq(assets.userBarCodeId, userBarCodeId)));
+        .from(assetsTable)
+        .where(and(eq(assetsTable.barcodeId, assetBarCodeId), eq(assetsTable.userBarCodeId, userBarCodeId)));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset not found" });
       }
 
-      db.update(assets).set({
+      db.update(assetsTable).set({
         userBarCodeId: null,
         rackAndCupboardBardCodeId: to,
       });
@@ -118,7 +118,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
     if (movementType === "rackToUser") {
       // validation if asset is present in rack
 
-      const movingAsset = await db.select().from(assets).where(eq(assets.barcodeId, assetBarCodeId));
+      const movingAsset = await db.select().from(assetsTable).where(eq(assetsTable.barcodeId, assetBarCodeId));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset is not in the rack" });
@@ -139,7 +139,7 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
           .send({ message: "Asset is not requested or it is in pending status, please consult to the admin" });
       }
 
-      db.update(assets).set({
+      db.update(assetsTable).set({
         userBarCodeId,
         rackAndCupboardBardCodeId: null,
       });
@@ -165,14 +165,14 @@ export const createAssetMovement = async (request: FastifyRequest, reply: Fastif
     if (movementType === "userToCupboard") {
       const movingAsset = await db
         .select()
-        .from(assets)
-        .where(and(eq(assets.barcodeId, assetBarCodeId), eq(assets.userBarCodeId, userBarCodeId)));
+        .from(assetsTable)
+        .where(and(eq(assetsTable.barcodeId, assetBarCodeId), eq(assetsTable.userBarCodeId, userBarCodeId)));
 
       if (movingAsset.length === 0) {
         return reply.status(400).send({ message: "Asset not found" });
       }
 
-      db.update(assets).set({
+      db.update(assetsTable).set({
         userBarCodeId: null,
         rackAndCupboardBardCodeId: to,
         quantityInUse: (movingAsset[0]?.quantityInUse || 0) + 1,

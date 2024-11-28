@@ -3,14 +3,14 @@ import { db } from "../Config/db";
 
 import { eq } from "drizzle-orm";
 
-import { users } from "../Models/user.model";
+import { usersTable } from "../Models/user.model";
 import { CreateUserInput, UpdateUserInput, UserIdInput } from "../Schemas/user.schema";
 
 export const createUser = async (request: FastifyRequest, reply: FastifyReply) => {
   const { name, barcodeId, role, contactNumber, password } = request.body as CreateUserInput;
 
   try {
-    const createUser = await db.insert(users).values({ name, barcodeId, role, contactNumber, password }).returning();
+    const createUser = await db.insert(usersTable).values({ name, barcodeId, role, contactNumber, password }).returning();
 
     reply.status(201).send(createUser);
   } catch (error) {
@@ -19,13 +19,13 @@ export const createUser = async (request: FastifyRequest, reply: FastifyReply) =
 };
 
 export const getAllUsers = async (_, reply: FastifyReply) => {
-  const allUsers = await db.select().from(users);
+  const allUsers = await db.select().from(usersTable);
   reply.send(allUsers);
 };
 
 export const getUserById = async (request: FastifyRequest, reply: FastifyReply) => {
   const { id } = request.params as { id: number };
-  const getUser = await db.select().from(users).where(eq(users.id, id));
+  const getUser = await db.select().from(usersTable).where(eq(usersTable.id, id));
 
   if (getUser.length === 0) {
     return reply.status(404).send({ message: "User not found" });
@@ -40,9 +40,9 @@ export const updateUserById = async (request: FastifyRequest, reply: FastifyRepl
 
   try {
     const updateUser = await db
-      .update(users)
+      .update(usersTable)
       .set({ name: newName, role, contactNumber }) // Update all fields
-      .where(eq(users.id, id))
+      .where(eq(usersTable.id, id))
       .returning();
 
     if (updateUser.length === 0) {
@@ -59,7 +59,7 @@ export const deleteUserById = async (request: FastifyRequest, reply: FastifyRepl
   const { id } = request.params as UserIdInput;
 
   try {
-    const deleteUser = await db.delete(users).where(eq(users.id, id)).returning();
+    const deleteUser = await db.delete(usersTable).where(eq(usersTable.id, id)).returning();
 
     if (deleteUser.length === 0) {
       return reply.status(404).send({ message: "User not found" });

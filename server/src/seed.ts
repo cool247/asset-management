@@ -1,9 +1,9 @@
-import { users } from "./Models/user.model";
+import { usersTable } from "./Models/user.model";
 import { rows } from "./Models/row.model";
 import bcrypt from "bcrypt";
 import { locations } from "./Models/location.model";
 import { racksAndCupboards } from "./Models/rack-cupboard.model";
-import { assets, assetTypes } from "./Models/asset.model";
+import { assetsTable, assetTypes } from "./Models/asset.model";
 import { assetMovements } from "./Models/asset-movement.model";
 import { db } from "./Config/db";
 
@@ -44,7 +44,7 @@ const seed = async () => {
     const p3 = await hashPassword("admin1@123");
     const p4 = await hashPassword("desktopuser2@123");
     // Users
-    await db.insert(users).values([
+    await db.insert(usersTable).values([
       { barcodeId: "U001", name: "John Doe", contactNumber: "9000000001", password: p1 },
       { barcodeId: "U002", name: "Jane Smith", password: p2, contactNumber: "9000000002" },
       { barcodeId: "U003", name: "Admin", password: p3, contactNumber: "9000000003", role: "admin" },
@@ -85,7 +85,7 @@ const seed = async () => {
     await db.insert(assetTypes).values([{ name: "Laptop" }, { name: "Monitor" }]);
 
     // Assets
-    await db.insert(assets).values([
+    await db.insert(assetsTable).values([
       {
         barcodeId: "A001",
         assetTypeId: 1,
