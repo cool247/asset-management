@@ -1,28 +1,14 @@
-import { integer, jsonb, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
-import { racksAndCupboards } from "./rack-cupboard.model";
-import { users } from "./user.model";
+import { boolean, integer,  pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { assetTypesTable } from "./asset-type.model";
 
-export const assetTypes = pgTable("asset_types", {
+export const assetsTable = pgTable("assets", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 50 }).notNull().unique(),
+  name: varchar("name", { length: 255 }).notNull(),
+  typeId: integer("type_id").notNull().references(() => assetTypesTable.id),
+  totalQuantity: integer("total_quantity").default(0).notNull(),
+  usedQuantity: integer("used_quantity").default(0).notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const assets = pgTable("assets", {
-  id: serial("id").primaryKey(),
-  barcodeId: varchar("barcode_id", { length: 100 }).notNull().unique(),
-  name: varchar("name", { length: 100 }).notNull(),
-  assetTypeId: integer("asset_type_id")
-    .notNull()
-    .references(() => assetTypes.id),
-  // vendor: varchar("vendor", { length: 100 }).notNull(),
-  // capacity: numeric("capacity").notNull(),
-  length: integer("length"),
-  quantityInUse: integer("quantity_in_use").default(0),
-  // qtyRemaining: integer("qty_remaining").default(0),
-  totalQty: integer("total_qty").notNull(),
-  rackAndCupboardBardCodeId: varchar("rack_and_cupboard_barcode_id").references(() => racksAndCupboards.barcodeId),
-  userBarCodeId: varchar("user_barcode_id").references(() => users.barcodeId),
-  dynamicFields: jsonb("dynamic_fields"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});

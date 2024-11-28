@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
-import { assets } from "../Models/asset.model";
+import { assetsTable } from "../Models/asset.model";
 import { eq } from "drizzle-orm";
 import { AssetIdInput, CreateAssetInput, UpdateAssetInput } from "../Schemas/asset.schema";
 
@@ -22,7 +22,7 @@ export const createAsset = async (request: FastifyRequest, reply: FastifyReply) 
 
   try {
     const createAsset = await db
-      .insert(assets)
+      .insert(assetsTable)
       .values({
         name,
         barcodeId,
@@ -45,7 +45,7 @@ export const createAsset = async (request: FastifyRequest, reply: FastifyReply) 
 
 export const getAllAssets = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
-    const allAssets = await db.select().from(assets);
+    const allAssets = await db.select().from(assetsTable);
     reply.send(allAssets);
   } catch (error) {
     logger.error(`Error fetching assets: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -57,7 +57,7 @@ export const getAssetById = async (request: FastifyRequest, reply: FastifyReply)
   const { id } = request.params as AssetIdInput;
 
   try {
-    const asset = await db.select().from(assets).where(eq(assets.id, id));
+    const asset = await db.select().from(assetsTable).where(eq(assetsTable.id, id));
 
     if (asset.length === 0) {
       reply.status(404).send({ message: "Asset not found" });
@@ -86,7 +86,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
 
   try {
     const updatedAsset = await db
-      .update(assets)
+      .update(assetsTable)
       .set({
         barcodeId,
         name,
@@ -98,7 +98,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
         userBarCodeId,
         dynamicFields,
       })
-      .where(eq(assets.id, id))
+      .where(eq(assetsTable.id, id))
       .returning();
 
     if (updatedAsset.length === 0) {
@@ -113,10 +113,10 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
 };
 
 export const deleteAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as AssetIdInput;
+  const { id } = request.params as { id: number };
 
   try {
-    const deletedAsset = await db.delete(assets).where(eq(assets.id, id)).returning();
+    const deletedAsset = await db.delete(assetsTable).where(eq(assetsTable.id, id)).returning();
 
     if (deletedAsset.length === 0) {
       reply.status(404).send({ message: "Asset not found" });

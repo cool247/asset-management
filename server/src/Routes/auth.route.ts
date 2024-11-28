@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../Config/db";
-import { users } from "../Models/user.model";
+import { usersTable } from "../Models/user.model";
 import bcrypt from "bcrypt";
 import { FastifyInstance } from "fastify";
 import { addToBlacklist } from "../Middleware/authenticate.middleware";
@@ -15,7 +15,7 @@ export const authRoutes = async (app: FastifyInstance) => {
     const { contactNumber, password } = request.body as loginRequest;
 
     try {
-      const [user] = await db.select().from(users).where(eq(users.contactNumber, contactNumber));
+      const [user] = await db.select().from(usersTable).where(eq(usersTable.contactNumber, contactNumber));
 
       if (!user) {
         return reply.status(401).send({ message: "Invalid credentials" });

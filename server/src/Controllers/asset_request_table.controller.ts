@@ -2,10 +2,10 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { and, eq } from "drizzle-orm";
 //
 import { db } from "../Config/db";
-import { assetRequestTable } from "../Models/asset_request_table";
-import { assets } from "../Models/asset.model";
+import { assetRequestTable } from "../Models/asset_request.model";
+import { assetsTable } from "../Models/asset.model";
 import { CreateAssetRequestInput, UpdateAssetRequestSchema } from "../Schemas/assetRequest.schema";
-import { users } from "../Models/user.model";
+import { usersTable } from "../Models/user.model";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
   const { assetId, userRemarks='' } = req.body as CreateAssetRequestInput;
@@ -30,19 +30,19 @@ export const getAllMyPendingRequests = async (req: FastifyRequest, reply: Fastif
       .select({
         requestId: assetRequestTable.id,
         assetId: assetRequestTable.assetId,
-        assetName: assets.name,
+        assetName: assetsTable.name,
         userId: assetRequestTable.userId,
-        userName: users.name,
+        userName: usersTable.name,
         adminId: assetRequestTable.adminId,
-        adminName: users.name,
+        adminName: usersTable.name,
         status: assetRequestTable.status,
         userRemarks: assetRequestTable.userRemarks,
         adminRemarks: assetRequestTable.adminRemarks,
         createdAt:assetRequestTable.createdAt,
       })
       .from(assetRequestTable)
-      .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
-      .innerJoin(users, eq(assetRequestTable.userId, users.id))
+      .innerJoin(assetsTable, eq(assetRequestTable.assetId, assetsTable.id))
+      .innerJoin(usersTable, eq(assetRequestTable.userId, usersTable.id))
       .where(and(eq(assetRequestTable.status, "Pending"), eq(assetRequestTable.userId, userId)));
     reply.send(requests);
   } catch (error) {
@@ -57,19 +57,19 @@ export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply)
       .select({
         requestId: assetRequestTable.id,
         assetId: assetRequestTable.assetId,
-        assetName: assets.name,
+        assetName: assetsTable.name,
         userId: assetRequestTable.userId,
-        userName: users.name,
+        userName: usersTable.name,
         adminId: assetRequestTable.adminId,
-        adminName: users.name,
+        adminName: usersTable.name,
         status: assetRequestTable.status,
         userRemarks: assetRequestTable.userRemarks,
         adminRemarks: assetRequestTable.adminRemarks,
         createdAt:assetRequestTable.createdAt,
       })
       .from(assetRequestTable)
-      .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
-      .innerJoin(users, eq(assetRequestTable.userId, users.id))
+      .innerJoin(assetsTable, eq(assetRequestTable.assetId, assetsTable.id))
+      .innerJoin(usersTable, eq(assetRequestTable.userId, usersTable.id))
       .where(eq(assetRequestTable.userId, userId));
     reply.send(requests);
   } catch (error) {
@@ -84,19 +84,19 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
       .select({
         requestId: assetRequestTable.id,
         assetId: assetRequestTable.assetId,
-        assetName: assets.name,
+        assetName: assetsTable.name,
         userId: assetRequestTable.userId,
-        userName: users.name,
+        userName: usersTable.name,
         adminId: assetRequestTable.adminId,
-        adminName: users.name,
+        adminName: usersTable.name,
         status: assetRequestTable.status,
         createdAt:assetRequestTable.createdAt,
         userRemarks: assetRequestTable.userRemarks,
         adminRemarks: assetRequestTable.adminRemarks,
       })
       .from(assetRequestTable)
-      .innerJoin(assets, eq(assetRequestTable.assetId, assets.id))
-      .innerJoin(users, eq(assetRequestTable.userId, users.id));
+      .innerJoin(assetsTable, eq(assetRequestTable.assetId, assetsTable.id))
+      .innerJoin(usersTable, eq(assetRequestTable.userId, usersTable.id));
     reply.send(requests);
   } catch (error) {
     reply.status(500).send({ message: "Failed to fetch requests" });
