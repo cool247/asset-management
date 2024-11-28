@@ -28,12 +28,16 @@ export default function AddRow({ onClose, isEditMode, refetch, row }) {
       return addUpdateRow(formData, row?.id);
     },
     onSuccess: () => {
-      enqueueSnackbar("Successfully Added Row", { variant: "success" });
+      enqueueSnackbar(`Successfully ${isEditMode ? "Updated" : "Added"}  Row`, {
+        variant: "success",
+      });
       refetch();
       onClose();
     },
     onError: () => {
-      enqueueSnackbar("Failed to add", { variant: "error" });
+      enqueueSnackbar(`Failed to ${isEditMode ? "update" : "add"} `, {
+        variant: "error",
+      });
     },
   });
   useEffect(() => {

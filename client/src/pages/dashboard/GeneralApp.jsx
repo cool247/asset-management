@@ -18,7 +18,7 @@ export default function GeneralAnalytics() {
   console.log(user, "user");
   return (
     <>
-      {user.role === "admin" ? (
+      {user?.role === "admin" ? (
         <Container maxWidth={themeStretch ? false : "xl"}>
           <Typography variant="h4" sx={{ mb: 5 }}>
             Hi, Welcome back
