@@ -1,5 +1,5 @@
 export * from './asset-items.route';
-export * from './asset-movement.route';
+// export * from './asset-movement.route';
 export * from './asset-request.route';
 export * from './asset-route';
 export * from './asset-type.route';

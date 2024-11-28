@@ -1,16 +1,15 @@
 import { z } from "zod";
-import { CreateAssetItemSchema, UpdateAssetItemSchema } from "./asset-item.schema";
+import { createAssetItemSchema, updateAssetItemSchema } from "./asset-item.schema";
 
 export const createAssetSchema = z.object({
   name: z.string().max(100, "name must be less than 100 characters"),
   typeId: z.number().int("Asset Type ID must be an integer").nonnegative("Asset Type ID must be positive"),
-  items: z.array(CreateAssetItemSchema),
+  items: z.array(createAssetItemSchema),
 });
 
 export const updateAssetSchema = z.object({
   name: z.string().max(100, "name must be less than 100 characters").optional(),
-  typeId: z.number().int("Asset Type ID must be an integer").nonnegative("Asset Type ID must be positive"),
-  items: z.array(UpdateAssetItemSchema),
+  items: z.array(updateAssetItemSchema),
 });
 
 

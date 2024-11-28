@@ -12,12 +12,7 @@ export const updateRowSchema = z.object({
   description: z.string().optional(),
 });
 
-// Schema for getting or deleting a row by ID
-export const rowIdSchema = z.object({
-  id: z.number().int("ID must be an integer"),
-});
 
 // Export inferred types
 export type CreateRowInput = z.infer<typeof createRowSchema>;
 export type UpdateRowInput = z.infer<typeof updateRowSchema>;
-export type RowIdInput = z.infer<typeof rowIdSchema>;

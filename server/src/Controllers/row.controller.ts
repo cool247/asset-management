@@ -3,7 +3,7 @@ import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { rows } from "../Models/row.model";
 import { eq } from "drizzle-orm";
-import { CreateRowInput, RowIdInput, UpdateRowInput } from "../Schemas/row.schema";
+import { CreateRowInput, UpdateRowInput } from "../Schemas/row.schema";
 
 export const createRow = async (request: FastifyRequest, reply: FastifyReply) => {
   const { name, description } = request.body as CreateRowInput;
@@ -46,7 +46,7 @@ export const getAllRows = async (request: FastifyRequest, reply: FastifyReply) =
 };
 
 export const getRowById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as RowIdInput;
+  const { id } = request.params as { id: number };
 
   try {
     const row = await db.select().from(rows).where(eq(rows.id, id));
@@ -68,7 +68,7 @@ export const getRowById = async (request: FastifyRequest, reply: FastifyReply) =
 };
 
 export const updateRowById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as RowIdInput;
+  const { id } = request.params as { id: number };
   const { name, description } = request.body as UpdateRowInput;
 
   try {
@@ -98,7 +98,7 @@ export const updateRowById = async (request: FastifyRequest, reply: FastifyReply
 };
 
 export const deleteRowById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as RowIdInput;
+  const { id } = request.params as { id: number };
 
   try {
     const deletedRow = await db.delete(rows).where(eq(rows.id, id)).returning();

@@ -16,11 +16,8 @@ export const updateRackOrCupboardSchema = z.object({
   description: z.string().max(255, "Description must be less than 255 characters").optional(),
 });
 
-export const rackOrCupboardIdSchema = z.object({
-  id: z.number().int("ID must be an integer"),
-});
+
 
 // Export inferred types
 export type CreateRackOrCupboardInput = z.infer<typeof createRackOrCupboardSchema>;
 export type UpdateRackOrCupboardInput = z.infer<typeof updateRackOrCupboardSchema>;
-export type RackOrCupboardIdSchema = z.infer<typeof rackOrCupboardIdSchema>;

@@ -3,7 +3,7 @@ import cors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 import { authenticate } from "../Middleware/authenticate.middleware";
 import {
-  assetMovementRoutes,
+  // assetMovementRoutes,
   assetRequestRoutes,
   assetRoutes,
   assetTypeRoutes,
@@ -64,8 +64,8 @@ export const buildServer = async () => {
     instance.register(rackAndCupboardRoutes, { prefix: "/rack-cupboard" });
     instance.register(assetTypeRoutes, { prefix: "/asset-type" });
     instance.register(assetRoutes, { prefix: "/asset" });
-    instance.register(assetMovementRoutes, { prefix: "/asset-movement" });
     instance.register(assetRequestRoutes, { prefix: "/asset-request" });
+    // instance.register(assetMovementRoutes, { prefix: "/asset-movement" });
   };
 
   app.register(registerRoutes, { prefix: "/api" });

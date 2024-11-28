@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { locations } from "../Models/location.model";
-import { CreateLocationInput, LocationIdInput, UpdateLocationInput } from "../Schemas/location.schema";
+import { CreateLocationInput,  UpdateLocationInput } from "../Schemas/location.schema";
 
 export const createLocation = async (request: FastifyRequest, reply: FastifyReply) => {
   const { name, description } = request.body as CreateLocationInput;
@@ -31,7 +31,7 @@ export const getAllLocations = async (request: FastifyRequest, reply: FastifyRep
 };
 
 export const getLocationById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as LocationIdInput;
+  const { id } = request.params as {id:number};
   try {
     const location = await db.select().from(locations).where(eq(locations.id, id));
 
@@ -47,7 +47,7 @@ export const getLocationById = async (request: FastifyRequest, reply: FastifyRep
 };
 
 export const updateLocationById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as LocationIdInput;
+  const { id } = request.params as {id:number};
   const { name, description } = request.body as UpdateLocationInput;
 
   try {
@@ -69,7 +69,7 @@ export const updateLocationById = async (request: FastifyRequest, reply: Fastify
 };
 
 export const deleteLocationById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as LocationIdInput;
+  const { id } = request.params as {id:number};
 
   try {
     const deletedLocation = await db.delete(locations).where(eq(locations.id, id)).returning();

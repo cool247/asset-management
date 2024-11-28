@@ -3,7 +3,6 @@ import { assetsTable } from "./asset.model";
 import { usersTable } from "./user.model";
 
 export const requestStatusEnum = pgEnum("request_status", ["Pending", "Approved", "Rejected"]);
-export type RequestStatusType = keyof typeof requestStatusEnum.enumValues
 
 export const assetRequestTable = pgTable("asset_request_table", {
   id: serial("id").primaryKey(),

@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-export const CreateAssetItemSchema = z.object({
+export const createAssetItemSchema = z.object({
   assetId: z.number().int("Asset Type ID must be an integer"),
   barcodeId: z.string().max(100, "Barcode ID must be less than 100 characters"),
   rackAndCupboardBardCodeId: z.string().max(100, "Barcode ID must be less than 100 characters"),
 });
 
-export const UpdateAssetItemSchema = z.object({
+export const updateAssetItemSchema = z.object({
   assetId: z.number().int("Asset Type ID must be an integer"),
   barcodeId: z.string().max(100, "Barcode ID must be less than 100 characters").optional(),
   rackAndCupboardBardCodeId: z.string().max(100, "Barcode ID must be less than 100 characters").optional(),
@@ -14,5 +14,5 @@ export const UpdateAssetItemSchema = z.object({
 });
 
 // Export inferred types
-export type CreateAssetItemInput = z.infer<typeof CreateAssetItemSchema>;
-export type UpdateAssetItemInput = z.infer<typeof UpdateAssetItemSchema>;
+export type CreateAssetItemInput = z.infer<typeof createAssetItemSchema>;
+export type UpdateAssetItemInput = z.infer<typeof updateAssetItemSchema>;

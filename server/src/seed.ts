@@ -1,11 +1,7 @@
-import { usersTable } from "./Models/user.model";
-import { rows } from "./Models/row.model";
 import bcrypt from "bcrypt";
-import { locations } from "./Models/location.model";
-import { racksAndCupboards } from "./Models/rack-cupboard.model";
-import { assetsTable, assetTypes } from "./Models/asset.model";
-import { assetMovements } from "./Models/asset-movement.model";
+
 import { db } from "./Config/db";
+import { assetsTable, assetTypesTable, locations, racksAndCupboards, rows, usersTable } from "./Models";
 
 const allowedTables = ["users", "locations", "rows", "racks_and_cupboards", "asset_types", "assets", "asset_movements"];
 
@@ -82,51 +78,32 @@ const seed = async () => {
     ]);
 
     // Asset Types
-    await db.insert(assetTypes).values([{ name: "Laptop" }, { name: "Monitor" }]);
+    await db.insert(assetTypesTable).values([{ name: "Laptop" }, { name: "Monitor" }]);
 
     // Assets
-    await db.insert(assetsTable).values([
-      {
-        barcodeId: "A001",
-        assetTypeId: 1,
-        name: "asset-1",
-        length: 15,
-        quantityInUse: 2,
-        totalQty: 10,
-        userBarCodeId: "U001",
-        dynamicFields: { color: "Black", model: "Dell XPS" },
-      },
-      {
-        barcodeId: "A002",
-        assetTypeId: 2,
-        length: 24,
-        name: "asset-2",
-        quantityInUse: 1,
-        totalQty: 5,
-        rackAndCupboardBardCodeId: "RC001",
-        dynamicFields: { resolution: "4K", brand: "LG" },
-      },
-    ]);
+    // await db.insert(assetsTable).values([
+    //   {
+    //     barcodeId: "A001",
+    //     assetTypeId: 1,
+    //     name: "asset-1",
+    //     length: 15,
+    //     quantityInUse: 2,
+    //     totalQty: 10,
+    //     userBarCodeId: "U001",
+    //     dynamicFields: { color: "Black", model: "Dell XPS" },
+    //   },
+    //   {
+    //     barcodeId: "A002",
+    //     assetTypeId: 2,
+    //     length: 24,
+    //     name: "asset-2",
+    //     quantityInUse: 1,
+    //     totalQty: 5,
+    //     rackAndCupboardBardCodeId: "RC001",
+    //     dynamicFields: { resolution: "4K", brand: "LG" },
+    //   },
+    // ]);
 
-    // Asset Movements
-    await db.insert(assetMovements).values([
-      {
-        assetBarCodeId: "A001",
-        from: "RC001",
-        to: null,
-        userBarCodeId: "U001",
-        status: "Pending",
-        comments: "Move for maintenance",
-      },
-      {
-        assetBarCodeId: "A002",
-        from: "RC002",
-        to: "RC001",
-        userBarCodeId: "U002",
-        status: "Completed",
-        comments: "Relocation to main warehouse",
-      },
-    ]);
 
     console.log("Seeding completed.");
   } catch (error) {

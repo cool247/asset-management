@@ -3,11 +3,7 @@ import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { eq } from "drizzle-orm";
 import { racksAndCupboards } from "../Models/rack-cupboard.model";
-import {
-  CreateRackOrCupboardInput,
-  UpdateRackOrCupboardInput,
-  RackOrCupboardIdSchema,
-} from "../Schemas/rack-cupboard.schema";
+import { CreateRackOrCupboardInput, UpdateRackOrCupboardInput } from "../Schemas/rack-cupboard.schema";
 
 export const createRackOrCupboard = async (request: FastifyRequest, reply: FastifyReply) => {
   const { barcodeId, rowId, type, name, description } = request.body as CreateRackOrCupboardInput;
@@ -44,7 +40,7 @@ export const getAllRacksAndCupboards = async (request: FastifyRequest, reply: Fa
 };
 
 export const getRackOrCupboardById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as RackOrCupboardIdSchema;
+  const { id } = request.params as { id: number };
 
   try {
     const rackOrCupboard = await db.select().from(racksAndCupboards).where(eq(racksAndCupboards.id, id));
@@ -61,7 +57,7 @@ export const getRackOrCupboardById = async (request: FastifyRequest, reply: Fast
 };
 
 export const updateRackOrCupboardById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as RackOrCupboardIdSchema;
+  const { id } = request.params as { id: number };
   const { barcodeId, rowId, type, name, description } = request.body as UpdateRackOrCupboardInput;
 
   try {
@@ -89,7 +85,7 @@ export const updateRackOrCupboardById = async (request: FastifyRequest, reply: F
 };
 
 export const deleteRackOrCupboardById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as RackOrCupboardIdSchema;
+  const { id } = request.params as { id: number };
 
   try {
     const deletedRackOrCupboard = await db.delete(racksAndCupboards).where(eq(racksAndCupboards.id, id)).returning();

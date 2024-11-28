@@ -14,10 +14,7 @@ export const updateUserSchema = z.object({
   contactNumber: z.string().max(15, "Contact number must be valid").optional(),
 });
 
-export const userIdSchema = z.object({
-  id: z.number().int("ID must be an integer"),
-});
+
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
-export type UserIdInput = z.infer<typeof userIdSchema>;

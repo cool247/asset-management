@@ -4,13 +4,16 @@ import { db } from "../Config/db";
 import { eq } from "drizzle-orm";
 
 import { usersTable } from "../Models/user.model";
-import { CreateUserInput, UpdateUserInput, UserIdInput } from "../Schemas/user.schema";
+import { CreateUserInput, UpdateUserInput } from "../Schemas/user.schema";
 
 export const createUser = async (request: FastifyRequest, reply: FastifyReply) => {
   const { name, barcodeId, role, contactNumber, password } = request.body as CreateUserInput;
 
   try {
-    const createUser = await db.insert(usersTable).values({ name, barcodeId, role, contactNumber, password }).returning();
+    const createUser = await db
+      .insert(usersTable)
+      .values({ name, barcodeId, role, contactNumber, password })
+      .returning();
 
     reply.status(201).send(createUser);
   } catch (error) {
@@ -35,7 +38,7 @@ export const getUserById = async (request: FastifyRequest, reply: FastifyReply) 
 };
 
 export const updateUserById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as UserIdInput;
+  const { id } = request.params as { id: number };
   const { newName, role, contactNumber } = request.body as UpdateUserInput;
 
   try {
@@ -56,7 +59,7 @@ export const updateUserById = async (request: FastifyRequest, reply: FastifyRepl
 };
 
 export const deleteUserById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as UserIdInput;
+  const { id } = request.params as { id: number };
 
   try {
     const deleteUser = await db.delete(usersTable).where(eq(usersTable.id, id)).returning();
