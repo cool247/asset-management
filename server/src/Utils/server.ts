@@ -1,22 +1,49 @@
 import fastify, { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
-import { userRoutes } from "../Routes/user.route";
-import { locationRoutes } from "../Routes/location.route";
-import { rowRoutes } from "../Routes/row.route";
-import { rackAndCupboardRoutes } from "../Routes/rack-cupboard.route";
-import { assetRoutes } from "../Routes/asset-route";
-import { assetMovementRoutes } from "../Routes/asset-movement.route";
-import { assetRequestRoutes } from "../Routes/asset_request_table";
-import { authRoutes } from "../Routes/auth.route";
 import { authenticate } from "../Middleware/authenticate.middleware";
+import {
+  assetMovementRoutes,
+  assetRequestRoutes,
+  assetRoutes,
+  assetTypeRoutes,
+  authRoutes,
+  locationRoutes,
+  rackAndCupboardRoutes,
+  rowRoutes,
+  userRoutes,
+} from "../Routes";
+//================================= Routes ====================================
 
 export const buildServer = async () => {
-  const app = fastify({ logger: true });
+  const app = fastify({
+    logger: {
+      level: "info",
+    },
+    // bodyLimit: 1_000_000,
+    // connectionTimeout: 30_000,
+    // requestTimeout: 30_000,
+    // ignoreTrailingSlash: true,
+    // maxParamLength: 10_000,
+    // caseSensitive: false,
+    // trustProxy: true,
+    // pluginTimeout: 30_000,
+    // ajv: {
+    //   customOptions: {
+    //     allErrors: true,
+    //   },
+    // },
+    // disableRequestLogging: false,
+  });
 
   app.register(cors, {
     origin: true,
+    // methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   });
+
+  // app.register(require("@fastify/compress"), {
+  //   global: true,
+  // });
 
   app.register(fastifyJwt, {
     secret: process.env.JWT_SECRET!,
@@ -35,6 +62,7 @@ export const buildServer = async () => {
     instance.register(locationRoutes, { prefix: "/location" });
     instance.register(rowRoutes, { prefix: "/row" });
     instance.register(rackAndCupboardRoutes, { prefix: "/rack-cupboard" });
+    instance.register(assetTypeRoutes, { prefix: "/asset-type" });
     instance.register(assetRoutes, { prefix: "/asset" });
     instance.register(assetMovementRoutes, { prefix: "/asset-movement" });
     instance.register(assetRequestRoutes, { prefix: "/asset-request" });

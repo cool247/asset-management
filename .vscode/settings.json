@@ -1,0 +1,8 @@
+{
+    "exportall.config.folderListener": [
+        "/server/src/Models"
+    ],
+    "exportall.config.relExclusion": [
+        "/server/src/Routes"
+    ]
+}

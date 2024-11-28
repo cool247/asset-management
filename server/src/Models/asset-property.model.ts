@@ -3,11 +3,10 @@ import { assetTypesTable } from "./asset-type.model";
 
 
 export const dataTypeEnum = pgEnum('data_type',['String', 'Number', 'Boolean']) 
-export type DataType = keyof typeof dataTypeEnum.enumValues
 
 export const assetPropertiesTable = pgTable("asset_properties", {
   id: serial("id").primaryKey(),
-  typeId: integer("type_id").notNull().references(() => assetTypesTable.id),
+  typeId: integer("type_id").notNull().references(() => assetTypesTable.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
   dataType: dataTypeEnum().default('String'),
   isRequired: boolean("is_required").default(true),

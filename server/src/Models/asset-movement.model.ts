@@ -2,8 +2,8 @@ import {  integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "dri
 import { assetsTable } from "./asset.model";
 import { racksAndCupboards } from "./rack-cupboard.model";
 import { usersTable } from "./user.model";
-import { assetRequestsTable } from "./asset_request.model";
-import { assetItemsTable } from "./asset_Item.model";
+import { assetRequestTable } from "./asset_request.model";
+import { assetItemsTable } from "./asset-Item.model";
 
 // Enum for movement status
 export const movementStatusEnum = pgEnum("movement_status", ["Pending", "Completed"]);
@@ -16,7 +16,7 @@ export const assetMovements = pgTable("asset_movements", {
   status: movementStatusEnum().default("Pending"), 
   fromLocationId: integer("from").notNull().references(() => racksAndCupboards.id),
   toLocationId: integer("to").notNull().references(() => racksAndCupboards.id),
-  requestId: integer("request_id").references(() => assetRequestsTable.id),
+  requestId: integer("request_id").references(() => assetRequestTable.id),
   movedQuantity: integer("moved_quantity").notNull(),
   movedBy: integer("moved_by").notNull().references(() => usersTable.id),
   moverRemarks: text("mover_remarks"),

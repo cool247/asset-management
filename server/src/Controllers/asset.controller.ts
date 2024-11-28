@@ -113,7 +113,7 @@ export const updateAssetById = async (request: FastifyRequest, reply: FastifyRep
 };
 
 export const deleteAssetById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = request.params as AssetIdInput;
+  const { id } = request.params as { id: number };
 
   try {
     const deletedAsset = await db.delete(assetsTable).where(eq(assetsTable.id, id)).returning();

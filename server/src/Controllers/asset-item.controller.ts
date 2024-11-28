@@ -3,16 +3,16 @@ import { eq } from "drizzle-orm";
 import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { CreateAssetItemInput, UpdateAssetItemInput } from "../Schemas/asset-item.schema";
-import { assetItemsTable } from "../Models/asset_Item.model";
+import { assetItemsTable } from "../Models/asset-Item.model";
 
 export const createAssetItem = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { assetId, barcodeId, currentUserId, rackAndCupboardBardCodeId } = request.body as CreateAssetItemInput;
-  logger.info(`Creating asset Item  with ${assetId} ${barcodeId} ${currentUserId} ${rackAndCupboardBardCodeId}`);
+  const { assetId, barcodeId, rackAndCupboardBardCodeId } = request.body as CreateAssetItemInput;
+  logger.info(`Creating asset Item  with ${assetId} ${barcodeId} ${rackAndCupboardBardCodeId}`);
 
   try {
     const createAssetItem = await db
       .insert(assetItemsTable)
-      .values({ assetId, barcodeId, currentUserId, rackAndCupboardBardCodeId })
+      .values({ assetId, barcodeId,  rackAndCupboardBardCodeId })
       .returning();
 
     reply.status(201).send(createAssetItem);

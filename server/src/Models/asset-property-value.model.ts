@@ -1,5 +1,5 @@
 import { boolean, integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
-import { assetPropertiesTable } from "./asset_property.model";
+import { assetPropertiesTable } from "./asset-property.model";
 import { assetsTable } from "./asset.model";
 
 export const assetPropertyValuesTable = pgTable("asset_property_values", {
