@@ -3,27 +3,36 @@ import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { eq } from "drizzle-orm";
 import { CreateAssetInput, UpdateAssetInput } from "../Schemas";
-import { assetItemsTable, assetsTable } from "../Models";
+import { assetItemsTable, assetPropertiesTable, assetPropertyValuesTable, assetsTable } from "../Models";
 
 export const createAssetTypeWithProperties = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name, typeId, items } = request.body as CreateAssetInput;
-  logger.info(`Creating Asset with name and items: ${name} ${JSON.stringify(items)}`);
+  const { name, typeId, items, propertiesAndValues } = request.body as CreateAssetInput;
+  logger.info(`Creating Asset with name and items: ${name} ${JSON.stringify(items)} ${JSON.stringify(propertiesAndValues)}`);
 
   try {
     const result = await db.transaction(async (trx) => {
-      const createAsset = await trx.insert(assetsTable).values({ name, typeId }).returning();
+      const createAsset = await trx.insert(assetsTable).values({ name, typeId, totalQuantity:items.length }).returning();
 
       if (!createAsset.length) {
         throw new Error("Failed to create asset");
       }
 
       const assetId = createAsset[0].id;
-      const itemsWithTypeId = items.map((item) => ({
+      const itemsWithAssetId = items.map((item) => ({
         ...item,
         assetId,
       }));
-      const createProperties = await trx.insert(assetItemsTable).values(itemsWithTypeId).returning();
-      return { asset: createAsset[0], items: createProperties };
+
+      const propertiesAndValuesWithAssetId = propertiesAndValues.map((p) => ({
+        ...p,
+        assetId,
+      }));
+
+
+      const createItems = await trx.insert(assetItemsTable).values(itemsWithAssetId).returning();
+      await trx.insert(assetPropertyValuesTable).values(propertiesAndValuesWithAssetId).returning();
+
+      return { ...createAsset[0], items: createItems };
     });
     reply.status(201).send(result);
   } catch (error) {
@@ -34,7 +43,19 @@ export const createAssetTypeWithProperties = async (request: FastifyRequest, rep
 
 export const getAllAssets = async (_, reply: FastifyReply) => {
   try {
-    const allAssets = await db.select().from(assetsTable);
+    const allAssets = await db.
+    select({
+      assetId: assetsTable.id,
+      assetName: assetsTable.name,
+      totalQuantity: assetsTable.totalQuantity,
+      usedQuantity: assetsTable.usedQuantity,
+      propertyValue:assetPropertyValuesTable.value,
+      propertyName:assetPropertiesTable.name,
+    })
+    .from(assetsTable)
+    .innerJoin(assetPropertyValuesTable, eq(assetPropertyValuesTable.assetId, assetsTable.id))
+    .innerJoin(assetPropertiesTable, eq(assetPropertiesTable.typeId, assetsTable.typeId));
+
     reply.send(allAssets);
   } catch (error) {
     logger.error(`Error fetching assets: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -55,10 +76,15 @@ export const getAssetWithItemsById = async (request: FastifyRequest, reply: Fast
         usedQuantity: assetsTable.usedQuantity,
         itemsId: assetItemsTable.id,
         barcodeId: assetItemsTable.barcodeId,
+        propertyValue:assetPropertyValuesTable.value,
+        propertyName:assetPropertiesTable.name,
       })
       .from(assetsTable)
       .innerJoin(assetItemsTable, eq(assetItemsTable.assetId, assetsTable.id))
+      .innerJoin(assetPropertyValuesTable, eq(assetPropertyValuesTable.assetId, assetsTable.id))
+      .innerJoin(assetPropertiesTable, eq(assetPropertiesTable.typeId, assetsTable.typeId))
       .where(eq(assetsTable.id, id));
+      
 
     if (results.length) {
       return reply.status(404).send({ message: "Asset not found" });

@@ -4,7 +4,7 @@ import { assetsTable } from "./asset.model";
 
 export const assetPropertyValuesTable = pgTable("asset_property_values", {
   id: serial("id").primaryKey(),
-  assetId: integer("asset_id").notNull().references(() => assetsTable.id),
+  assetId: integer("asset_id").notNull().references(() => assetsTable.id,{onDelete:"cascade"}),
   propertyId: integer("property_id")
     .notNull()
     .references(() => assetPropertiesTable.id),

@@ -1,7 +1,16 @@
 import bcrypt from "bcrypt";
 
 import { db } from "./Config/db";
-import { assetsTable, assetTypesTable, locations, racksAndCupboards, rows, usersTable } from "./Models";
+import {
+  assetPropertiesTable,
+  assetPropertyValuesTable,
+  assetsTable,
+  assetTypesTable,
+  locations,
+  racksAndCupboards,
+  rows,
+  usersTable,
+} from "./Models";
 
 const allowedTables = ["users", "locations", "rows", "racks_and_cupboards", "asset_types", "assets", "asset_movements"];
 
@@ -80,30 +89,68 @@ const seed = async () => {
     // Asset Types
     await db.insert(assetTypesTable).values([{ name: "Laptop" }, { name: "Monitor" }]);
 
-    // Assets
-    // await db.insert(assetsTable).values([
-    //   {
-    //     barcodeId: "A001",
-    //     assetTypeId: 1,
-    //     name: "asset-1",
-    //     length: 15,
-    //     quantityInUse: 2,
-    //     totalQty: 10,
-    //     userBarCodeId: "U001",
-    //     dynamicFields: { color: "Black", model: "Dell XPS" },
-    //   },
-    //   {
-    //     barcodeId: "A002",
-    //     assetTypeId: 2,
-    //     length: 24,
-    //     name: "asset-2",
-    //     quantityInUse: 1,
-    //     totalQty: 5,
-    //     rackAndCupboardBardCodeId: "RC001",
-    //     dynamicFields: { resolution: "4K", brand: "LG" },
-    //   },
-    // ]);
+    // Assets Properties
+    await db.insert(assetPropertiesTable).values([
+      {
+        id: 1,
+        typeId: 1,
+        name: "partNo",
+        dataType: "String",
+      },
+      {
+        id: 2,
+        typeId: 1,
+        name: "Serial Number",
+        dataType: "String",
+      },
+    ]);
 
+    // Assets
+    await db.insert(assetsTable).values([
+      {
+        id: 1,
+        typeId: 1,
+        name: "asset-1",
+        usedQuantity: 2,
+        totalQuantity: 10,
+      },
+      {
+        id: 2,
+        typeId: 1,
+        name: "asset-2",
+        usedQuantity: 2,
+        totalQuantity: 10,
+      },
+    ]);
+
+    // Assets Properties Values
+    await db.insert(assetPropertyValuesTable).values([
+      {
+        id: 1,
+        assetId: 1,
+        propertyId: 1,
+        value: "aaaa4234",
+      },
+      {
+        id: 2,
+        assetId: 1,
+        propertyId: 2,
+        value: "352354234",
+      },
+
+      {
+        id: 3,
+        assetId: 2,
+        propertyId: 1,
+        value: "sadsad3423",
+      },
+      {
+        id: 4,
+        assetId: 2,
+        propertyId: 2,
+        value: "864765434",
+      },
+    ]);
 
     console.log("Seeding completed.");
   } catch (error) {
