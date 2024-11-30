@@ -15,7 +15,6 @@ import { useSnackbar } from "notistack";
 import { useGetRackCupBoard } from "../../../api-hook";
 
 const defaultValues = {
-  assetTypeId: "",
   type: "",
   rackAndCupboardBardCodeId: null,
   barcodeId: "",
@@ -27,10 +26,7 @@ const defaultValues = {
   userBardCodeId: null,
 };
 
-const DEFAULT_ASSET = [
-  { name: "Pen-drive", id: 1 },
-  { name: "Laptop", id: 2 },
-];
+
 const schema = Yup.object().shape({
   name: Yup.string().trim().required("Required"),
   rackAndCupboardBardCodeId: Yup.string()
@@ -40,7 +36,6 @@ const schema = Yup.object().shape({
   // location: Yup.string().trim().required("Required"),
   totalQty: Yup.string().trim().required("Required"),
 
-  assetTypeId: Yup.string().trim().required("Required"),
   barcodeId: Yup.string().trim().required("Required"),
   dynamicFields: Yup.object().shape({
     vendor: Yup.string().trim(),
@@ -48,7 +43,7 @@ const schema = Yup.object().shape({
     partNo: Yup.string().trim().required("Required"),
   }),
 });
-export default function AddAsset({ onClose, isEditMode, row, refetch }) {
+export default function AddAsset({ onClose, isEditMode, row, refetch, assetTypeId }) {
   const { enqueueSnackbar } = useSnackbar();
   const { data } = useGetRackCupBoard();
   const methods = useForm({
@@ -81,7 +76,7 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
     console.log(data);
     mutation.mutate({
       ...data,
-      assetTypeId: +data.assetTypeId,
+      assetTypeId,
       totalQty: +data.totalQty,
       // type: +data.type,
     });
@@ -108,21 +103,7 @@ export default function AddAsset({ onClose, isEditMode, row, refetch }) {
       {" "}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFSelect
-              name={"assetTypeId"}
-              label={"Asset Type"}
-              required
-              native={false}
-            >
-              <MenuItem value="">Select Type</MenuItem>
-              {DEFAULT_ASSET.map((el, index) => (
-                <MenuItem value={el.id} key={index}>
-                  {el.name}
-                </MenuItem>
-              ))}
-            </RHFSelect>
-          </Grid>
+          
           <Grid item xs={12} sm={12} md={4}>
             <RHFTextField
               name={"name"}

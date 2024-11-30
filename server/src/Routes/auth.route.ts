@@ -39,6 +39,7 @@ export const authRoutes = async (app: FastifyInstance) => {
         },
       });
     } catch (error) {
+      console.log(error,"login error")
       reply.status(500).send({ message: "Error logging in", error });
     }
   });

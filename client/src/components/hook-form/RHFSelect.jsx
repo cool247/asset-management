@@ -26,6 +26,7 @@ export default function RHFSelect({
         <TextField
           {...field}
           select
+          size="small"
           fullWidth
           SelectProps={{ native: native }}
           error={!!error}
