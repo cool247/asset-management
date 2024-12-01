@@ -79,9 +79,10 @@ export default function Asset() {
 
       <TextField
         value={selectedAssetTypeId}
+        label="Select Asset Type"
         onChange={e => setSelectedAssetTypeId(e.target.value)}
         select
-        sx={{ minWidth: 200 }}
+        sx={{ minWidth: 300 }}
         size="small"
       >
         <MenuItem value={""}>Select</MenuItem>

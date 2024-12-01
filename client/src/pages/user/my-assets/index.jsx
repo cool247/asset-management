@@ -11,7 +11,7 @@ import { useSnackbar } from "notistack";
 import CreateAssetsRequest from "./request-assets";
 import Label from "../../../components/Label";
 
-const getStatusColor = status => {
+const getStatusColor = (status) => {
   if (status === "Pending") {
     return "warning";
   }
@@ -23,19 +23,35 @@ const getStatusColor = status => {
   }
   return "default";
 };
+// "requestId": 1,
+// "assetId": 4,
+// "assetName": "Some",
+// "requestedBy": 4,
+// "requesterName": "Desktop User",
+// "approvedBy": null,
+// "approverName": "Desktop User",
+// "status": "Pending",
+// "requestedRemarks": "some",
+// "approvalRemarks": null,
+
 const columns = [
   {
     accessorKey: "assetName",
     header: "Asset Name",
   },
   {
-    accessorKey: "userRemarks",
-    header: "User Remarks",
+    accessorKey: "requestedRemarks",
+    header: "Requester Remarks",
   },
+  
   {
-    accessorKey: "adminRemarks",
-    header: "Admin Remark",
+    accessorKey: "requestedQuantity",
+    header: "Requested Quantity",
   },
+
+  {
+    accessorKey: "approvedQuantity",
+    header: "Requested Quantity"},
   {
     accessorKey: "status",
     header: "Status",
@@ -104,8 +120,7 @@ export default function MyRequest() {
                 setOpen(true);
                 setSelectedRow(row.original);
                 setIsEditMode(true);
-              }}
-            >
+              }}>
               <Iconify icon={"eva:edit-fill"} />
             </IconButton>
             <IconButton
@@ -113,8 +128,7 @@ export default function MyRequest() {
                 setOpenDelete(true);
                 setSelectedRow(row.original);
               }}
-              color="error"
-            >
+              color="error">
               <Iconify icon={"eva:trash-2-outline"} />
             </IconButton>
           </Box>
@@ -127,8 +141,7 @@ export default function MyRequest() {
               onClick={() => {
                 setOpen(true);
                 setIsEditMode(false);
-              }}
-            >
+              }}>
               Create New Request
             </Button>
           </Box>

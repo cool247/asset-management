@@ -12,7 +12,7 @@ export const createAssetRequestSchema = z.object({
 export const updateAssetRequestSchema = z.object({
   status: assetRequestStatusEnum,
   approvedQuantity: z.number().positive("Requested Quantity must be positive").min(1).int(),
-  requestedRemarks:z.string().min(1,"Comments must not less than 1 characters").max(255, "Comments must not exceed 255 characters").optional(),
+  approvalRemarks:z.string().min(1,"Comments must not less than 1 characters").max(255, "Comments must not exceed 255 characters").optional(),
 });
 
 export type CreateAssetRequestInput = z.infer<typeof createAssetRequestSchema>;

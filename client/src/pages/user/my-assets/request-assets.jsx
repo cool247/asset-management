@@ -1,8 +1,4 @@
-import {
-  FormProvider,
-  RHFSelect,
-  RHFTextField,
-} from "../../../components/hook-form";
+import { FormProvider, RHFSelect, RHFTextField } from "../../../components/hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -13,39 +9,26 @@ import { createAsstReq } from "../../../mutations";
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
 import { useGetAssets } from "../../../api-hook";
-import jwtDecode from "jwt-decode";
 
 const defaultValues = {
   assetId: null,
   userRemarks: "",
 };
 const schema = Yup.object().shape({
-  assetId: Yup.number()
-    .nullable()
-    .positive("Asset ID must be positive")
-    .required("Required"),
-  // qty: Yup.number().positive("User ID must be positive").required("Required"),
-  userRemarks: Yup.string()
-    .max(255, "Comments must not exceed 255 characters")
-    .optional(),
+  assetId: Yup.number().nullable().positive("Asset ID must be positive").required("Required"),
+  requestedRemarks: Yup.string().max(255, "Comments must not exceed 255 characters").optional(),
+  requestedQuantity:Yup.number().nullable().positive("must be positive").required("Required")
 });
-export default function CreateAssetsRequest({
-  onClose,
-  isEditMode,
-  row,
-  refetch,
-}) {
+export default function CreateAssetsRequest({ onClose, isEditMode, row, refetch }) {
   const { data } = useGetAssets();
   const { enqueueSnackbar } = useSnackbar();
-  const token = localStorage.getItem("accessToken");
-  const parseUser = jwtDecode(token);
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
   const { handleSubmit, reset } = methods;
   const mutation = useMutation({
-    mutationFn: async formData => {
+    mutationFn: async (formData) => {
       return createAsstReq(formData, row?.id);
     },
     onSuccess: () => {
@@ -61,8 +44,8 @@ export default function CreateAssetsRequest({
       });
     },
   });
-  const onSubmit = data => {
-    mutation.mutate({ ...data, userId: parseUser.id });
+  const onSubmit = (data) => {
+    mutation.mutate(data );
   };
   useEffect(() => {
     if (isEditMode) {
@@ -71,6 +54,7 @@ export default function CreateAssetsRequest({
       });
     }
   }, [row, isEditMode]);
+
   return (
     <FormWrapper
       onClose={onClose}
@@ -82,23 +66,23 @@ export default function CreateAssetsRequest({
       maxWidth={"xs"}
       fullWidth
       isEditMode={isEditMode}
-      title={isEditMode ? "Update Request" : "Create New Request"}
-    >
-      {" "}
+      title={isEditMode ? "Update Request" : "Create New Request"}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <RHFSelect name={"assetId"} label={"Select Asset"} required>
-              {data &&
-                data.map(el => (
-                  <MenuItem value={el.assetId} key={el.assetId}>
-                    {el.assetName}
-                  </MenuItem>
-                ))}
+              {data?.map((el) => (
+                <MenuItem value={el.id} key={el.id}>
+                  {el.name}
+                </MenuItem>
+              ))}
             </RHFSelect>
           </Grid>
+          <Grid item xs={6}>
+            <RHFTextField type='number' name={"requestedQuantity"} label={"Request Quantity"} />
+          </Grid>
           <Grid item xs={12}>
-            <RHFTextField name={"userRemarks"} label={"Remarks"} />
+            <RHFTextField name={"requestedRemarks"} label={"Remarks"} />
           </Grid>
         </Grid>
       </FormProvider>

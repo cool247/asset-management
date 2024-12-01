@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 //
 import { db } from "../Config/db";
 import { assetRequestTable } from "../Models/asset-request.model";
@@ -52,8 +52,9 @@ export const getAllMyPendingRequests = async (req: FastifyRequest, reply: Fastif
         createdAt: assetRequestTable.createdAt,
       })
       .from(assetRequestTable)
-      .innerJoin(assetsTable, eq(assetRequestTable.assetId, assetsTable.id))
-      .innerJoin(usersTable, eq(assetRequestTable.requestedBy, usersTable.id))
+      .leftJoin(assetsTable, eq(assetRequestTable.assetId, assetsTable.id))
+      .leftJoin(usersTable, eq(assetRequestTable.requestedBy, usersTable.id))
+      .leftJoin(usersTable, eq(assetRequestTable.approvedBy, usersTable.id))
       .where(
         and(
           eq(assetRequestTable.status, assetRequestStatusEnum.Values.Pending),
@@ -70,31 +71,30 @@ export const getAllMyPendingRequests = async (req: FastifyRequest, reply: Fastif
 export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
     const userId = req.jwtPayload.id;
-    const requests = await db
-      .select({
-        requestId: assetRequestTable.id,
-        assetId: assetRequestTable.assetId,
-        assetName: assetsTable.name,
-        requestedBy: assetRequestTable.requestedBy,
-        requesterName: usersTable.name,
-        approvedBy: assetRequestTable.approvedBy,
-        approverName: usersTable.name,
-        status: assetRequestTable.status,
-        requestedRemarks: assetRequestTable.requestedRemarks,
-        approvalRemarks: assetRequestTable.approvalRemarks,
-        createdAt: assetRequestTable.createdAt,
-      })
-      .from(assetRequestTable)
-      .innerJoin(assetsTable, eq(assetRequestTable.assetId, assetsTable.id))
-      .innerJoin(usersTable, eq(assetRequestTable.requestedBy, usersTable.id))
-      .where(
-        and(
-          eq(assetRequestTable.status, assetRequestStatusEnum.Values.Pending),
-          eq(assetRequestTable.requestedBy, userId),
-        ),
-      );
 
-    reply.send(requests);
+    const requests = await db.execute(sql`
+  SELECT 
+    ar.id AS "requestId",
+    ar.asset_id AS "assetId",
+    a.name AS "assetName",
+    ar.requested_quantity AS "requestedQuantity",
+    ar.approved_quantity AS "approvedQuantity",
+    ar.requested_by AS "requestedBy",
+    requester.name AS "requesterName",
+    ar.approved_by AS "approvedBy",
+    approver.name AS "approverName",
+    ar.status AS "status",
+    ar.requested_remarks AS "requestedRemarks",
+    ar.approval_remarks AS "approvalRemarks",
+    ar.created_at AS "createdAt"
+  FROM ${assetRequestTable} ar
+  LEFT JOIN ${assetsTable} a ON ar.asset_id = a.id
+  LEFT JOIN ${usersTable} requester ON ar.requested_by = requester.id
+  LEFT JOIN ${usersTable} approver ON ar.approved_by = approver.id
+  WHERE ar.requested_by = ${userId}
+`);
+
+    reply.send(requests.rows);
   } catch (error) {
     console.log(error);
     reply.status(500).send({ message: "Failed to fetch requests" });
@@ -135,13 +135,13 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
 
 export const updateAssetRequestStatus = async (req: FastifyRequest, reply: FastifyReply) => {
   const { id } = req.params as { id: number };
-  const { status, approvedQuantity, requestedRemarks } = req.body as UpdateAssetRequestSchema;
+  const { status, approvedQuantity, approvalRemarks } = req.body as UpdateAssetRequestSchema;
   const requestedBy = req.jwtPayload.id;
 
   try {
     const updatedRequest = await db
       .update(assetRequestTable)
-      .set({ requestedBy, status, approvedQuantity, requestedRemarks })
+      .set({ requestedBy, status, approvedQuantity, approvalRemarks })
       .where(eq(assetRequestTable.id, id))
       .returning();
 

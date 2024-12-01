@@ -41,39 +41,10 @@ export const getAllAssets = async (_, reply: FastifyReply) => {
   try {
     // Query the database
     const allAssets = await db
-      .select({
-        assetId: assetsTable.id,
-        assetName: assetsTable.name,
-        totalQuantity: assetsTable.totalQuantity,
-        usedQuantity: assetsTable.usedQuantity,
-        propertyValue: assetPropertyValuesTable.value,
-        propertyName: assetPropertiesTable.name,
-      })
+      .select()
       .from(assetsTable)
-      .innerJoin(assetPropertyValuesTable, eq(assetPropertyValuesTable.assetId, assetsTable.id))
-      .innerJoin(assetPropertiesTable, eq(assetPropertiesTable.id, assetPropertyValuesTable.propertyId)); // Fix this join condition
 
-    // Transform the result
-    const groupedAssets = Object.values(
-      allAssets.reduce((acc, asset) => {
-        if (!acc[asset.assetId]) {
-          acc[asset.assetId] = {
-            assetId: asset.assetId,
-            assetName: asset.assetName,
-            totalQuantity: asset.totalQuantity,
-            usedQuantity: asset.usedQuantity,
-            properties: {}, // Initialize properties object
-          };
-        }
-
-        acc[asset.assetId].properties[asset.propertyName] = asset.propertyValue;
-
-        return acc;
-      }, {})
-    );
-
-    // Send the transformed result
-    reply.send(groupedAssets);
+    reply.send(allAssets);
   } catch (error) {
     logger.error(
       `Error fetching assets: ${error instanceof Error ? error.message : "Unknown error"}`
