@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 // @mui
 import { styled, useTheme } from "@mui/material/styles";
-import { Box, Stack, Drawer } from "@mui/material";
+import { Box, Stack, Drawer, Typography } from "@mui/material";
 // hooks
 import useResponsive from "../../../hooks/useResponsive";
 import useCollapseDrawer from "../../../hooks/useCollapseDrawer";
@@ -46,14 +46,8 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
 
   const isDesktop = useResponsive("up", "lg");
 
-  const {
-    isCollapse,
-    collapseClick,
-    collapseHover,
-    onToggleCollapse,
-    onHoverEnter,
-    onHoverLeave,
-  } = useCollapseDrawer();
+  const { isCollapse, collapseClick, collapseHover, onToggleCollapse, onHoverEnter, onHoverLeave } =
+    useCollapseDrawer();
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -71,8 +65,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
           display: "flex",
           flexDirection: "column",
         },
-      }}
-    >
+      }}>
       <Stack
         spacing={3}
         sx={{
@@ -81,20 +74,15 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
           px: 2.5,
           flexShrink: 0,
           ...(isCollapse && { alignItems: "center" }),
-        }}
-      >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
+        }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Logo />
+          <Typography variant="subtitle2" color="info.dark">
+            Asset Management
+          </Typography>
 
           {isDesktop && !isCollapse && (
-            <CollapseButton
-              onToggleCollapse={onToggleCollapse}
-              collapseClick={collapseClick}
-            />
+            <CollapseButton onToggleCollapse={onToggleCollapse} collapseClick={collapseClick} />
           )}
         </Stack>
 
@@ -113,21 +101,14 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
     <RootStyle
       sx={{
         width: {
-          lg: isCollapse
-            ? NAVBAR.DASHBOARD_COLLAPSE_WIDTH
-            : NAVBAR.DASHBOARD_WIDTH,
+          lg: isCollapse ? NAVBAR.DASHBOARD_COLLAPSE_WIDTH : NAVBAR.DASHBOARD_WIDTH,
         },
         ...(collapseClick && {
           position: "absolute",
         }),
-      }}
-    >
+      }}>
       {!isDesktop && (
-        <Drawer
-          open={isOpenSidebar}
-          onClose={onCloseSidebar}
-          PaperProps={{ sx: { width: NAVBAR.DASHBOARD_WIDTH } }}
-        >
+        <Drawer open={isOpenSidebar} onClose={onCloseSidebar} PaperProps={{ sx: { width: NAVBAR.DASHBOARD_WIDTH } }}>
           {renderContent}
         </Drawer>
       )}
@@ -143,7 +124,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
               width: NAVBAR.DASHBOARD_WIDTH,
               borderRightStyle: "dashed",
               bgcolor: "background.default",
-              transition: theme =>
+              transition: (theme) =>
                 theme.transitions.create("width", {
                   duration: theme.transitions.duration.standard,
                 }),
@@ -152,11 +133,10 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
               }),
               ...(collapseHover && {
                 ...cssStyles(theme).bgBlur(),
-                boxShadow: theme => theme.customShadows.z24,
+                boxShadow: (theme) => theme.customShadows.z24,
               }),
             },
-          }}
-        >
+          }}>
           {renderContent}
         </Drawer>
       )}

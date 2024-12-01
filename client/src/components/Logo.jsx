@@ -50,7 +50,7 @@ export default function Logo({ disabledLink = false, sx }) {
           />
         </g>
       </svg> */}
-      <img alt='logo' src={logoUI} />
+      <img alt='logo' src={logoUI} height={50} width={50} />
     </Box>
   );
 
