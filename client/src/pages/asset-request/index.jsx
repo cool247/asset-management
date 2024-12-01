@@ -8,6 +8,7 @@ import {
   DialogActions,
   DialogContent,
   Divider,
+  Grid,
   IconButton,
   TextField,
   Toolbar,
@@ -21,7 +22,8 @@ import { Close } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "notistack";
 import { updateReqByAdmin } from "../../mutations";
-const getStatusColor = status => {
+
+const getStatusColor = (status) => {
   if (status === "Pending") {
     return "warning";
   }
@@ -34,18 +36,6 @@ const getStatusColor = status => {
   return "default";
 };
 
-// "requestId": 1,
-// "assetId": 4,
-// "assetName": "Some",
-// "requestedQuantity": 120,
-// "approvedQuantity": null,
-// "requestedBy": 4,
-// "requesterName": "Desktop User",
-// "approvedBy": null,
-// "approverName": null,
-// "status": "Pending",
-// "requestedRemarks": "some",
-// "approvalRemarks": null,
 const columns = [
   {
     accessorKey: "requesterName",
@@ -56,8 +46,16 @@ const columns = [
     header: "Asset Name",
   },
   {
+    accessorKey: "requestedQuantity",
+    header: "Requested Qty",
+  },
+  {
     accessorKey: "requestedRemarks",
     header: "Requester Remarks",
+  },
+  {
+    accessorKey: "approvedQuantity",
+    header: "Approved Qty",
   },
   {
     accessorKey: "approvalRemarks",
@@ -67,10 +65,10 @@ const columns = [
     accessorKey: "createdAt",
     header: "Requested Date",
     Cell: ({ renderedCellValue }) => (
-      <Typography variant={"body2"} fontFamily={'monospace'} color='error'>
+      <Typography variant={"body2"} fontFamily={"monospace"} color="error">
         {new Date(renderedCellValue).toDateString()}
       </Typography>
-    )
+    ),
   },
   {
     accessorKey: "status",
@@ -88,19 +86,22 @@ export default function AllAssetRequestAdmin() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [remarks, setRemaks] = useState("");
-  const [selectedActionType, setSetlectedActionType] = useState("");
+  const [remarks, setRemarks] = useState("");
+  const [approvedQuantity, setApprovedQuantity] = useState(0);
+  const [selectedActionType, setSetSelectedActionType] = useState("");
   const onClose = () => {
     setOpen(false);
-    setSetlectedActionType("");
-    setRemaks("");
+    setSetSelectedActionType("");
+    setRemarks("");
+    setApprovedQuantity(0);
   };
   const onSubmit = async () => {
     setLoading(true);
     try {
       const req = {
         status: selectedActionType,
-        adminRemarks: remarks,
+        approvalRemarks: remarks,
+        approvedQuantity:parseInt(approvedQuantity,10),
       };
       await updateReqByAdmin(req, selectedRow.requestId);
       enqueueSnackbar("Successfully updated status ", { variant: "success" });
@@ -112,7 +113,7 @@ export default function AllAssetRequestAdmin() {
       setLoading(false);
     }
   };
-  console.log(selectedRow, "selectedRow");
+
   return (
     <>
       <MRTTable
@@ -127,20 +128,18 @@ export default function AllAssetRequestAdmin() {
                   onClick={() => {
                     setOpen(true);
                     setSelectedRow(row.original);
-                    setSetlectedActionType("Approved");
+                    setSetSelectedActionType("Approved");
                   }}
-                  color="success"
-                >
+                  color="success">
                   <Iconify icon={"healthicons:yes"} />
                 </IconButton>
                 <IconButton
                   onClick={() => {
                     setOpen(true);
                     setSelectedRow(row.original);
-                    setSetlectedActionType("Rejected");
+                    setSetSelectedActionType("Rejected");
                   }}
-                  color="error"
-                >
+                  color="error">
                   <Iconify icon={"material-symbols:cancel"} />
                 </IconButton>
               </>
@@ -162,49 +161,52 @@ export default function AllAssetRequestAdmin() {
             return false;
           }
           onClose();
-        }}
-      >
+        }}>
         <AppBar
           sx={{
             position: "relative",
-            background: theme => theme.palette.primary.lighter,
-            color: theme => theme.palette.primary.darker,
-          }}
-          variant="outlined"
-        >
+            background: (theme) => theme.palette.primary.lighter,
+            color: (theme) => theme.palette.primary.darker,
+          }}>
           <Toolbar variant="dense">
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Action
+              Approve/Reject
             </Typography>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={onClose}
-              aria-label="close"
-              size="small"
-            >
+            <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close" size="small">
               <Close />
             </IconButton>
           </Toolbar>
         </AppBar>
         <DialogContent dividers>
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Enter you remarks here..."
-            onChange={e => {
-              setRemaks(e.target.value);
-            }}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                size="small"
+                type="number"
+                placeholder="Approved Qty"
+                label="Approved Qty"
+                onChange={(e) => {
+                  setApprovedQuantity(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                size="small"
+                label='Remarks'
+                placeholder="Enter you remarks here..."
+                onChange={(e) => {
+                  setRemarks(e.target.value);
+                }}
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
         <Divider />
         <DialogActions>
-          <LoadingButton
-            onClick={onSubmit}
-            variant="contained"
-            color="success"
-            loading={loading}
-          >
+          <LoadingButton onClick={onSubmit} variant="contained" color="success" loading={loading}>
             Submit
           </LoadingButton>
 

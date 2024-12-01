@@ -10,7 +10,6 @@ import {
   UpdateAssetRequestSchema,
 } from "../Schemas/assetRequest.schema";
 import { usersTable } from "../Models/user.model";
-import { alias } from "drizzle-orm/pg-core";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
   const { assetId, requestedQuantity, requestedRemarks = "" } = req.body as CreateAssetRequestInput;
