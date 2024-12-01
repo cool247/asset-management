@@ -63,6 +63,11 @@ const navConfig = [
         type: ["admin"],
       },
       {
+        title: "Asset Types",
+        path: PATH_DASHBOARD.master.assetTypes,
+        type: ["admin"],
+      },
+      {
         title: "Assets",
         path: PATH_DASHBOARD.master.assets,
         type: ["admin"],

@@ -12,7 +12,6 @@ const createPropertiesSchema = z.object({
 export const createAssetSchema = z.object({
   name: z.string().max(100, "name must be less than 100 characters"),
   typeId: z.number().int("Asset Type ID must be an integer").positive("Asset Type ID must be positive"),
-  items: z.array(createAssetItemSchema),
   propertiesAndValues: z.array(createPropertiesSchema),
 });
 

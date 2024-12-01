@@ -1,10 +1,12 @@
 import { z } from "zod";
 
-export const createAssetItemSchema = z.object({
+export const createAssetItem = z.object({
   assetId: z.number().int("Asset Type ID must be an integer"),
   barcodeId: z.string().max(100, "Barcode ID must be less than 100 characters"),
   rackAndCupboardBardCodeId: z.string().max(100, "Barcode ID must be less than 100 characters"),
 });
+
+export const createAssetItemSchema = z.array(createAssetItem);
 
 export const updateAssetItemSchema = z.object({
   assetId: z.number().int("Asset Type ID must be an integer"),

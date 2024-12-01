@@ -8,7 +8,7 @@ export const assetPropertyValuesTable = pgTable("asset_property_values", {
   propertyId: integer("property_id")
     .notNull()
     .references(() => assetPropertiesTable.id),
-  value: text("value"), // Dynamic property value
+  value: text("value").notNull(), // Dynamic property value
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

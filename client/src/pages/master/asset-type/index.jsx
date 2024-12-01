@@ -1,50 +1,38 @@
-4/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { useState, useMemo } from "react";
 import MRTTable from "../../../components/mrt-table";
-import { Box, Button, IconButton, MenuItem, Select, TextField } from "@mui/material";
+import { Box, Button, IconButton, MenuItem, Select, TextField, Typography } from "@mui/material";
 import Iconify from "../../../components/Iconify";
-import AddAsset from "./add-asset";
-import { useGetAssets, useGetAssetsById, useGetAssetTypes } from "../../../api-hook";
-import AddAssetItems from "./asset-items";
+import { useGetAllAssetTypes, useGetAssets, useGetAssetTypes } from "../../../api-hook";
+import AddAssetType from "./add-asset-type";
+import AssetTypeProperty from "./asset-type-property";
 
-export default function Asset() {
+const columns = [
+  { accessorKey: "name", header: "Asset Type Name" },
+  // { accessorKey: "propertyDataType", header: "DataType" },
+  // { accessorKey: "propertyName", header: "propertyName" },
+  // {
+  //   accessorKey: "propertyIsRequired",
+  //   header: "Required",
+  //   Cell: ({ row }) => {
+  //     return <Typography>{row.original.propertyIsRequired ? "Yes" : "No"}</Typography>;
+  //   },
+  // },
+];
+
+export default function AssetType() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedAssetTypeId, setSelectedAssetTypeId] = useState(1);
-  const [openItems, setOpenItems] = useState(false);
+  const [openPropView, setOpenPropView] = useState(false);
 
-  const { data, isLoading, refetch } = useGetAssetsById(selectedAssetTypeId);
-  const { data: assetType } = useGetAssetTypes();
-  
-  const dynamicPropertyKeys = useMemo(() => {
-    const keys = new Set();
-    (data || []).forEach((item) => {
-      Object.keys(item.properties || {}).forEach((key) => keys.add(key));
-    });
-    return Array.from(keys);
-  }, [data]);
-
-  const columns = useMemo(() => {
-    const staticColumns = [
-      { accessorKey: "assetName", header: "Asset Name" },
-      { accessorKey: "totalQuantity", header: "Quantity" },
-      { accessorKey: "usedQuantity", header: "Quantity in Use" },
-    ];
-
-    const propertyColumns = dynamicPropertyKeys.map((key) => ({
-      accessorKey: `properties.${key}`,
-      header: key,
-    }));
-
-    return [...staticColumns, ...propertyColumns];
-  }, [dynamicPropertyKeys]);
+  const { data, isLoading, refetch } = useGetAllAssetTypes();
 
   return (
     <>
       {open && (
-        <AddAsset
+        <AddAssetType
           isEditMode={isEditMode}
           onClose={() => {
             setIsEditMode(false);
@@ -53,36 +41,18 @@ export default function Asset() {
           }}
           row={selectedRow}
           refetch={refetch}
-          assetTypeId={selectedAssetTypeId}
         />
       )}
 
-      {openItems && (
-        <AddAssetItems
+      {openPropView && (
+        <AssetTypeProperty
           onClose={() => {
             setSelectedRow(null);
-            setOpenItems(false);
+            setOpenPropView(false);
           }}
           row={selectedRow}
-          assetTypeId={selectedAssetTypeId}
         />
       )}
-
-      <TextField
-        value={selectedAssetTypeId}
-        onChange={(e) => setSelectedAssetTypeId(e.target.value)}
-        select
-        sx={{ minWidth: 200 }}
-        size="small">
-          <MenuItem value={''}>
-            Select 
-          </MenuItem>
-        {assetType?.map((el, index) => (
-          <MenuItem value={el.id} key={index}>
-            {el.name}
-          </MenuItem>
-        ))}
-      </TextField>
 
       <MRTTable
         data={data || []}
@@ -92,7 +62,7 @@ export default function Asset() {
           <Box sx={{ display: "flex" }}>
             <IconButton
               onClick={() => {
-                setOpenItems(true);
+                setOpenPropView(true);
                 setSelectedRow(row);
               }}>
               <Iconify icon={"eva:eye-fill"} sx={{ color: "skyblue" }} />

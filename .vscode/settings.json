@@ -4,5 +4,8 @@
     ],
     "exportall.config.relExclusion": [
         "/server/src/Routes"
+    ],
+    "cSpell.words": [
+        "Andcupboard"
     ]
 }

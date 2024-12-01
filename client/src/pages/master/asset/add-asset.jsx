@@ -1,62 +1,87 @@
-import {
-  FormProvider,
-  RHFSelect,
-  RHFTextField,
-} from "../../../components/hook-form";
 import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import { Grid, MenuItem } from "@mui/material";
-import FormWrapper from "../../../components/FormWrapper";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { addUpdatAsset } from "../../../mutations";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useSnackbar } from "notistack";
-import { useGetRackCupBoard } from "../../../api-hook";
+import { useForm } from "react-hook-form";
+import { Box, Grid } from "@mui/material";
+//
+import { FormProvider, RHFRadioGroup, RHFTextField } from "../../../components/hook-form";
+import FormWrapper from "../../../components/FormWrapper";
+import { addUpdatAsset } from "../../../mutations";
+import { useGetAssetTypeWithPropertiesById } from "../../../api-hook";
 
-const defaultValues = {
-  type: "",
-  rackAndCupboardBardCodeId: null,
-  barcodeId: "",
-  location: "",
-  name: "",
-  description: "",
-  totalQty: "",
-  dynamicFields: null,
-  userBardCodeId: null,
-};
+// Generate Yup schema and default values
+function generateSchemaAndDefaults(assetType) {
+  const propertySchema = {};
+  const defaultValues = {};
 
+  for (const property of assetType.properties) {
+    const fieldName = `propertyId_${property.id}`;
 
-const schema = Yup.object().shape({
-  name: Yup.string().trim().required("Required"),
-  rackAndCupboardBardCodeId: Yup.string()
-    .trim()
-    .nullable()
-    .required("Required"),
-  // location: Yup.string().trim().required("Required"),
-  totalQty: Yup.string().trim().required("Required"),
+    // Define validation schema
+    let fieldSchema;
+    let defaultValue;
 
-  barcodeId: Yup.string().trim().required("Required"),
-  dynamicFields: Yup.object().shape({
-    vendor: Yup.string().trim(),
-    capacity: Yup.string().trim(),
-    partNo: Yup.string().trim().required("Required"),
-  }),
-});
+    switch (property.dataType) {
+      case "String":
+        fieldSchema = Yup.string();
+        defaultValue = "";
+        break;
+      case "Number":
+        fieldSchema = Yup.number().typeError(`${property.name} must be a number`);
+        defaultValue = 0;
+        break;
+      case "Boolean":
+        fieldSchema = Yup.boolean();
+        defaultValue = false;
+        break;
+      default:
+        throw new Error(`Unsupported data type: ${property.dataType}`);
+    }
+
+    // Mark required or optional
+    if (property.isRequired) {
+      fieldSchema = fieldSchema.required(`Field "${property.name}" is required`);
+    } else {
+      fieldSchema = fieldSchema.notRequired();
+    }
+
+    // Add to schema and default values
+    propertySchema[fieldName] = fieldSchema;
+    defaultValues[fieldName] = defaultValue;
+  }
+
+  return {
+    schema: Yup.object().shape({
+      name: Yup.string().trim().required("Required"),
+      ...propertySchema,
+    }),
+    defaultValues: {
+      name: "",
+      ...defaultValues,
+    },
+  };
+}
+
 export default function AddAsset({ onClose, isEditMode, row, refetch, assetTypeId }) {
   const { enqueueSnackbar } = useSnackbar();
-  const { data } = useGetRackCupBoard();
+  const { data } = useGetAssetTypeWithPropertiesById(assetTypeId);
+  // Generate schema and default values
+  const formInfo = data && generateSchemaAndDefaults(data);
+
   const methods = useForm({
-    resolver: yupResolver(schema),
-    defaultValues,
+    defaultValues:formInfo?.defaultValues,
+    resolver: yupResolver(formInfo?.schema),
   });
+
   const {
     handleSubmit,
     reset,
     formState: { errors },
   } = methods;
   const mutation = useMutation({
-    mutationFn: async formData => {
+    mutationFn: async (formData) => {
       return addUpdatAsset(formData, row?.id);
     },
     onSuccess: () => {
@@ -72,13 +97,18 @@ export default function AddAsset({ onClose, isEditMode, row, refetch, assetTypeI
       });
     },
   });
-  const onSubmit = data => {
+
+  const onSubmit = (data) => {
     console.log(data);
     mutation.mutate({
-      ...data,
-      assetTypeId,
-      totalQty: +data.totalQty,
-      // type: +data.type,
+      propertiesAndValues: Object.entries(data)
+    .filter(([key]) => key.startsWith("propertyId_")) // Filter property keys
+    .map(([key, value]) => ({
+      propertyId: parseInt(key.replace("propertyId_", ""), 10), // Extract property ID
+      propertyValue: value,
+    })),
+      typeId:assetTypeId,
+      name:data.name
     });
   };
   useEffect(() => {
@@ -86,7 +116,8 @@ export default function AddAsset({ onClose, isEditMode, row, refetch, assetTypeI
       reset({ ...row });
     }
   }, []);
-  console.log(errors, "errors");
+
+  console.log(errors, "errors", data);
   return (
     <FormWrapper
       onClose={onClose}
@@ -98,94 +129,36 @@ export default function AddAsset({ onClose, isEditMode, row, refetch, assetTypeI
       maxWidth={"md"}
       fullWidth
       isEditMode={isEditMode}
-      title={isEditMode ? "Update Asset" : "Add Asset"}
-    >
-      {" "}
+      title={isEditMode ? "Update Asset" : "Add Asset"}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2}>
-          
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFTextField
-              name={"name"}
-              label={"Asset Name"}
-              placeholder="Enter Asset Name"
-              required
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFTextField
-              name={"dynamicFields.partNo"}
-              label={"Part No."}
-              placeholder="Enter Part Name"
-              required
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFTextField
-              name={"dynamicFields.capacity"}
-              label={"Capacity"}
-              placeholder="Enter Capacity"
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFTextField
-              name={"dynamicFields.vendor"}
-              label={"Vendor"}
-              placeholder="Enter Vendor"
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFTextField
-              name={"barcodeId"}
-              label={"Barcode"}
-              placeholder="Enter Barcode"
-              required
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFTextField
-              name={"totalQty"}
-              label={"Quantity"}
-              placeholder="Enter Quantity"
-              required
-            />
-          </Grid>
-
-          {/* <Grid item xs={12} sm={12} md={4}>
-            <RHFSelect name={"location"} label={"Select location"} required>
-              <MenuItem value="">Select Location</MenuItem>
-            </RHFSelect>
-          </Grid> */}
-
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFSelect name={"type"} label={"Select Type"} required>
-              <MenuItem value="1">Rack</MenuItem>
-              <MenuItem value="2">Cupboard</MenuItem>
-            </RHFSelect>
-          </Grid>
-
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFSelect
-              name={"rackAndCupboardBardCodeId"}
-              label={"Select Rack/Cupboard"}
-              required
-            >
-              <MenuItem value="">Select Rack/Cupboard</MenuItem>
-              {data &&
-                data.map(el => (
-                  <MenuItem value={el.barcodeId} key={el.id}>
-                    {el.name}
-                  </MenuItem>
-                ))}
-            </RHFSelect>
-          </Grid>
-          <Grid item xs={12} sm={12} md={4}>
-            <RHFTextField
-              name={"description"}
-              label={"Description"}
-              placeholder="Enter Description"
-            />
-          </Grid>
+        <Box>
+          <RHFTextField
+            name={"name"}
+            label={"Asset Name"}
+            fullWidth={false}
+            placeholder="Enter Asset Name"
+            required
+          />
+        </Box>
+        <Grid container spacing={2} mt={1}>
+          {data?.properties?.map((property) => {
+            const fieldName = `propertyId_${property.id}`;
+            return (
+              <Grid item xs={12} sm={12} md={4} key={property.id}>
+                {property.dataType === "Boolean" ? (
+                  <RHFRadioGroup label={property.name} name={fieldName} />
+                ) : (
+                  <RHFTextField
+                    name={fieldName}
+                    label={property.name}
+                    type={property.dataType === "Number" ? "number" : "text"}
+                    placeholder="Enter here"
+                    required={property.isRequired}
+                  />
+                )}
+              </Grid>
+            );
+          })}
         </Grid>
       </FormProvider>
     </FormWrapper>

@@ -1,4 +1,4 @@
-import { ASSET, ASSET_REQ, LOCATION, RACK_COUPBOARD, ROW } from "../urls";
+import { ASSET, ASSET_ITEM, ASSET_REQ, ASSET_TYPE, LOCATION, RACK_COUPBOARD, ROW } from "../urls";
 import axiosInstance from "../utils/axios";
 
 export const addUpdateRow = async (req, id) => {
@@ -62,5 +62,24 @@ export const createAsstReq = async req => {
 };
 export const updateReqByAdmin = async (req, id) => {
   const data = await axiosInstance.put(ASSET_REQ + `/${id}`, req);
+  return data;
+};
+
+
+export const addUpdateAssetType = async (req, id) => {
+  if (id) {
+    const data = await axiosInstance.patch(ASSET_TYPE + `/${id}`, req);
+    return data;
+  }
+  const data = await axiosInstance.post(ASSET_TYPE + `/create-new`, req);
+  return data;
+};
+
+export const addUpdateAssetItem = async (req, id) => {
+  if (id) {
+    const data = await axiosInstance.patch(ASSET_ITEM + `/${id}`, req);
+    return data;
+  }
+  const data = await axiosInstance.post(ASSET_ITEM + `/create-new`, req);
   return data;
 };

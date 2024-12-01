@@ -7,13 +7,13 @@ import { assetItemsTable } from "../Models/asset-Item.model";
 import { assetsTable, racksAndCupboards, usersTable } from "../Models";
 
 export const createAssetItem = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { assetId, barcodeId, rackAndCupboardBardCodeId } = request.body as CreateAssetItemInput;
-  logger.info(`Creating asset Item  with ${assetId} ${barcodeId} ${rackAndCupboardBardCodeId}`);
+  const assetItems = request.body as CreateAssetItemInput;
+  // logger.info(`Creating asset Item  with ${assetId} ${barcodeId} ${rackAndCupboardBardCodeId}`);
 
   try {
     const createAssetItem = await db
       .insert(assetItemsTable)
-      .values({ assetId, barcodeId,  rackAndCupboardBardCodeId })
+      .values(assetItems)
       .returning();
 
     reply.status(201).send(createAssetItem);
@@ -27,12 +27,12 @@ export const getAssetItemsByAssetId = async (request: FastifyRequest, reply: Fas
   const { id } = request.params as { id: number };
   try {
     const allAssets = await db
-    .select({barcodeId:assetItemsTable.barcodeId, rackAndCupboardBardCodeId:assetItemsTable.barcodeId,rackOrCupboardBoardName:racksAndCupboards.name,})
+    .select()
     .from(assetItemsTable)
-    .innerJoin(racksAndCupboards, eq(racksAndCupboards.barcodeId, assetItemsTable.rackAndCupboardBardCodeId))
     .innerJoin(assetsTable, eq(assetsTable.id, assetItemsTable.assetId))
+    // .innerJoin(racksAndCupboards, eq(racksAndCupboards.id, assetItemsTable.rackAndCupboardBardCodeId))
     // .innerJoin(usersTable, eq(usersTable.id, assetItemsTable.currentUserId))
-    .where(eq(assetsTable.id, id));
+    .where(eq(assetItemsTable.assetId, id));
     reply.send(allAssets);
   } catch (error) {
     console.log(error);

@@ -60,8 +60,23 @@ export const useGetAssets = () => {
   return { data, isLoading, isError, refetch };
 };
 
+export const useGetAssetsById = (id) => {
+  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["getAssetsById",id],
+    enabled:!!id,
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(ASSET+"/"+id);
+      return data;
+    },
+  });
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ["getAssetsById"] });
+  };
+  return { data, isLoading, isError, refetch };
+};
+
 export const useGetAssetTypes = () => {
-  useQueryClient();
   const { data } = useQuery({
     queryKey: ["getAllAssetTypes"],
     queryFn: async () => {
@@ -72,12 +87,44 @@ export const useGetAssetTypes = () => {
   return { data };
 };
 
+export const useGetAllAssetTypes = () => {
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["getAllAssetTypesWithProperty"],
+    queryFn: async () => {
+      return (await axiosInstance.get(ASSET_TYPE)).data;
+    },
+  });
+
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ["getAllAssetTypesWithProperty"] });
+  };
+
+  return { data, isLoading, refetch };
+};
+
 export const useGetAssetItemByAssetId = (id) => {
-  useQueryClient();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["getAllAssetItemsByAssetID", id],
     queryFn: async () => {
       return (await axiosInstance.get(ASSET_ITEM + "/" + id)).data;
+    },
+  });
+
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ["getAllAssetTypesWithProperty"] });
+  };
+
+  return { data, isLoading, refetch };
+};
+
+export const useGetAssetTypeWithPropertiesById = (id) => {
+  console.log(id, "id");
+  const { data, isLoading } = useQuery({
+    queryKey: ["getAssetTypeWithPropertiesById", id],
+    queryFn: async () => {
+      return (await axiosInstance.get(ASSET_TYPE + "/" + id)).data;
     },
   });
 

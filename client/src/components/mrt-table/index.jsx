@@ -20,13 +20,14 @@ const MRTTable = ({
   pagination = defaultPagination,
   enableRowSelection,
   expanded,
+  enableColumnActions=true,
   ...others
 }) => {
   const table = useMaterialReactTable({
     columns,
     data,
     // enableColumnResizing: true,
-    enableColumnActions: true,
+    enableColumnActions: enableColumnActions,
     enableRowActions: true,
     positionActionsColumn: "last",
     enableDensityToggle: false,
@@ -105,9 +106,9 @@ const MRTTable = ({
     ...others,
   });
 
-  useEffect(() => {
-    table.resetRowSelection();
-  }, [data, table]);
+  // useEffect(() => {
+  //   table.resetRowSelection();
+  // }, [data, table]);
   return <MaterialReactTable table={table} />;
 };
 

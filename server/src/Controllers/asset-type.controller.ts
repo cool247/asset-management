@@ -52,7 +52,32 @@ export const createAssetTypeWithProperties = async (
 
 export const getAllAssetTypes = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
-    const allAssetTypes = await db.select().from(assetTypesTable);
+    const allAssetTypes = await db
+    .select()
+    .from(assetTypesTable);
+
+    reply.send(allAssetTypes);
+  } catch (error) {
+    console.log(error);
+    logger.error(`Error fetching AssetTypes: ${error instanceof Error ? error.message : "Unknown error"}`);
+    reply.status(500).send({ message: "Failed to fetch AssetTypes" });
+  }
+};
+
+export const getAllAssetTypesWithProperty = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const allAssetTypes = await db
+    .select({
+      assetTypeId: assetTypesTable.id,
+      assetTypeName: assetTypesTable.name,
+      propertyId: assetPropertiesTable.id,
+      propertyName: assetPropertiesTable.name,
+      propertyDataType: assetPropertiesTable.dataType,
+      propertyIsRequired: assetPropertiesTable.isRequired,
+    })
+    .from(assetTypesTable)
+    .innerJoin(assetPropertiesTable, eq(assetTypesTable.id, assetPropertiesTable.typeId));
+
     reply.send(allAssetTypes);
   } catch (error) {
     console.log(error);
@@ -63,7 +88,7 @@ export const getAllAssetTypes = async (request: FastifyRequest, reply: FastifyRe
 
 export const getAssetTypeWithPropertiesById = async (request: FastifyRequest, reply: FastifyReply) => {
   const { id } = request.params as { id: number };
-
+console.log("id=====",id)
 
   try {
     // Fetch the asset type and its properties
@@ -79,9 +104,10 @@ export const getAssetTypeWithPropertiesById = async (request: FastifyRequest, re
       .from(assetTypesTable)
       .innerJoin(assetPropertiesTable, eq(assetTypesTable.id, assetPropertiesTable.typeId))
       .where(eq(assetTypesTable.id, id));
+      console.log(results)
 
     // Handle no results
-    if (results.length) {
+    if (results.length === 0) {
       return reply.status(404).send({ message: "AssetType not found" });
     }
 

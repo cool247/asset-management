@@ -47,6 +47,7 @@ export const PATH_DASHBOARD = {
     row: path(ROOTS_DASHBOARD, "/master/row"),
     rackCupboard: path(ROOTS_DASHBOARD, "/master/rack-cupboard"),
     assets: path(ROOTS_DASHBOARD, "/master/assets"),
+    assetTypes: path(ROOTS_DASHBOARD, "/master/assetTypes"),
   },
   action: {
     root: path(ROOTS_DASHBOARD, "/action"),

@@ -6,33 +6,29 @@ import { CreateAssetInput, UpdateAssetInput } from "../Schemas";
 import { assetItemsTable, assetPropertiesTable, assetPropertyValuesTable, assetsTable } from "../Models";
 
 export const createAssetTypeWithProperties = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name, typeId, items, propertiesAndValues } = request.body as CreateAssetInput;
-  logger.info(`Creating Asset with name and items: ${name} ${JSON.stringify(items)} ${JSON.stringify(propertiesAndValues)}`);
+  const { name, typeId, propertiesAndValues } = request.body as CreateAssetInput;
+  logger.info(`Creating Asset with name and items: ${name}  ${JSON.stringify(propertiesAndValues)}`);
 
   try {
     const result = await db.transaction(async (trx) => {
-      const createAsset = await trx.insert(assetsTable).values({ name, typeId, totalQuantity:items.length }).returning();
+      const createAsset = await trx.insert(assetsTable).values({ name, typeId, }).returning();
 
       if (!createAsset.length) {
         throw new Error("Failed to create asset");
       }
 
       const assetId = createAsset[0].id;
-      const itemsWithAssetId = items.map((item) => ({
-        ...item,
-        assetId,
-      }));
+      
 
       const propertiesAndValuesWithAssetId = propertiesAndValues.map((p) => ({
-        ...p,
+        propertyId:p.propertyId,
+        value:String(p.propertyValue),
         assetId,
       }));
 
+      await trx.insert(assetPropertyValuesTable).values(propertiesAndValuesWithAssetId);
 
-      const createItems = await trx.insert(assetItemsTable).values(itemsWithAssetId).returning();
-      await trx.insert(assetPropertyValuesTable).values(propertiesAndValuesWithAssetId).returning();
-
-      return { ...createAsset[0], items: createItems };
+      return createAsset[0];
     });
     reply.status(201).send(result);
   } catch (error) {
@@ -110,7 +106,7 @@ export const getAssetWithItemsById = async (request: FastifyRequest, reply: Fast
       .where(eq(assetsTable.id, id));
       
 
-    if (results.length) {
+    if (!results.length) {
       return reply.status(404).send({ message: "Asset not found" });
     }
 

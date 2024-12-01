@@ -19,6 +19,7 @@ import RackCupboard from "../pages/master/rack-cupboard";
 import Asset from "../pages/master/asset";
 import MyRequest from "../pages/user/my-assets";
 import AllAssetRequestAdmin from "../pages/asset-request";
+import AssetType from "../pages/master/asset-TYPE";
 
 // ----------------------------------------------------------------------
 
@@ -150,6 +151,7 @@ export default function Router() {
             { path: "row", element: <AssertsRow /> },
             { path: "rack-cupboard", element: <RackCupboard /> },
             { path: "assets", element: <Asset /> },
+            { path: "assetTypes", element: <AssetType /> },
           ],
         },
         {

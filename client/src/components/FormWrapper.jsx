@@ -56,7 +56,6 @@ export default function FormWrapper({
           background: theme => theme.palette.primary.lighter,
           color: theme => theme.palette.primary.darker,
         }}
-        variant="outlined"
       >
         <Toolbar variant="dense">
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
