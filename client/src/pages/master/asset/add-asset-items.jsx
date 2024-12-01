@@ -116,8 +116,8 @@ export default function AddAssetItem({ onClose, isEditMode, row, refetch, assetI
                       <MenuItem value="" disabled>
                         Select Rack/Cupboard
                       </MenuItem>
-                      {racksAndcupboard?.map(({ id, name }) => (
-                        <MenuItem value={id} key={id}>
+                      {racksAndcupboard?.map(({ barcodeId, name }) => (
+                        <MenuItem value={barcodeId} key={barcodeId}>
                           {name}
                         </MenuItem>
                       ))}

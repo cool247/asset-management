@@ -3,7 +3,7 @@ import { db } from "../Config/db";
 import { logger } from "../Utils/logger";
 import { eq } from "drizzle-orm";
 import { CreateAssetInput, UpdateAssetInput } from "../Schemas";
-import { assetItemsTable, assetPropertiesTable, assetPropertyValuesTable, assetsTable } from "../Models";
+import { assetItemsTable, assetPropertiesTable, assetPropertyValuesTable, assetsTable, assetTypesTable } from "../Models";
 
 export const createAssetTypeWithProperties = async (request: FastifyRequest, reply: FastifyReply) => {
   const { name, typeId, propertiesAndValues } = request.body as CreateAssetInput;
@@ -88,38 +88,46 @@ export const getAssetWithItemsById = async (request: FastifyRequest, reply: Fast
 
   try {
     // Fetch the asset type and its properties
-    const results = await db
+    const allAssets = await db
       .select({
         assetId: assetsTable.id,
         assetName: assetsTable.name,
         totalQuantity: assetsTable.totalQuantity,
         usedQuantity: assetsTable.usedQuantity,
-        itemsId: assetItemsTable.id,
-        barcodeId: assetItemsTable.barcodeId,
-        propertyValue:assetPropertyValuesTable.value,
-        propertyName:assetPropertiesTable.name,
+        propertyValue: assetPropertyValuesTable.value,
+        propertyName: assetPropertiesTable.name,
       })
       .from(assetsTable)
-      .innerJoin(assetItemsTable, eq(assetItemsTable.assetId, assetsTable.id))
       .innerJoin(assetPropertyValuesTable, eq(assetPropertyValuesTable.assetId, assetsTable.id))
-      .innerJoin(assetPropertiesTable, eq(assetPropertiesTable.typeId, assetsTable.typeId))
-      .where(eq(assetsTable.id, id));
+      .innerJoin(assetPropertiesTable, eq(assetPropertiesTable.id, assetPropertyValuesTable.propertyId))
+      .where(eq(assetsTable.typeId, id) )
+      console.log(allAssets,"===========")
       
 
-    if (!results.length) {
-      return reply.status(404).send({ message: "Asset not found" });
+    if (!allAssets.length) {
+      return reply.send([]);
     }
 
-    const asset = {
-      id: results[0].assetId,
-      name: results[0].assetName,
-      properties: results.map((row) => ({
-        id: row.itemsId,
-        barcodeId: row.barcodeId,
-      })),
-    };
+    // Transform the result
+    const groupedAssets = Object.values(
+      allAssets.reduce((acc, asset) => {
+        if (!acc[asset.assetId]) {
+          acc[asset.assetId] = {
+            assetId: asset.assetId,
+            assetName: asset.assetName,
+            totalQuantity: asset.totalQuantity,
+            usedQuantity: asset.usedQuantity,
+            properties: {}, // Initialize properties object
+          };
+        }
 
-    reply.send(asset);
+        acc[asset.assetId].properties[asset.propertyName] = asset.propertyValue;
+
+        return acc;
+      }, {})
+    );
+
+    reply.send(groupedAssets);
   } catch (error) {
     logger.error(`Error fetching asset by id: ${error instanceof Error ? error.message : "Unknown error"}`);
     reply.status(500).send({ message: "Failed to fetch Asset with item1aGFD name" });

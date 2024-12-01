@@ -7,7 +7,7 @@ import AddAssetItem from "./add-asset-items";
 
 const columns = [
   { accessorKey: "asset_items.barcodeId", header: "Barcode ID" },
-  { accessorKey: "rackOrCupboardBoardName", header: "Rack/Cupboard Name" },
+  { accessorKey: "asset_items.rackAndCupboardBardCodeId", header: "Rack/Cupboard Name" },
   { accessorKey: "userName", header: "User Name" },
 ];
 

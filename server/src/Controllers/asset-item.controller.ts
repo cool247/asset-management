@@ -11,12 +11,33 @@ export const createAssetItem = async (request: FastifyRequest, reply: FastifyRep
   // logger.info(`Creating asset Item  with ${assetId} ${barcodeId} ${rackAndCupboardBardCodeId}`);
 
   try {
-    const createAssetItem = await db
-      .insert(assetItemsTable)
-      .values(assetItems)
-      .returning();
+    const result = await db.transaction(async (trx) => {
+      const createAssetItem = await db.insert(assetItemsTable).values(assetItems).returning();
 
-    reply.status(201).send(createAssetItem);
+      if (!createAssetItem.length) {
+        throw new Error("Failed to create asset item");
+      }
+
+      const asset = await trx
+        .select({ quantity: assetsTable.totalQuantity })
+        .from(assetsTable)
+        .where(eq(assetsTable.id, assetItems[0].assetId));
+
+      if (!asset) {
+        throw new Error("Asset not found");
+      }
+
+      await db
+        .update(assetsTable)
+        .set({
+          totalQuantity: createAssetItem.length + asset[0].quantity,
+        })
+        .where(eq(assetsTable.id, assetItems[0].assetId));
+
+      return createAssetItem;
+    });
+
+    reply.status(201).send(result);
   } catch (error) {
     logger.error(`Error creating Asset-Item: ${error instanceof Error ? error.message : "Unknown error"}`);
     reply.status(500).send({ message: "Failed to create Asset Item" });
@@ -27,12 +48,12 @@ export const getAssetItemsByAssetId = async (request: FastifyRequest, reply: Fas
   const { id } = request.params as { id: number };
   try {
     const allAssets = await db
-    .select()
-    .from(assetItemsTable)
-    .innerJoin(assetsTable, eq(assetsTable.id, assetItemsTable.assetId))
-    // .innerJoin(racksAndCupboards, eq(racksAndCupboards.id, assetItemsTable.rackAndCupboardBardCodeId))
-    // .innerJoin(usersTable, eq(usersTable.id, assetItemsTable.currentUserId))
-    .where(eq(assetItemsTable.assetId, id));
+      .select()
+      .from(assetItemsTable)
+      .innerJoin(assetsTable, eq(assetsTable.id, assetItemsTable.assetId))
+      // .innerJoin(racksAndCupboards, eq(racksAndCupboards.id, assetItemsTable.rackAndCupboardBardCodeId))
+      // .innerJoin(usersTable, eq(usersTable.id, assetItemsTable.currentUserId))
+      .where(eq(assetItemsTable.assetId, id));
     reply.send(allAssets);
   } catch (error) {
     console.log(error);
