@@ -91,8 +91,8 @@ export default function CreateAssetsRequest({
             <RHFSelect name={"assetId"} label={"Select Asset"} required>
               {data &&
                 data.map(el => (
-                  <MenuItem value={el.id} key={el.id}>
-                    {el.name}
+                  <MenuItem value={el.assetId} key={el.assetId}>
+                    {el.assetName}
                   </MenuItem>
                 ))}
             </RHFSelect>

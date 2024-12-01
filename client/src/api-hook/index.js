@@ -1,6 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../utils/axios";
-import { ASSET, ASSET_ITEM, ASSET_REQ, ASSET_TYPE, LOCATION, RACK_COUPBOARD, ROW } from "../urls";
+import {
+  ASSET,
+  ASSET_ITEM,
+  ASSET_REQ,
+  ASSET_TYPE,
+  LOCATION,
+  RACK_COUPBOARD,
+  ROW,
+} from "../urls";
 
 export const useGetRows = () => {
   const queryClient = useQueryClient();
@@ -60,13 +68,13 @@ export const useGetAssets = () => {
   return { data, isLoading, isError, refetch };
 };
 
-export const useGetAssetsById = (id) => {
+export const useGetAssetsById = id => {
   const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["getAssetsById",id],
-    enabled:!!id,
+    queryKey: ["getAssetsById", id],
+    enabled: !!id,
     queryFn: async () => {
-      const { data } = await axiosInstance.get(ASSET+"/"+id);
+      const { data } = await axiosInstance.get(ASSET + "/" + id);
       return data;
     },
   });
@@ -97,13 +105,15 @@ export const useGetAllAssetTypes = () => {
   });
 
   const refetch = () => {
-    queryClient.invalidateQueries({ queryKey: ["getAllAssetTypesWithProperty"] });
+    queryClient.invalidateQueries({
+      queryKey: ["getAllAssetTypesWithProperty"],
+    });
   };
 
   return { data, isLoading, refetch };
 };
 
-export const useGetAssetItemByAssetId = (id) => {
+export const useGetAssetItemByAssetId = id => {
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["getAllAssetItemsByAssetID", id],
@@ -113,13 +123,13 @@ export const useGetAssetItemByAssetId = (id) => {
   });
 
   const refetch = () => {
-    queryClient.invalidateQueries({ queryKey: ["getAllAssetTypesWithProperty"] });
+    queryClient.invalidateQueries({ queryKey: ["getAllAssetItemsByAssetID"] });
   };
 
   return { data, isLoading, refetch };
 };
 
-export const useGetAssetTypeWithPropertiesById = (id) => {
+export const useGetAssetTypeWithPropertiesById = id => {
   console.log(id, "id");
   const { data, isLoading } = useQuery({
     queryKey: ["getAssetTypeWithPropertiesById", id],

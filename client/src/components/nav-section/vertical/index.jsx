@@ -37,7 +37,6 @@ export default function NavSectionVertical({
   return (
     <Box {...other}>
       {navConfig.map(group => {
-        console.log(group, "group");
         if (group.type.includes(user?.role)) {
           return (
             <List key={group.subheader} disablePadding sx={{ px: 2 }}>

@@ -16,20 +16,27 @@ import {
   Typography,
 } from "@mui/material";
 //
-import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from "../../../components/hook-form";
+import {
+  FormProvider,
+  RHFRadioGroup,
+  RHFSelect,
+  RHFTextField,
+} from "../../../components/hook-form";
 import FormWrapper from "../../../components/FormWrapper";
-import { addUpdatAsset, addUpdateAssetType } from "../../../mutations";
+import { addUpdateAssetType } from "../../../mutations";
 import { Add } from "@mui/icons-material";
 
 const DATA_TYPE = ["String", "Number", "Boolean"];
 
 const defaultValues = {
   name: "",
-  properties: [{
-    name: "",
-    dataType: "",
-    isRequired: "",
-  }],
+  properties: [
+    {
+      name: "",
+      dataType: "",
+      isRequired: "",
+    },
+  ],
 };
 
 const schema = Yup.object().shape({
@@ -37,16 +44,22 @@ const schema = Yup.object().shape({
   properties: Yup.array()
     .of(
       Yup.object().shape({
-        name: Yup.string().required('Required'),
-        dataType: Yup.string().required('Required'),
-        isRequired: Yup.string().required('Required'),
+        name: Yup.string().required("Required"),
+        dataType: Yup.string().required("Required"),
+        isRequired: Yup.string().required("Required"),
       })
     )
     .min(1)
     .required(),
 });
 
-export default function AddAssetType({ onClose, isEditMode, row, refetch, assetTypeId }) {
+export default function AddAssetType({
+  onClose,
+  isEditMode,
+  row,
+  refetch,
+  assetTypeId,
+}) {
   const { enqueueSnackbar } = useSnackbar();
 
   const methods = useForm({
@@ -67,7 +80,7 @@ export default function AddAssetType({ onClose, isEditMode, row, refetch, assetT
   });
 
   const mutation = useMutation({
-    mutationFn: async (formData) => {
+    mutationFn: async formData => {
       return addUpdateAssetType(formData, row?.id);
     },
     onSuccess: () => {
@@ -84,9 +97,15 @@ export default function AddAssetType({ onClose, isEditMode, row, refetch, assetT
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     console.log(data);
-    mutation.mutate({name:data.name, properties:data.properties.map(p=>({...p,isRequired:p.isRequired === 'true'}))});
+    mutation.mutate({
+      name: data.name,
+      properties: data.properties.map(p => ({
+        ...p,
+        isRequired: p.isRequired === "true",
+      })),
+    });
   };
   useEffect(() => {
     if (isEditMode) {
@@ -94,7 +113,7 @@ export default function AddAssetType({ onClose, isEditMode, row, refetch, assetT
     }
   }, []);
 
-  console.log(errors, "errors",fields);
+  console.log(errors, "errors", fields);
   return (
     <FormWrapper
       onClose={onClose}
@@ -106,9 +125,10 @@ export default function AddAssetType({ onClose, isEditMode, row, refetch, assetT
       maxWidth={"md"}
       fullWidth
       isEditMode={isEditMode}
-      title={isEditMode ? "Update Asset Type" : "Add Asset Type"}>
+      title={isEditMode ? "Update Asset Type" : "Add Asset Type"}
+    >
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Box >
+        <Box>
           <RHFTextField
             name={"name"}
             label={"Asset Type Name"}
@@ -118,16 +138,29 @@ export default function AddAssetType({ onClose, isEditMode, row, refetch, assetT
           />
         </Box>
 
-        <Typography style={{marginBlock:8}} align="center" variant="h6" color='text.secondary'> Enter Property Details</Typography>
+        <Typography
+          style={{ marginBlock: 8 }}
+          align="center"
+          variant="h6"
+          color="text.secondary"
+        >
+          {" "}
+          Enter Property Details
+        </Typography>
 
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>Name *</TableCell>
-              <TableCell width={'220px'}>Data Type *</TableCell>
+              <TableCell width={"220px"}>Data Type *</TableCell>
               <TableCell>Is Required *</TableCell>
               <TableCell>
-                <IconButton onClick={() => append({ name: "", dataType: "", isRequired: "" })}>
+                <IconButton
+                  size="small"
+                  onClick={() =>
+                    append({ name: "", dataType: "", isRequired: "" })
+                  }
+                >
                   <Add />
                 </IconButton>
               </TableCell>
@@ -135,31 +168,43 @@ export default function AddAssetType({ onClose, isEditMode, row, refetch, assetT
           </TableHead>
           <TableBody>
             {fields.map((item, index) => {
-             return <TableRow key={item.id}>
-                <TableCell>
-                  <RHFTextField name={`properties[${index}].name`} required placeholder='Enter Property Name' />
-                </TableCell>
-                <TableCell>
-                  <RHFSelect name={`properties[${index}].dataType`} required>
-                    <MenuItem value="" disabled>Select Data Type</MenuItem>
-                    {DATA_TYPE.map((dt) => (
-                      <MenuItem value={dt} key={dt}>
-                        {dt}
+              return (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <RHFTextField
+                      name={`properties[${index}].name`}
+                      required
+                      placeholder="Enter Property Name"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <RHFSelect name={`properties[${index}].dataType`} required>
+                      <MenuItem value="" disabled>
+                        Select Data Type
                       </MenuItem>
-                    ))}
-                  </RHFSelect>
-                </TableCell>
-                <TableCell >
-                  <RHFRadioGroup name={`properties[${index}].isRequired`} />
-                </TableCell>
-                <TableCell width={80}>
-                  {index !== 0 && (
-                    <IconButton size="small" color="primary" onClick={() => remove(index)}>
-                      <Add fontSize="small" />
-                    </IconButton>
-                  )}
-                </TableCell>
-              </TableRow>;
+                      {DATA_TYPE.map(dt => (
+                        <MenuItem value={dt} key={dt}>
+                          {dt}
+                        </MenuItem>
+                      ))}
+                    </RHFSelect>
+                  </TableCell>
+                  <TableCell>
+                    <RHFRadioGroup name={`properties[${index}].isRequired`} />
+                  </TableCell>
+                  <TableCell width={80}>
+                    {index !== 0 && (
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => remove(index)}
+                      >
+                        <Add fontSize="small" />
+                      </IconButton>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
             })}
           </TableBody>
         </Table>

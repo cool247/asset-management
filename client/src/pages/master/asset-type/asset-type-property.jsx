@@ -1,11 +1,20 @@
 import { Close } from "@mui/icons-material";
-import { AppBar, Button, Dialog, DialogActions, DialogContent, IconButton, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { useGetAssetTypeWithPropertiesById } from "../../../api-hook";
 import MRTTable from "../../../components/mrt-table";
 
 const columns = [
-  { accessorKey: "dataType", header: "Data Type" },
   { accessorKey: "name", header: "Property Name" },
+  { accessorKey: "dataType", header: "Data Type" },
   {
     accessorKey: "isRequired",
     header: "Required",
@@ -16,8 +25,9 @@ const columns = [
 ];
 
 export default function AssetTypeProperty({ onClose, row }) {
-  const { data, isLoading } = useGetAssetTypeWithPropertiesById(row.original?.id);
-  console.log(row.original, "row", data);
+  const { data, isLoading } = useGetAssetTypeWithPropertiesById(
+    row.original?.id
+  );
   return (
     <Dialog
       maxWidth="lg"
@@ -28,18 +38,26 @@ export default function AssetTypeProperty({ onClose, row }) {
           return false;
         }
         onClose();
-      }}>
+      }}
+    >
       <AppBar
         sx={{
           position: "relative",
-          background: (theme) => theme.palette.primary.lighter,
-          color: (theme) => theme.palette.primary.darker,
-        }}>
+          background: theme => theme.palette.primary.lighter,
+          color: theme => theme.palette.primary.darker,
+        }}
+      >
         <Toolbar variant="dense">
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Properties
           </Typography>
-          <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close" size="small">
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={onClose}
+            aria-label="close"
+            size="small"
+          >
             <Close />
           </IconButton>
         </Toolbar>

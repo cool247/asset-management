@@ -4,11 +4,23 @@ import { useMutation } from "@tanstack/react-query";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSnackbar } from "notistack";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Box, Grid, IconButton, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import {
+  IconButton,
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 //
-import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from "../../../components/hook-form";
+import {
+  FormProvider,
+  RHFSelect,
+  RHFTextField,
+} from "../../../components/hook-form";
 import FormWrapper from "../../../components/FormWrapper";
-import { addUpdatAsset, addUpdateAssetItem } from "../../../mutations";
+import { addUpdateAssetItem } from "../../../mutations";
 import { Add, Delete } from "@mui/icons-material";
 import { useGetRackCupBoard } from "../../../api-hook";
 
@@ -24,13 +36,25 @@ const defaultValues = {
 const schema = Yup.object().shape({
   item: Yup.array().of(
     Yup.object().shape({
-      barcodeId: Yup.string().trim().min(1).max(100).required("Barcode ID is required"),
-      rackAndCupboardBardCodeId: Yup.string().required("Rack/Cupboard is required"),
+      barcodeId: Yup.string()
+        .trim()
+        .min(1)
+        .max(100)
+        .required("Barcode ID is required"),
+      rackAndCupboardBardCodeId: Yup.string().required(
+        "Rack/Cupboard is required"
+      ),
     })
   ),
 });
 
-export default function AddAssetItem({ onClose, isEditMode, row, refetch, assetId }) {
+export default function AddAssetItem({
+  onClose,
+  isEditMode,
+  row,
+  refetch,
+  assetId,
+}) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { data: racksAndcupboard } = useGetRackCupBoard();
@@ -50,16 +74,17 @@ export default function AddAssetItem({ onClose, isEditMode, row, refetch, assetI
     reset,
     formState: { errors },
   } = methods;
+
   const mutation = useMutation({
-    mutationFn: async (formData) => {
+    mutationFn: async formData => {
       return addUpdateAssetItem(formData, row?.id);
     },
     onSuccess: () => {
       enqueueSnackbar(`Successfully ${isEditMode ? "Updated" : "Added"}  `, {
         variant: "success",
       });
-      refetch();
       onClose();
+      refetch();
     },
     onError: () => {
       enqueueSnackbar(`Failed to ${isEditMode ? "update" : "add"} `, {
@@ -68,9 +93,8 @@ export default function AddAssetItem({ onClose, isEditMode, row, refetch, assetI
     },
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-    mutation.mutate(data.item.map(d=> ({...d, assetId})));
+  const onSubmit = data => {
+    mutation.mutate(data.item.map(d => ({ ...d, assetId })));
   };
   useEffect(() => {
     if (isEditMode) {
@@ -90,15 +114,21 @@ export default function AddAssetItem({ onClose, isEditMode, row, refetch, assetI
       maxWidth={"md"}
       fullWidth
       isEditMode={isEditMode}
-      title={isEditMode ? "Update Item" : "Add Item"}>
+      title={isEditMode ? "Update Item" : "Add Item"}
+    >
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>Barcode ID *</TableCell>
               <TableCell>Rack/Cupboard *</TableCell>
               <TableCell>
-                <IconButton onClick={() => append({ barcodeId: "", rackAndCupboardBardCodeId: "" })}>
+                <IconButton
+                  size="small"
+                  onClick={() =>
+                    append({ barcodeId: "", rackAndCupboardBardCodeId: "" })
+                  }
+                >
                   <Add />
                 </IconButton>
               </TableCell>
@@ -109,10 +139,17 @@ export default function AddAssetItem({ onClose, isEditMode, row, refetch, assetI
               return (
                 <TableRow key={item.id}>
                   <TableCell>
-                    <RHFTextField name={`item[${index}].barcodeId`} required placeholder="Enter Barcode ID" />
+                    <RHFTextField
+                      name={`item[${index}].barcodeId`}
+                      required
+                      placeholder="Enter Barcode ID"
+                    />
                   </TableCell>
                   <TableCell>
-                    <RHFSelect name={`item[${index}].rackAndCupboardBardCodeId`} required>
+                    <RHFSelect
+                      name={`item[${index}].rackAndCupboardBardCodeId`}
+                      required
+                    >
                       <MenuItem value="" disabled>
                         Select Rack/Cupboard
                       </MenuItem>
@@ -126,7 +163,11 @@ export default function AddAssetItem({ onClose, isEditMode, row, refetch, assetI
 
                   <TableCell width={80}>
                     {index !== 0 && (
-                      <IconButton size="small" color="primary" onClick={() => remove(index)}>
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => remove(index)}
+                      >
                         <Delete fontSize="small" color="error" />
                       </IconButton>
                     )}
