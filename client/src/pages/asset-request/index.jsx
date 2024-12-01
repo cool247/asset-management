@@ -33,9 +33,22 @@ const getStatusColor = status => {
   }
   return "default";
 };
+
+// "requestId": 1,
+// "assetId": 4,
+// "assetName": "Some",
+// "requestedQuantity": 120,
+// "approvedQuantity": null,
+// "requestedBy": 4,
+// "requesterName": "Desktop User",
+// "approvedBy": null,
+// "approverName": null,
+// "status": "Pending",
+// "requestedRemarks": "some",
+// "approvalRemarks": null,
 const columns = [
   {
-    accessorKey: "userName",
+    accessorKey: "requesterName",
     header: "Requested By",
   },
   {
@@ -43,21 +56,26 @@ const columns = [
     header: "Asset Name",
   },
   {
-    accessorKey: "userRemarks",
-    header: "User Remarks",
+    accessorKey: "requestedRemarks",
+    header: "Requester Remarks",
   },
   {
-    accessorKey: "adminRemarks",
-    header: "Admin Remark",
+    accessorKey: "approvalRemarks",
+    header: "Approval Remarks",
   },
   {
     accessorKey: "createdAt",
     header: "Requested Date",
+    Cell: ({ renderedCellValue }) => (
+      <Typography variant={"body2"} fontFamily={'monospace'} color='error'>
+        {new Date(renderedCellValue).toDateString()}
+      </Typography>
+    )
   },
   {
     accessorKey: "status",
     header: "Status",
-    Cell: ({ renderedCellValue, row }) => (
+    Cell: ({ renderedCellValue }) => (
       <Label variant={"ghost"} color={getStatusColor(renderedCellValue)}>
         {renderedCellValue}
       </Label>

@@ -103,30 +103,28 @@ export const getAllMyRequests = async (req: FastifyRequest, reply: FastifyReply)
 
 export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-    // Create table aliases for users
-    const requesterTable = alias(usersTable, "requester");
-    const approverTable = alias(usersTable, "approver");
+    const requests = await db.execute(sql`
+      SELECT 
+        ar.id AS "requestId",
+        ar.asset_id AS "assetId",
+        a.name AS "assetName",
+        ar.requested_quantity AS "requestedQuantity",
+        ar.approved_quantity AS "approvedQuantity",
+        ar.requested_by AS "requestedBy",
+        requester.name AS "requesterName",
+        ar.approved_by AS "approvedBy",
+        approver.name AS "approverName",
+        ar.status AS "status",
+        ar.requested_remarks AS "requestedRemarks",
+        ar.approval_remarks AS "approvalRemarks",
+        ar.created_at AS "createdAt"
+      FROM ${assetRequestTable} ar
+      LEFT JOIN ${assetsTable} a ON ar.asset_id = a.id
+      LEFT JOIN ${usersTable} requester ON ar.requested_by = requester.id
+      LEFT JOIN ${usersTable} approver ON ar.approved_by = approver.id
+    `);
 
-    const requests = await db
-      .select({
-        requestId: assetRequestTable.id,
-        assetId: assetRequestTable.assetId,
-        assetName: assetsTable.name,
-        requestedBy: assetRequestTable.requestedBy,
-        requestName: requesterTable.name,
-        approvedBy: assetRequestTable.approvedBy,
-        approverName: approverTable.name,
-        status: assetRequestTable.status,
-        createdAt: assetRequestTable.createdAt,
-        userRemarks: assetRequestTable.requestedRemarks,
-        adminRemarks: assetRequestTable.approvalRemarks,
-      })
-      .from(assetRequestTable)
-      .innerJoin(assetsTable, eq(assetRequestTable.assetId, assetsTable.id))
-      .innerJoin(requesterTable, eq(assetRequestTable.requestedBy, usersTable.id))
-      .innerJoin(approverTable, eq(assetRequestTable.approvedBy, usersTable.id));
-
-    reply.send(requests);
+    reply.send(requests.rows);
   } catch (error) {
     console.error(error);
     reply.status(500).send({ message: "Failed to fetch requests" });
