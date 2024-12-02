@@ -24,7 +24,7 @@ import {
 } from "../../../components/hook-form";
 import FormWrapper from "../../../components/FormWrapper";
 import { addUpdateAssetType } from "../../../mutations";
-import { Add } from "@mui/icons-material";
+import { Add, Delete } from "@mui/icons-material";
 
 const DATA_TYPE = ["String", "Number", "Boolean"];
 
@@ -199,7 +199,7 @@ export default function AddAssetType({
                         color="primary"
                         onClick={() => remove(index)}
                       >
-                        <Add fontSize="small" />
+                        <Delete color="error" fontSize="small" />
                       </IconButton>
                     )}
                   </TableCell>
