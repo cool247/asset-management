@@ -73,9 +73,9 @@ export default function Asset() {
           onClose={() => {
             setSelectedRow(null);
             setOpenItems(false);
+            refetch()
           }}
           row={selectedRow}
-          assetTypeId={selectedAssetTypeId}
         />
       )}
 
