@@ -132,7 +132,7 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
 
 export const updateAssetRequestStatus = async (req: FastifyRequest, reply: FastifyReply) => {
   const { id } = req.params as { id: number };
-  const { status, approvedQuantity, approvalRemarks } = req.body as UpdateAssetRequestSchema;
+  const { status, approvedQuantity=0, approvalRemarks } = req.body as UpdateAssetRequestSchema;
   const requestedBy = req.jwtPayload.id;
   let qty = approvedQuantity; 
 

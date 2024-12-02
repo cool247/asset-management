@@ -11,7 +11,7 @@ export const createAssetRequestSchema = z.object({
 
 export const updateAssetRequestSchema = z.object({
   status: assetRequestStatusEnum,
-  approvedQuantity: z.number().positive("Requested Quantity must be positive").int(),
+  approvedQuantity: z.number().positive("Requested Quantity must be positive").int().optional(),
   approvalRemarks:z.string().min(1,"Comments must not less than 1 characters").max(255, "Comments must not exceed 255 characters").optional(),
 });
 
