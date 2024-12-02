@@ -104,7 +104,13 @@ export default function AllAssetRequestAdmin() {
       .when(approvedQuantity => {
         console.log("selectedActionType", selectedActionType);
         if (selectedActionType === "Approved") {
-          return Yup.number().nullable().required("Required");
+          return Yup.number()
+            .nullable()
+            .required("Required")
+            .max(
+              selectedRow.requestedQuantity,
+              `Qty must be <= ${selectedRow.requestedQuantity}`
+            );
         }
       }),
     approvalRemarks: Yup.string().trim().required("Required"),

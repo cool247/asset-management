@@ -17,9 +17,7 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem("userDetails");
       window.location.href = "/auth/login";
     }
-    Promise.reject(
-      (error.response && error.response.data) || "Something went wrong"
-    );
+    throw error;
   }
 );
 

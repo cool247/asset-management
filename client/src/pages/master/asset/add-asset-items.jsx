@@ -77,7 +77,7 @@ export default function AddAssetItem({
 
   const mutation = useMutation({
     mutationFn: async formData => {
-      return addUpdateAssetItem(formData, row?.id);
+      return await addUpdateAssetItem(formData, row?.id);
     },
     onSuccess: () => {
       enqueueSnackbar(`Successfully ${isEditMode ? "Updated" : "Added"}  `, {

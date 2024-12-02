@@ -36,7 +36,7 @@ import { store, persistor } from "./redux/store";
 // contexts
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { CollapseDrawerProvider } from "./contexts/CollapseDrawerContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 // Check our docs
 
 import { AuthProvider } from "./contexts/JWTContext";
@@ -50,19 +50,6 @@ import "./index.css";
 const container = document.getElementById("root");
 const root = createRoot(container);
 
-const queryClient = new QueryClient({
-  defaultOptions:{
-    queries:{
-      retry:false,
-      refetchOnWindowFocus:false,
-
-    }
-  }
-});
-
-
-// ----------------------------------------------------------------------
-
 root.render(
   <AuthProvider>
     <ReduxProvider store={store}>
@@ -71,9 +58,7 @@ root.render(
           <SettingsProvider>
             <CollapseDrawerProvider>
               <BrowserRouter>
-                <QueryClientProvider client={queryClient}>
-                  <App />
-                </QueryClientProvider>
+                <App />
               </BrowserRouter>
             </CollapseDrawerProvider>
           </SettingsProvider>
