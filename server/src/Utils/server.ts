@@ -48,6 +48,9 @@ export const buildServer = async () => {
 
   app.register(fastifyJwt, {
     secret: process.env.JWT_SECRET!,
+    sign: {
+      expiresIn: "1h",
+    },
   });
 
   app.addHook("onRequest", async (request, reply) => {
