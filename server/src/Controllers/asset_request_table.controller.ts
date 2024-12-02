@@ -10,26 +10,47 @@ import {
   UpdateAssetRequestSchema,
 } from "../Schemas/assetRequest.schema";
 import { usersTable } from "../Models/user.model";
+import CustomError from "../Error";
 
 export const createAssetRequest = async (req: FastifyRequest, reply: FastifyReply) => {
   const { assetId, requestedQuantity, requestedRemarks = "" } = req.body as CreateAssetRequestInput;
   const requestedBy = req.jwtPayload.id;
   try {
-    const newRequest = await db
-      .insert(assetRequestTable)
-      .values({
-        assetId,
-        requestedBy,
-        requestedQuantity,
-        requestedRemarks,
-        status: assetRequestStatusEnum.Values.Pending,
-      })
-      .returning();
+    const result = await db.transaction(async (trx) => {
+      const assetObj = await trx.select().from(assetsTable).where(eq(assetsTable.id, assetId)).limit(1);
 
-    reply.status(201).send(newRequest);
+      if (!assetObj.length) {
+        throw new CustomError("No asset found to create request for");
+      }
+
+      const availableQuantity = assetObj[0].totalQuantity - assetObj[0].usedQuantity;
+
+      if (requestedQuantity > availableQuantity) {
+        throw new CustomError("Requested qty should be less than " + availableQuantity);
+      }
+
+      const newRequest = await trx
+        .insert(assetRequestTable)
+        .values({
+          assetId,
+          requestedBy,
+          requestedQuantity,
+          requestedRemarks,
+          status: assetRequestStatusEnum.Values.Pending,
+        })
+        .returning();
+
+      return newRequest;
+    });
+
+    reply.status(201).send(result);
   } catch (error) {
     console.log(error);
-    reply.status(500).send({ message: "Failed to create request" });
+    if (error instanceof CustomError) {
+      reply.status(error.code).send({ message: error.message });
+    } else {
+      reply.status(500).send({ message: "Failed to create request" });
+    }
   }
 };
 
@@ -132,28 +153,43 @@ export const getAllAssetRequests = async (req: FastifyRequest, reply: FastifyRep
 
 export const updateAssetRequestStatus = async (req: FastifyRequest, reply: FastifyReply) => {
   const { id } = req.params as { id: number };
-  const { status, approvedQuantity=0, approvalRemarks } = req.body as UpdateAssetRequestSchema;
-  const requestedBy = req.jwtPayload.id;
-  let qty = approvedQuantity; 
+  const { status, approvedQuantity = 0, approvalRemarks } = req.body as UpdateAssetRequestSchema;
+  const approvedBy = req.jwtPayload.id;
+  let qty = approvedQuantity;
 
-    if(status === 'Rejected'){
-        qty=0;
-    }
+  if (status === "Rejected") {
+    qty = 0;
+  }
 
   try {
-    const updatedRequest = await db
-      .update(assetRequestTable)
-      .set({ requestedBy, status, approvedQuantity:qty, approvalRemarks })
-      .where(eq(assetRequestTable.id, id))
-      .returning();
+    const result = await db.transaction(async (trx) => {
+      const assetRequestObj = await trx.select().from(assetRequestTable).where(eq(assetRequestTable.id, id));
+      if (!assetRequestObj.length) {
+        throw new CustomError("No Request found for this Id");
+      }
 
-    if (!updatedRequest.length) {
-      return reply.status(404).send({ message: "Request not found" });
-    }
+      if (approvedQuantity > assetRequestObj[0].requestedQuantity) {
+        throw new CustomError("Approval qty should be less than " + assetRequestObj[0].requestedQuantity);
+      }
 
-    reply.status(200).send(updatedRequest);
+      const updatedRequest = await db
+        .update(assetRequestTable)
+        .set({ approvedBy, status, approvedQuantity: qty, approvalRemarks })
+        .where(eq(assetRequestTable.id, id))
+        .returning();
+
+      if (!updatedRequest.length) {
+        return reply.status(404).send({ message: "No Request found for this Id" });
+      }
+    });
+
+    reply.status(200).send(result);
   } catch (error) {
     console.error(error);
-    reply.status(500).send({ message: "Failed to update request status" });
+    if (error instanceof CustomError) {
+      reply.status(error.code).send({ message: error.message });
+    } else {
+      reply.status(500).send({ message: "Failed to Approve/Reject request" });
+    }
   }
 };

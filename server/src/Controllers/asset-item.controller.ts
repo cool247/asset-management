@@ -12,7 +12,7 @@ export const createAssetItem = async (request: FastifyRequest, reply: FastifyRep
 
   try {
     const result = await db.transaction(async (trx) => {
-      const createAssetItem = await db.insert(assetItemsTable).values(assetItems).returning();
+      const createAssetItem = await trx.insert(assetItemsTable).values(assetItems).returning();
 
       if (!createAssetItem.length) {
         throw new Error("Failed to create asset item");

@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import { createUser, getAllUsers, getUserById, updateUserById, deleteUserById } from "../Controllers/user.controller";
 import { createUserSchema, updateUserSchema } from "../Schemas/user.schema";
 import { validate } from "../Middleware/validation.middleware";

@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { CreateRowInput, UpdateRowInput } from "../Schemas/row.schema";
 
 export const createRow = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name, description } = request.body as CreateRowInput;
+  const { name, description, locationId } = request.body as CreateRowInput;
 
   try {
     const createRow = await db
@@ -14,6 +14,7 @@ export const createRow = async (request: FastifyRequest, reply: FastifyReply) =>
       .values({
         name,
         description,
+        locationId,
       })
       .returning();
 
@@ -69,13 +70,14 @@ export const getRowById = async (request: FastifyRequest, reply: FastifyReply) =
 
 export const updateRowById = async (request: FastifyRequest, reply: FastifyReply) => {
   const { id } = request.params as { id: number };
-  const { name, description } = request.body as UpdateRowInput;
+  const { name, description, locationId } = request.body as UpdateRowInput;
 
   try {
     const updatedRow = await db
       .update(rows)
       .set({
         name,
+        locationId,
         description,
       })
       .where(eq(rows.id, id))
