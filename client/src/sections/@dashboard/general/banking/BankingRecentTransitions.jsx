@@ -34,7 +34,6 @@ import MenuPopover from "../../../../components/MenuPopover";
 
 export default function BankingRecentTransitions({ isUser }) {
   const theme = useTheme();
-
   const isLight = theme.palette.mode === "light";
 
   return (
@@ -105,6 +104,11 @@ export default function BankingRecentTransitions({ isUser }) {
           <Button
             size="small"
             color="inherit"
+            LinkComponent={"a"}
+            href={isUser ? "user/my-all-request" : "action/assets-request"}
+            // onClick={() => {
+            //   navigate("action/assets-request");
+            // }}
             endIcon={<Iconify icon={"eva:arrow-ios-forward-fill"} />}
           >
             View All

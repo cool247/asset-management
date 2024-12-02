@@ -73,7 +73,7 @@ function AuthProvider({ children }) {
         const accessToken = window.localStorage.getItem("accessToken");
         if (accessToken) {
           setSession(accessToken);
-          const user = JSON.parse(sessionStorage.getItem("userDetails"));
+          const user = JSON.parse(localStorage.getItem("userDetails"));
 
           dispatch({
             type: "INITIALIZE",
@@ -115,7 +115,7 @@ function AuthProvider({ children }) {
     const { token, userDetails } = data;
 
     setSession(token);
-    sessionStorage.setItem("userDetails", JSON.stringify(userDetails));
+    localStorage.setItem("userDetails", JSON.stringify(userDetails));
     dispatch({
       type: "LOGIN",
       payload: {
@@ -145,6 +145,7 @@ function AuthProvider({ children }) {
   const logout = async () => {
     setSession(null);
     dispatch({ type: "LOGOUT" });
+    localStorage.removeItem("userDetails");
   };
 
   return (

@@ -22,8 +22,11 @@ import { Close } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "notistack";
 import { updateReqByAdmin } from "../../mutations";
-
-const getStatusColor = (status) => {
+import { useForm } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { FormProvider, RHFTextField } from "../../components/hook-form";
+const getStatusColor = status => {
   if (status === "Pending") {
     return "warning";
   }
@@ -80,6 +83,10 @@ const columns = [
     ),
   },
 ];
+const defaultValues = {
+  approvedQuantity: null,
+  approvalRemarks: "",
+};
 export default function AllAssetRequestAdmin() {
   const { enqueueSnackbar } = useSnackbar();
   const { data, isLoading, refetch } = useGetAllAssetsRequestAdmin();
@@ -87,21 +94,43 @@ export default function AllAssetRequestAdmin() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [remarks, setRemarks] = useState("");
-  const [approvedQuantity, setApprovedQuantity] = useState(0);
+
   const [selectedActionType, setSetSelectedActionType] = useState("");
+
+  const schema = Yup.object().shape({
+    approvedQuantity: Yup.number()
+      .nullable()
+      .notRequired()
+      .when(approvedQuantity => {
+        console.log("selectedActionType", selectedActionType);
+        if (selectedActionType === "Approved") {
+          return Yup.number().nullable().required("Required");
+        }
+      }),
+    approvalRemarks: Yup.string().trim().required("Required"),
+  });
+  const methods = useForm({
+    defaultValues,
+    resolver: yupResolver(schema),
+  });
+  const { handleSubmit, reset } = methods;
   const onClose = () => {
     setOpen(false);
     setSetSelectedActionType("");
     setRemarks("");
-    setApprovedQuantity(0);
+    reset(defaultValues);
   };
-  const onSubmit = async () => {
+
+  const onSubmit = async data => {
     setLoading(true);
     try {
       const req = {
+        ...data,
         status: selectedActionType,
-        approvalRemarks: remarks,
-        approvedQuantity:parseInt(approvedQuantity,10),
+        approvedQuantity:
+          selectedActionType === "Approved"
+            ? parseInt(data.approvedQuantity, 10)
+            : undefined,
       };
       await updateReqByAdmin(req, selectedRow.requestId);
       enqueueSnackbar("Successfully updated status ", { variant: "success" });
@@ -130,7 +159,8 @@ export default function AllAssetRequestAdmin() {
                     setSelectedRow(row.original);
                     setSetSelectedActionType("Approved");
                   }}
-                  color="success">
+                  color="success"
+                >
                   <Iconify icon={"healthicons:yes"} />
                 </IconButton>
                 <IconButton
@@ -139,7 +169,8 @@ export default function AllAssetRequestAdmin() {
                     setSelectedRow(row.original);
                     setSetSelectedActionType("Rejected");
                   }}
-                  color="error">
+                  color="error"
+                >
                   <Iconify icon={"material-symbols:cancel"} />
                 </IconButton>
               </>
@@ -151,70 +182,86 @@ export default function AllAssetRequestAdmin() {
           </Box>
         )}
       />
-
-      <Dialog
-        maxWidth={"xs"}
-        fullWidth
-        open={open}
-        onClose={(event, reason) => {
-          if (reason === "backdropClick") {
-            return false;
-          }
-          onClose();
-        }}>
-        <AppBar
-          sx={{
-            position: "relative",
-            background: (theme) => theme.palette.primary.lighter,
-            color: (theme) => theme.palette.primary.darker,
-          }}>
-          <Toolbar variant="dense">
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Approve/Reject
-            </Typography>
-            <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close" size="small">
-              <Close />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <DialogContent dividers>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
+      {open && (
+        <Dialog
+          maxWidth={"xs"}
+          fullWidth
+          open
+          onClose={(event, reason) => {
+            if (reason === "backdropClick") {
+              return false;
+            }
+            onClose();
+          }}
+        >
+          <AppBar
+            sx={{
+              position: "relative",
+              background: theme => theme.palette.primary.lighter,
+              color: theme => theme.palette.primary.darker,
+            }}
+          >
+            <Toolbar variant="dense">
+              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                {selectedActionType === "Approved" ? "Approve" : "Reject"}
+              </Typography>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={onClose}
+                aria-label="close"
                 size="small"
-                type="number"
-                placeholder="Approved Qty"
-                label="Approved Qty"
-                onChange={(e) => {
-                  setApprovedQuantity(e.target.value);
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                size="small"
-                label='Remarks'
-                placeholder="Enter you remarks here..."
-                onChange={(e) => {
-                  setRemarks(e.target.value);
-                }}
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <Divider />
-        <DialogActions>
-          <LoadingButton onClick={onSubmit} variant="contained" color="success" loading={loading}>
-            Submit
-          </LoadingButton>
+              >
+                <Close />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          <DialogContent dividers>
+            <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+              <Grid container spacing={2}>
+                {selectedActionType === "Approved" && (
+                  <Grid item xs={12}>
+                    <RHFTextField
+                      name={"approvedQuantity"}
+                      fullWidth
+                      size="small"
+                      type="number"
+                      placeholder="Approved Qty"
+                      label="Approved Qty"
+                      required
+                    />
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <RHFTextField
+                    name={"approvalRemarks"}
+                    fullWidth
+                    size="small"
+                    label="Remarks"
+                    placeholder="Enter you remarks here..."
+                    required
+                  />
+                </Grid>
+              </Grid>
+            </FormProvider>
+          </DialogContent>
+          <Divider />
+          <DialogActions>
+            <LoadingButton
+              onClick={handleSubmit(onSubmit)}
+              variant="contained"
+              color="success"
+              loading={loading}
+            >
+              Submit
+            </LoadingButton>
 
-          <Button onClick={onClose} variant="contained" color="error">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+            <Button onClick={onClose} variant="contained" color="error">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </>
   );
 }
