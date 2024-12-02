@@ -134,11 +134,16 @@ export const updateAssetRequestStatus = async (req: FastifyRequest, reply: Fasti
   const { id } = req.params as { id: number };
   const { status, approvedQuantity, approvalRemarks } = req.body as UpdateAssetRequestSchema;
   const requestedBy = req.jwtPayload.id;
+  let qty = approvedQuantity; 
+
+    if(status === 'Rejected'){
+        qty=0;
+    }
 
   try {
     const updatedRequest = await db
       .update(assetRequestTable)
-      .set({ requestedBy, status, approvedQuantity, approvalRemarks })
+      .set({ requestedBy, status, approvedQuantity:qty, approvalRemarks })
       .where(eq(assetRequestTable.id, id))
       .returning();
 
