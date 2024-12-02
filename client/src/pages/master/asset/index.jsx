@@ -6,7 +6,6 @@ import {
   Button,
   IconButton,
   MenuItem,
-  Select,
   Skeleton,
   TextField,
   Table,
@@ -33,8 +32,8 @@ export default function Asset() {
 
   const dynamicPropertyKeys = useMemo(() => {
     const keys = new Set();
-    (data || []).forEach((item) => {
-      Object.keys(item.properties || {}).forEach((key) => keys.add(key));
+    (data || []).forEach(item => {
+      Object.keys(item.properties || {}).forEach(key => keys.add(key));
     });
     return Array.from(keys);
   }, [data]);
@@ -45,7 +44,7 @@ export default function Asset() {
       { accessorKey: "totalQuantity", header: "Quantity" },
       { accessorKey: "usedQuantity", header: "Quantity in Use" },
     ];
-    const propertyColumns = dynamicPropertyKeys.map((key) => ({
+    const propertyColumns = dynamicPropertyKeys.map(key => ({
       accessorKey: `properties.${key}`,
       header: key,
     }));
@@ -73,7 +72,7 @@ export default function Asset() {
           onClose={() => {
             setSelectedRow(null);
             setOpenItems(false);
-            refetch()
+            refetch();
           }}
           row={selectedRow}
         />
@@ -82,10 +81,11 @@ export default function Asset() {
       <TextField
         value={selectedAssetTypeId}
         label="Select Asset Type"
-        onChange={(e) => setSelectedAssetTypeId(e.target.value)}
+        onChange={e => setSelectedAssetTypeId(e.target.value)}
         select
         sx={{ minWidth: 300 }}
-        size="small">
+        size="small"
+      >
         <MenuItem value={""}>Select</MenuItem>
         {assetType?.map((el, index) => (
           <MenuItem value={el.id} key={index}>
@@ -104,15 +104,18 @@ export default function Asset() {
                 onClick={() => {
                   setOpenItems(true);
                   setSelectedRow(row);
-                }}>
-                <Iconify icon={"eva:eye-fill"} sx={{ color: "skyblue" }} />
+                }}
+                color="success"
+              >
+                <Iconify icon={"gridicons:add-outline"} />
               </IconButton>
               <IconButton
                 onClick={() => {
                   setOpen(true);
                   setSelectedRow(row);
                   setIsEditMode(true);
-                }}>
+                }}
+              >
                 <Iconify icon={"eva:edit-fill"} />
               </IconButton>
               <IconButton
@@ -120,7 +123,8 @@ export default function Asset() {
                   setOpenDelete(true);
                   setSelectedRow(row);
                 }}
-                color="error">
+                color="error"
+              >
                 <Iconify icon={"eva:trash-2-outline"} />
               </IconButton>
             </Box>
@@ -133,7 +137,8 @@ export default function Asset() {
                 onClick={() => {
                   setOpen(true);
                   setIsEditMode(false);
-                }}>
+                }}
+              >
                 Add New
               </Button>
             </Box>
