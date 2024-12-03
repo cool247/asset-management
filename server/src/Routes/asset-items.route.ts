@@ -5,12 +5,12 @@ import {
   updateAssetItemById,
   deleteAssetItemById,
 } from "../Controllers/asset-item.controller";
-// import { validate } from "../Middleware/validation.middleware";
-// import { CreateLocationSchema, UpdateLocationSchema } from "../Schemas/location.schema";
+import { validate } from "../Middleware/validation.middleware";
+import { createAssetItemSchema, updateAssetItemSchema } from "../Schemas";
 
 export const assetItemsRoutes = async (app: FastifyInstance) => {
-  app.post("/create-new",  createAssetItem);
+  app.post("/create-new", {preHandler: validate(createAssetItemSchema)}, createAssetItem);
   app.get("/:id", getAssetItemsByAssetId);
-  app.patch("/:id",  updateAssetItemById);
+  app.patch("/:id",{preHandler: validate(updateAssetItemSchema)},  updateAssetItemById);
   app.delete("/:id", deleteAssetItemById);
 };

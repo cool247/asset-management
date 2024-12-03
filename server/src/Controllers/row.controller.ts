@@ -33,7 +33,6 @@ export const createRow = async (request: FastifyRequest, reply: FastifyReply) =>
 export const getAllRows = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const allRows = await db.select().from(rows);
-
     reply.send(allRows);
   } catch (error) {
     if (error instanceof Error) {

@@ -8,7 +8,7 @@ export const usersTable = pgTable("users", {
   barcodeId: varchar("barcode_id", { length: 100 }).notNull().unique(),
   name: varchar("name", { length: 50 }).notNull(),
   password: varchar("password", { length: 100 }).notNull(),
-  role: userRoleEnum().default("desktop_user"),
+  role: userRoleEnum().notNull(),
   isActive: boolean("is_active").default(true),
   contactNumber: varchar("contact_number", { length: 10 }).notNull().unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

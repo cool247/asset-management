@@ -1,25 +1,21 @@
-// import {  integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
-// import { assetsTable } from "./asset.model";
-// import { racksAndCupboards } from "./rack-cupboard.model";
-// import { usersTable } from "./user.model";
-// import { assetRequestTable } from "./asset_request.model";
-// import { assetItemsTable } from "./asset-Item.model";
+import {  integer, pgEnum, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import {  assetRequestTable, assetsTable,  usersTable } from "./";
 
-// // Enum for movement status
-// export const movementStatusEnum = pgEnum("movement_status", ["Pending", "Completed"]);
-// export type MovementStatusType = keyof typeof movementStatusEnum.enumValues
 
-// export const assetMovements = pgTable("asset_movements", {
-//   id: serial("id").primaryKey(),
-//   assetItemBarCodeId: varchar("asset_item_barcode_id").notNull().references(() => assetItemsTable.barcodeId), 
-//   userBarCodeId: varchar("user_barcode_id").notNull().references(() => usersTable.barcodeId), 
-//   status: movementStatusEnum().default("Pending"), 
-//   fromLocationId: integer("from").notNull().references(() => racksAndCupboards.id),
-//   toLocationId: integer("to").notNull().references(() => racksAndCupboards.id),
-//   requestId: integer("request_id").references(() => assetRequestTable.id),
-//   movedQuantity: integer("moved_quantity").notNull(),
-//   movedBy: integer("moved_by").notNull().references(() => usersTable.id),
-//   moverRemarks: text("mover_remarks"),
-//   movedAt: timestamp("moved_at").defaultNow().notNull(), 
-//   createdAt: timestamp("created_at").defaultNow().notNull(),
-// });
+export const movementStatusEnum = pgEnum("movement_status", ["Pending", "Completed"]);
+export type MovementStatusType = keyof typeof movementStatusEnum.enumValues
+
+export const assetMovementTable = pgTable("asset_movements", {
+  id: serial("id").primaryKey(),
+  requestId: integer("request_id").notNull().references(() => assetRequestTable.id),
+  assetId: integer("asset_id").notNull().references(() => assetsTable.id),
+
+  userBarCodeId: varchar("user_barcode_id").notNull().references(() => usersTable.barcodeId), 
+  
+  movedQuantity: integer("moved_quantity").notNull().default(0),
+  quantityWithUser: integer("quantity_with_user").notNull().default(0),
+
+  status: movementStatusEnum().default("Pending"), 
+  startedAt: timestamp("moved_at").defaultNow().notNull(), 
+  completedAt: timestamp("completed_at").defaultNow(),
+});

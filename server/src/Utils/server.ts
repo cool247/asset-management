@@ -4,7 +4,7 @@ import fastifyJwt from "@fastify/jwt";
 import { authenticate } from "../Middleware/authenticate.middleware";
 import {
   assetItemsRoutes,
-  // assetMovementRoutes,
+  assetMovementRoutes,
   assetRequestRoutes,
   assetRoutes,
   assetTypeRoutes,
@@ -13,6 +13,7 @@ import {
   rackAndCupboardRoutes,
   rowRoutes,
   userRoutes,
+  reportRoutes
 } from "../Routes";
 //================================= Routes ====================================
 
@@ -70,7 +71,8 @@ export const buildServer = async () => {
     instance.register(assetItemsRoutes, { prefix: "/asset-item" });
     instance.register(assetRoutes, { prefix: "/asset" });
     instance.register(assetRequestRoutes, { prefix: "/asset-request" });
-    // instance.register(assetMovementRoutes, { prefix: "/asset-movement" });
+    instance.register(reportRoutes, { prefix: "/report" });
+    instance.register(assetMovementRoutes, { prefix: "/asset-movement" });
   };
 
   app.register(registerRoutes, { prefix: "/api" });

@@ -1,5 +1,6 @@
 export * from './asset-Item.model';
-// export * from './asset-movement.model';
+export * from './asset-movement.model';
+export * from './asset.item-transaction.model';
 export * from './asset-property-value.model';
 export * from './asset-property.model';
 export * from './asset-request.model';

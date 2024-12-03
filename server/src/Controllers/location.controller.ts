@@ -84,3 +84,4 @@ export const deleteLocationById = async (request: FastifyRequest, reply: Fastify
     reply.status(500).send({ message: "Failed to delete location" });
   }
 };
+

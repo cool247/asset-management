@@ -35,8 +35,8 @@ export default function LoginForm() {
   });
 
   const defaultValues = {
-    contactNumber: "9000000003",
-    password: "admin1@123",
+    contactNumber: "9000000002",
+    password: "Admin@123",
     remember: true,
   };
 

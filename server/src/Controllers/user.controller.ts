@@ -12,7 +12,7 @@ export const createUser = async (request: FastifyRequest, reply: FastifyReply) =
   try {
     const createUser = await db
       .insert(usersTable)
-      .values({ name, barcodeId, role, contactNumber, password })
+      .values({ name, barcodeId, role, contactNumber, password, })
       .returning();
 
     reply.status(201).send(createUser);
