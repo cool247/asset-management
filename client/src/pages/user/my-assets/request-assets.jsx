@@ -1,4 +1,8 @@
-import { FormProvider, RHFSelect, RHFTextField } from "../../../components/hook-form";
+import {
+  FormProvider,
+  RHFSelect,
+  RHFTextField,
+} from "../../../components/hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -15,11 +19,24 @@ const defaultValues = {
   userRemarks: "",
 };
 const schema = Yup.object().shape({
-  assetId: Yup.number().nullable().positive("Asset ID must be positive").required("Required"),
-  requestedRemarks: Yup.string().max(255, "Comments must not exceed 255 characters").optional(),
-  requestedQuantity:Yup.number().nullable().positive("must be positive").required("Required")
+  assetId: Yup.number()
+    .nullable()
+    .positive("Asset ID must be positive")
+    .required("Required"),
+  requestedRemarks: Yup.string()
+    .max(255, "Comments must not exceed 255 characters")
+    .optional(),
+  requestedQuantity: Yup.number()
+    .nullable()
+    .positive("must be positive")
+    .required("Required"),
 });
-export default function CreateAssetsRequest({ onClose, isEditMode, row, refetch }) {
+export default function CreateAssetsRequest({
+  onClose,
+  isEditMode,
+  row,
+  refetch,
+}) {
   const { data } = useGetAssets();
   const { enqueueSnackbar } = useSnackbar();
   const methods = useForm({
@@ -28,7 +45,7 @@ export default function CreateAssetsRequest({ onClose, isEditMode, row, refetch 
   });
   const { handleSubmit, reset } = methods;
   const mutation = useMutation({
-    mutationFn: async (formData) => {
+    mutationFn: async formData => {
       return createAsstReq(formData, row?.id);
     },
     onSuccess: () => {
@@ -38,14 +55,17 @@ export default function CreateAssetsRequest({ onClose, isEditMode, row, refetch 
       refetch();
       onClose();
     },
-    onError: () => {
-      enqueueSnackbar(`Failed to ${isEditMode ? "update" : "add"} `, {
-        variant: "error",
-      });
+    onError: error => {
+      enqueueSnackbar(
+        error?.response?.data?.message || "Something went wrong",
+        {
+          variant: "error",
+        }
+      );
     },
   });
-  const onSubmit = (data) => {
-    mutation.mutate(data );
+  const onSubmit = data => {
+    mutation.mutate(data);
   };
   useEffect(() => {
     if (isEditMode) {
@@ -66,12 +86,13 @@ export default function CreateAssetsRequest({ onClose, isEditMode, row, refetch 
       maxWidth={"xs"}
       fullWidth
       isEditMode={isEditMode}
-      title={isEditMode ? "Update Request" : "Create New Request"}>
+      title={isEditMode ? "Update Request" : "Create New Request"}
+    >
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <RHFSelect name={"assetId"} label={"Select Asset"} required>
-              {data?.map((el) => (
+              {data?.map(el => (
                 <MenuItem value={el.id} key={el.id}>
                   {el.name}
                 </MenuItem>
@@ -79,7 +100,11 @@ export default function CreateAssetsRequest({ onClose, isEditMode, row, refetch 
             </RHFSelect>
           </Grid>
           <Grid item xs={6}>
-            <RHFTextField type='number' name={"requestedQuantity"} label={"Request Quantity"} />
+            <RHFTextField
+              type="number"
+              name={"requestedQuantity"}
+              label={"Request Quantity"}
+            />
           </Grid>
           <Grid item xs={12}>
             <RHFTextField name={"requestedRemarks"} label={"Remarks"} />

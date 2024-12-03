@@ -6,7 +6,8 @@ import {
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { Grid, MenuItem } from "@mui/material";
+import { Button, Grid, MenuItem, Stack } from "@mui/material";
+import QrCode2Icon from "@mui/icons-material/QrCode2";
 import FormWrapper from "../../../components/FormWrapper";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -34,7 +35,7 @@ export default function AddRackCupboard({ onClose, isEditMode, row, refetch }) {
     resolver: yupResolver(schema),
     defaultValues,
   });
-  const { handleSubmit, reset, watch } = methods;
+  const { handleSubmit, reset, watch, setFocus } = methods;
 
   const mutation = useMutation({
     mutationFn: async formData => {
@@ -110,7 +111,25 @@ export default function AddRackCupboard({ onClose, isEditMode, row, refetch }) {
             <RHFTextField name={"description"} label={"Description"} />
           </Grid>
           <Grid item xs={12}>
-            <RHFTextField name={"barcodeId"} label={"Barcode"} />
+            <Stack direction={"row"} gap={"10px"}>
+              <RHFTextField
+                name={"barcodeId"}
+                label={"Barcode"}
+                inputProps={{ readOnly: true }}
+              />
+              <Button
+                endIcon={<QrCode2Icon />}
+                variant="contained"
+                color="info"
+                onClick={() => {
+                  setFocus("barcodeId");
+                  document.querySelector('input[name="barcodeId"]').focus();
+                }}
+                // size="small"
+              >
+                Scan
+              </Button>
+            </Stack>
           </Grid>
         </Grid>
       </FormProvider>
